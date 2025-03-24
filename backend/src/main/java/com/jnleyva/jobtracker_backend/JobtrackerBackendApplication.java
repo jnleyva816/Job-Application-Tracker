@@ -1,13 +1,13 @@
-package com.jnleyva.jobtracker;
+package com.jnleyva.jobtracker_backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JobtrackerApplication {
+public class JobtrackerBackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JobtrackerApplication.class, args);
+		SpringApplication.run(JobtrackerBackendApplication.class, args);
 	}
 
 }

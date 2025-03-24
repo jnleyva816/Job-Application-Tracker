@@ -1,9 +1,9 @@
-package com.jnleyva.jobtracker.controller;
+package com.jnleyva.jobtracker_backend.controller;
 
-import com.jnleyva.jobtracker.model.User;
-import com.jnleyva.jobtracker.repository.UserRepository;
-import com.jnleyva.jobtracker.service.JwtService; // You'll need this for JWT
-import com.jnleyva.jobtracker.service.MyUserDetailsService; // You'll need this for JWT
+import com.jnleyva.jobtracker_backend.model.User;
+import com.jnleyva.jobtracker_backend.repository.UserRepository;
+import com.jnleyva.jobtracker_backend.service.JwtService; // You'll need this for JWT
+import com.jnleyva.jobtracker_backend.service.MyUserDetailsService; // You'll need this for JWT
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

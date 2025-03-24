@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.jnleyva</groupId>
-	<artifactId>jobtracker</artifactId>
+	<artifactId>jobtracker-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jobtracker</name>
+	<name>jobtracker-backend</name>
 	<description>Job Application Tracker Backend</description>
 	<url/>
 	<licenses>
@@ -90,6 +90,17 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<includes>
+					<include>.env</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
 </project>
