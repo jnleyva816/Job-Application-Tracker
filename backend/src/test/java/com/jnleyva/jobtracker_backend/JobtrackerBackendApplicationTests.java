@@ -1,10 +1,10 @@
-package com.jnleyva.jobtracker;
+package com.jnleyva.jobtracker_backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JobtrackerApplicationTests {
+class JobtrackerBackendApplicationTests {
 
 	@Test
 	void contextLoads() {

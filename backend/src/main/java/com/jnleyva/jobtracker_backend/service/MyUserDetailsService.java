@@ -1,7 +1,7 @@
-package com.jnleyva.jobtracker.service;
+package com.jnleyva.jobtracker_backend.service;
 
-import com.jnleyva.jobtracker.model.User;
-import com.jnleyva.jobtracker.repository.UserRepository;
+import com.jnleyva.jobtracker_backend.model.User;
+import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

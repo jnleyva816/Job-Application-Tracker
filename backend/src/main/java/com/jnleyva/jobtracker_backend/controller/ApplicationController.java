@@ -1,7 +1,7 @@
-package com.jnleyva.jobtracker.controller;
+package com.jnleyva.jobtracker_backend.controller;
 
-import com.jnleyva.jobtracker.model.Application;
-import com.jnleyva.jobtracker.repository.ApplicationRepository;
+import com.jnleyva.jobtracker_backend.model.Application;
+import com.jnleyva.jobtracker_backend.repository.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

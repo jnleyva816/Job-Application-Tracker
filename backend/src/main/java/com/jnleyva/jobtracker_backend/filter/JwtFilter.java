@@ -1,7 +1,7 @@
-package com.jnleyva.jobtracker.filter;
+package com.jnleyva.jobtracker_backend.filter;
 
 
-import com.jnleyva.jobtracker.service.JwtService;
+import com.jnleyva.jobtracker_backend.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

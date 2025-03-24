@@ -1,4 +1,4 @@
-package com.jnleyva.jobtracker.service;
+package com.jnleyva.jobtracker_backend.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

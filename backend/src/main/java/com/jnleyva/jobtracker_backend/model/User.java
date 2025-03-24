@@ -1,4 +1,4 @@
-package com.jnleyva.jobtracker.model;
+package com.jnleyva.jobtracker_backend.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

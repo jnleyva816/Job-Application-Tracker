@@ -1,6 +1,6 @@
-package com.jnleyva.jobtracker.config;
+package com.jnleyva.jobtracker_backend.config;
 
-import com.jnleyva.jobtracker.filter.JwtFilter;
+import com.jnleyva.jobtracker_backend.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
