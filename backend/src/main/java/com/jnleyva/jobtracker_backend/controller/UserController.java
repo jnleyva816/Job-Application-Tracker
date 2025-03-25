@@ -1,9 +1,9 @@
 package com.jnleyva.jobtracker_backend.controller;
 
 import com.jnleyva.jobtracker_backend.model.User;
-import com.jnleyva.jobtracker_backend.repository.UserRepository;
-import com.jnleyva.jobtracker_backend.service.JwtService; // You'll need this for JWT
-import com.jnleyva.jobtracker_backend.service.MyUserDetailsService; // You'll need this for JWT
+import com.jnleyva.jobtracker_backend.service.JwtService;
+import com.jnleyva.jobtracker_backend.service.MyUserDetailsService;
+import com.jnleyva.jobtracker_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +12,25 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private UserService userService;
+    
     @Autowired
     private AuthenticationManager authenticationManager;
+    
     @Autowired
     private JwtService jwtService;
+    
     @Autowired
     private MyUserDetailsService userDetailsService;
 
@@ -51,42 +52,54 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // Check if email already exists
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("Email already in use"));
-        }
-        
-        // Check if username already exists
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("Username already in use"));
-        }
-        
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("ROLE_USER");
-        }
-        User savedUser = userRepository.save(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/username/{username}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.hasUsername(authentication, #username)")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        User user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.hasEmail(authentication, #email)")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+        User updatedUser = userService.updateUser(id, userDetails);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.hasUserId(authentication, #id)")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            userRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
-    //  A simple class to represent the login request.
+    // Inner classes for request/response objects
     static class LoginRequest {
         private String username;
         private String password;
@@ -108,7 +121,6 @@ public class UserController {
         }
     }
 
-    //  A simple class to represent the login response.
     static class LoginResponse {
         private String token;
 
@@ -125,7 +137,6 @@ public class UserController {
         }
     }
 
-    // A simple class for Error Response
     static class ErrorResponse {
         private String message;
 

@@ -1,5 +1,6 @@
 package com.jnleyva.jobtracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +37,11 @@ public class Application {
 
     @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -129,6 +135,14 @@ public class Application {
 
     public void setApplicationDate(LocalDate applicationDate) {
         this.applicationDate = applicationDate;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getCreatedAt() {
