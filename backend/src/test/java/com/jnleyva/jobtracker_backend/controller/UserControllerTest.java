@@ -5,6 +5,7 @@ import com.jnleyva.jobtracker_backend.config.TestSecurityConfig;
 import com.jnleyva.jobtracker_backend.model.User;
 import com.jnleyva.jobtracker_backend.service.JwtService;
 import com.jnleyva.jobtracker_backend.service.MyUserDetailsService;
+import com.jnleyva.jobtracker_backend.service.TokenBlacklistService;
 import com.jnleyva.jobtracker_backend.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.security.test.context.support.WithMockUser;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -46,6 +50,9 @@ public class UserControllerTest {
 
     @MockBean
     private MyUserDetailsService userDetailsService;
+
+    @MockBean
+    private TokenBlacklistService tokenBlacklistService;
 
     private User testUser;
     private UserDetails userDetails;
@@ -135,7 +142,7 @@ public class UserControllerTest {
     void login_InvalidCredentials() throws Exception {
         String wrongUsername = "wronguser";
         when(userService.getUserByUsername(wrongUsername))
-                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Invalid credentials"));
+                .thenThrow(new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"));
 
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -145,5 +152,82 @@ public class UserControllerTest {
                 }})))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Invalid credentials"));
+    }
+
+    @Test
+    @WithMockUser
+    public void testLogout() throws Exception {
+        mockMvc.perform(post("/api/users/logout")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Successfully logged out"));
+    }
+
+    @Test
+    void userLifecycle_RegisterLoginLogoutLoginAgain() throws Exception {
+        // Setup test user
+        User newUser = new User();
+        newUser.setUsername("lifecycleuser");
+        newUser.setPassword("Password123!");
+        newUser.setEmail("lifecycle@example.com");
+        newUser.setRole("ROLE_USER");
+
+        // 1. Register User
+        when(userService.createUser(any(User.class))).thenReturn(newUser);
+        mockMvc.perform(post("/api/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newUser)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value(newUser.getUsername()));
+
+        // 2. First Login
+        Authentication firstAuth = new UsernamePasswordAuthenticationToken(
+                newUser.getUsername(), newUser.getPassword());
+        String firstToken = "first.jwt.token";
+        
+        when(userService.getUserByUsername(newUser.getUsername())).thenReturn(newUser);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(firstAuth);
+        when(userDetailsService.loadUserByUsername(newUser.getUsername()))
+                .thenReturn(org.springframework.security.core.userdetails.User
+                        .withUsername(newUser.getUsername())
+                        .password(newUser.getPassword())
+                        .roles("USER")
+                        .build());
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn(firstToken);
+
+        mockMvc.perform(post("/api/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserController.LoginRequest() {{
+                    setUsername(newUser.getUsername());
+                    setPassword(newUser.getPassword());
+                }})))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value(firstToken));
+
+        // 3. Logout
+        mockMvc.perform(post("/api/users/logout")
+                .with(user(newUser.getUsername()).roles("USER"))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Successfully logged out"));
+
+        // 4. Second Login
+        Authentication secondAuth = new UsernamePasswordAuthenticationToken(
+                newUser.getUsername(), newUser.getPassword());
+        String secondToken = "second.jwt.token";
+        
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(secondAuth);
+        when(jwtService.generateToken(any(UserDetails.class))).thenReturn(secondToken);
+
+        mockMvc.perform(post("/api/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new UserController.LoginRequest() {{
+                    setUsername(newUser.getUsername());
+                    setPassword(newUser.getPassword());
+                }})))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value(secondToken));
     }
 } 
