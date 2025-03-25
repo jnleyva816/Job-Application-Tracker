@@ -4,13 +4,11 @@ import com.jnleyva.jobtracker_backend.config.TestConfig;
 import com.jnleyva.jobtracker_backend.exception.ResourceAlreadyExistsException;
 import com.jnleyva.jobtracker_backend.exception.ResourceNotFoundException;
 import com.jnleyva.jobtracker_backend.model.User;
-import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +25,6 @@ class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private User testUser;
 
@@ -40,7 +33,7 @@ class UserServiceTest {
         // Create a fresh test user for each test
         testUser = new User();
         testUser.setUsername("testuser");
-        testUser.setPassword("password123");
+        testUser.setPassword("Password123!");
         testUser.setEmail("test@example.com");
         testUser.setRole("ROLE_USER");
     }
@@ -70,7 +63,7 @@ class UserServiceTest {
         // Create second user with same username but different email
         User duplicateUser = new User();
         duplicateUser.setUsername("testuser");
-        duplicateUser.setPassword("differentpassword");
+        duplicateUser.setPassword("DifferentPassword123!");
         duplicateUser.setEmail("different@example.com");
         duplicateUser.setRole("ROLE_USER");
         
@@ -88,7 +81,7 @@ class UserServiceTest {
         // Create second user with same email but different username
         User duplicateUser = new User();
         duplicateUser.setUsername("differentuser");
-        duplicateUser.setPassword("differentpassword");
+        duplicateUser.setPassword("DifferentPassword123!");
         duplicateUser.setEmail("test@example.com");
         duplicateUser.setRole("ROLE_USER");
         
@@ -166,7 +159,7 @@ class UserServiceTest {
         
         User secondUser = new User();
         secondUser.setUsername("testuser2");
-        secondUser.setPassword("password456");
+        secondUser.setPassword("Password456!");
         secondUser.setEmail("test2@example.com");
         secondUser.setRole("ROLE_USER");
         userService.createUser(secondUser);
@@ -203,7 +196,7 @@ class UserServiceTest {
         User updateDetails = new User();
         updateDetails.setUsername("updatedusername");
         updateDetails.setEmail("updated@example.com");
-        updateDetails.setPassword("newpassword");
+        updateDetails.setPassword("NewPassword123!");
         updateDetails.setRole("ROLE_ADMIN");
         
         User updatedUser = userService.updateUser(savedUser.getId(), updateDetails);
@@ -239,7 +232,7 @@ class UserServiceTest {
         // Create second user
         User secondUser = new User();
         secondUser.setUsername("testuser2");
-        secondUser.setPassword("password456");
+        secondUser.setPassword("Password456!");
         secondUser.setEmail("test2@example.com");
         secondUser.setRole("ROLE_USER");
         userService.createUser(secondUser);
@@ -262,7 +255,7 @@ class UserServiceTest {
         // Create second user
         User secondUser = new User();
         secondUser.setUsername("testuser2");
-        secondUser.setPassword("password456");
+        secondUser.setPassword("Password456!");
         secondUser.setEmail("test2@example.com");
         secondUser.setRole("ROLE_USER");
         userService.createUser(secondUser);
