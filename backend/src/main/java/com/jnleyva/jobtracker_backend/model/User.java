@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "users")
 public class User {
@@ -26,6 +28,9 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private String role; // e.g., "ROLE_USER", "ROLE_ADMIN"
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     @Column(name = "failed_login_attempts")
     private int failedLoginAttempts = 0;
@@ -158,8 +163,14 @@ public class User {
         this.accountLockedUntil = null;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

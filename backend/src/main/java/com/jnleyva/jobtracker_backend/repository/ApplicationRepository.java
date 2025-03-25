@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -20,5 +21,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     void deleteByUserId(@Param("userId") Long userId);
     
     Long countByUserId(Long userId);
+    
+    List<Application> findByCreatedAtBefore(LocalDateTime date);
     // You can add custom query methods here if needed
 }

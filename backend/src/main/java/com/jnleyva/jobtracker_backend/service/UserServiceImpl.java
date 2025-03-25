@@ -7,12 +7,20 @@ import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -20,35 +28,75 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @Override
     public User createUser(User user) {
+        logger.debug("Creating new user with username: {}", user.getUsername());
+        
         // Check if username already exists
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            logger.warn("Username already exists: {}", user.getUsername());
             throw new ResourceAlreadyExistsException("User", "username", user.getUsername());
         }
 
         // Check if email already exists
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            logger.warn("Email already exists: {}", user.getEmail());
             throw new ResourceAlreadyExistsException("User", "email", user.getEmail());
         }
 
         // Validate password
         validatePassword(user.getPassword());
+        logger.debug("Password validation passed for user: {}", user.getUsername());
 
+        // Create a new user instance to avoid modifying the input
+        User newUser = new User();
+        newUser.setUsername(user.getUsername());
+        newUser.setEmail(user.getEmail());
+        
         // Encode password
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String rawPassword = user.getPassword();
+        logger.debug("Raw password length for user {}: {}", user.getUsername(), rawPassword.length());
+        
+        String encodedPassword = passwordEncoder.encode(rawPassword);
+        logger.debug("Password encoded for user: {}, encoded length: {}, encoded prefix: {}", 
+            user.getUsername(), encodedPassword.length(),
+            encodedPassword.substring(0, Math.min(20, encodedPassword.length())));
+        
+        // Test password match before saving
+        boolean preMatchTest = passwordEncoder.matches(rawPassword, encodedPassword);
+        logger.debug("Pre-save password match test for user {}: {}", user.getUsername(), preMatchTest);
+        
+        newUser.setPassword(encodedPassword);
         
         // Set default role if not provided
         if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("ROLE_USER");
+            newUser.setRole("ROLE_USER");
+        } else {
+            newUser.setRole(user.getRole());
         }
 
         // Set timestamps
         LocalDateTime now = LocalDateTime.now();
-        user.setCreatedAt(now);
-        user.setUpdatedAt(now);
+        newUser.setCreatedAt(now);
+        newUser.setUpdatedAt(now);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(newUser);
+        logger.info("User created successfully: {}", savedUser.getUsername());
+        
+        // Verify the saved password can be matched
+        boolean postMatchTest = passwordEncoder.matches(rawPassword, savedUser.getPassword());
+        logger.debug("Post-save password match test for user {}: {}", savedUser.getUsername(), postMatchTest);
+        
+        if (!postMatchTest) {
+            logger.error("Password verification failed for user: {}", savedUser.getUsername());
+            logger.error("Stored password prefix: {}", savedUser.getPassword().substring(0, Math.min(20, savedUser.getPassword().length())));
+            throw new RuntimeException("Password verification failed after user creation");
+        }
+        
+        return savedUser;
     }
 
     @Override
@@ -77,33 +125,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long id, User userDetails) {
         User user = getUserById(id);
+        boolean isPasswordChanged = false;
 
         // Check if username is provided and being changed
-        if (userDetails.getUsername() != null) {
+        if (userDetails.getUsername() != null && !userDetails.getUsername().isEmpty()) {
             // Check if username is being changed and if it already exists
             if (!user.getUsername().equals(userDetails.getUsername()) &&
                     userRepository.findByUsername(userDetails.getUsername()).isPresent()) {
                 throw new ResourceAlreadyExistsException("User", "username", userDetails.getUsername());
             }
-            // Update username only if provided
             user.setUsername(userDetails.getUsername());
         }
 
         // Check if email is provided and being changed
-        if (userDetails.getEmail() != null) {
+        if (userDetails.getEmail() != null && !userDetails.getEmail().isEmpty()) {
             // Check if email is being changed and if it already exists
             if (!user.getEmail().equals(userDetails.getEmail()) &&
                     userRepository.findByEmail(userDetails.getEmail()).isPresent()) {
                 throw new ResourceAlreadyExistsException("User", "email", userDetails.getEmail());
             }
-            // Update email only if provided
             user.setEmail(userDetails.getEmail());
         }
         
         // Update password if provided
         if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
             validatePassword(userDetails.getPassword());
-            user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+            String encodedPassword = passwordEncoder.encode(userDetails.getPassword());
+            user.setPassword(encodedPassword);
+            isPasswordChanged = true;
+            logger.debug("Password updated for user: {}", user.getUsername());
         }
         
         // Update role if provided and not empty
@@ -114,14 +164,38 @@ public class UserServiceImpl implements UserService {
         // Update timestamp
         user.setUpdatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        logger.info("User updated successfully: {} (password changed: {})", updatedUser.getUsername(), isPasswordChanged);
+        return updatedUser;
+    }
+
+    @Override
+    public void updateUserLoginInfo(Long id, int failedLoginAttempts, LocalDateTime lastLogin) {
+        // Use native query to update only specific fields
+        Query query = entityManager.createNativeQuery(
+            "UPDATE users SET failed_login_attempts = :failedAttempts, " +
+            "last_login = :lastLogin, updated_at = :updatedAt " +
+            "WHERE user_id = :id");
+        
+        query.setParameter("failedAttempts", failedLoginAttempts);
+        query.setParameter("lastLogin", lastLogin);
+        query.setParameter("updatedAt", LocalDateTime.now());
+        query.setParameter("id", id);
+        
+        int updatedRows = query.executeUpdate();
+        if (updatedRows == 0) {
+            throw new RuntimeException("Failed to update user login info");
+        }
+        
+        logger.info("User login info updated successfully: {} (failed attempts: {}, last login: {})", 
+            id, failedLoginAttempts, lastLogin);
     }
 
     @Override
     public void deleteUser(Long id) {
-        // Check if user exists
         User user = getUserById(id);
         userRepository.delete(user);
+        logger.info("User deleted successfully: {}", user.getUsername());
     }
 
     private void validatePassword(String password) {

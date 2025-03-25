@@ -1,13 +1,17 @@
 package com.jnleyva.jobtracker_backend.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.github.cdimascio.dotenv.Dotenv;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,7 +21,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
     private final String secret;
     private final long expiration = 86400000; // 1 day (in milliseconds)
 
@@ -26,8 +30,8 @@ public class JwtService {
         String envSecret = dotenv.get("JWT_SECRET");
         if (envSecret == null || envSecret.isEmpty()) {
             // Fallback for development only - remove in production
-            this.secret = "MjFiMTYyYTViYmZiYjNhODZmMjY4YTgxZmMxZmQyOGE0Yjk5MWQzODAyOGQzYzRlMGVjNmVjYmEwNDNkMTBjMA==";
-            System.out.println("WARNING: Using default JWT secret. Set JWT_SECRET in .env file");
+            this.secret = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+            logger.warn("WARNING: Using default JWT secret. Set JWT_SECRET in .env file");
         } else {
             this.secret = envSecret;
         }
@@ -39,7 +43,18 @@ public class JwtService {
      * @return The username.
      */
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            logger.info("Extracting username from token");
+            String username = extractClaim(token, Claims::getSubject);
+            logger.info("Username extracted: {}", username);
+            return username;
+        } catch (ExpiredJwtException e) {
+            logger.warn("Attempted to extract username from expired token");
+            return e.getClaims().getSubject();
+        } catch (Exception e) {
+            logger.error("Error extracting username from token: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -48,7 +63,18 @@ public class JwtService {
      * @return The expiration date.
      */
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        try {
+            logger.info("Extracting expiration from token");
+            Date expiration = extractClaim(token, Claims::getExpiration);
+            logger.info("Expiration extracted: {}", expiration);
+            return expiration;
+        } catch (ExpiredJwtException e) {
+            logger.warn("Attempted to extract expiration from expired token");
+            return e.getClaims().getExpiration();
+        } catch (Exception e) {
+            logger.error("Error extracting expiration from token: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -65,12 +91,25 @@ public class JwtService {
      * @return The claims.
      */
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            logger.debug("Extracting all claims from token");
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            logger.debug("Claims extracted successfully");
+            return claims;
+        } catch (ExpiredJwtException e) {
+            logger.warn("Token has expired");
+            throw e;
+        } catch (SignatureException e) {
+            logger.error("Invalid JWT signature");
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error parsing JWT token: {}", e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -79,7 +118,23 @@ public class JwtService {
      * @return True if the token has expired, false otherwise.
      */
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            Date expiration = extractExpiration(token);
+            if (expiration == null) {
+                logger.warn("Token has no expiration date");
+                return true;
+            }
+            boolean expired = expiration.before(new Date());
+            logger.info("Token expiration check - Expired: {}, Expiration: {}, Current time: {}", 
+                expired, expiration, new Date());
+            return expired;
+        } catch (ExpiredJwtException e) {
+            logger.warn("Token has expired");
+            return true;
+        } catch (Exception e) {
+            logger.error("Error checking token expiration: {}", e.getMessage());
+            return true;
+        }
     }
 
     /**
@@ -90,8 +145,21 @@ public class JwtService {
      * @return True if the token is valid, false otherwise.
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try {
+            logger.info("Validating token for user: {}", userDetails.getUsername());
+            final String username = extractUsername(token);
+            boolean isValid = (username != null && 
+                    username.equals(userDetails.getUsername()) && 
+                    !isTokenExpired(token));
+            logger.info("Token validation result: {}", isValid);
+            return isValid;
+        } catch (ExpiredJwtException e) {
+            logger.warn("Attempted to validate expired token");
+            return false;
+        } catch (Exception e) {
+            logger.error("Error validating token: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -110,13 +178,25 @@ public class JwtService {
      * @return The JWT token.
      */
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+        try {
+            logger.info("Generating token for user: {}", userDetails.getUsername());
+            Date now = new Date();
+            Date expiryDate = new Date(now.getTime() + expiration);
+            
+            String token = Jwts.builder()
+                    .setClaims(extraClaims)
+                    .setSubject(userDetails.getUsername())
+                    .setIssuedAt(now)
+                    .setExpiration(expiryDate)
+                    .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                    .compact();
+            
+            logger.info("Token generated successfully. Expires at: {}", expiryDate);
+            return token;
+        } catch (Exception e) {
+            logger.error("Error generating token: {}", e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -124,7 +204,6 @@ public class JwtService {
      * @return The signing key.
      */
     private Key getSigningKey() {
-        System.out.println("JWT Secret from .env: " + secret); // Add this line
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
