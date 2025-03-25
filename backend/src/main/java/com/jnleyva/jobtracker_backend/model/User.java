@@ -1,7 +1,10 @@
 package com.jnleyva.jobtracker_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +26,10 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private String role; // e.g., "ROLE_USER", "ROLE_ADMIN"
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Application> applications = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -77,6 +84,24 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    
+    public List<Application> getApplications() {
+        return applications;
+    }
+    
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
+    }
+    
+    public void addApplication(Application application) {
+        applications.add(application);
+        application.setUser(this);
+    }
+    
+    public void removeApplication(Application application) {
+        applications.remove(application);
+        application.setUser(null);
     }
 
     public LocalDateTime getCreatedAt() {
