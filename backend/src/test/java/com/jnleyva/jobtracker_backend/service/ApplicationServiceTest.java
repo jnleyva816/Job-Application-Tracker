@@ -46,7 +46,7 @@ class ApplicationServiceTest {
         // Create a test user
         testUser = new User();
         testUser.setUsername("applicationtestuser");
-        testUser.setPassword("password123");
+        testUser.setPassword("Password123!");
         testUser.setEmail("apptest@example.com");
         testUser.setRole("ROLE_USER");
         testUser = userService.createUser(testUser);
@@ -153,7 +153,7 @@ class ApplicationServiceTest {
         // Create a second user
         User secondUser = new User();
         secondUser.setUsername("seconduser");
-        secondUser.setPassword("password456");
+        secondUser.setPassword("Password456!");
         secondUser.setEmail("second@example.com");
         secondUser.setRole("ROLE_USER");
         secondUser = userService.createUser(secondUser);

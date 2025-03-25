@@ -32,6 +32,9 @@ public class UserServiceImpl implements UserService {
             throw new ResourceAlreadyExistsException("User", "email", user.getEmail());
         }
 
+        // Validate password
+        validatePassword(user.getPassword());
+
         // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         
@@ -99,6 +102,7 @@ public class UserServiceImpl implements UserService {
         
         // Update password if provided
         if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
+            validatePassword(userDetails.getPassword());
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
         
@@ -118,5 +122,23 @@ public class UserServiceImpl implements UserService {
         // Check if user exists
         User user = getUserById(id);
         userRepository.delete(user);
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.length() < 8) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            throw new IllegalArgumentException("Password must contain at least one uppercase letter");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            throw new IllegalArgumentException("Password must contain at least one lowercase letter");
+        }
+        if (!password.matches(".*\\d.*")) {
+            throw new IllegalArgumentException("Password must contain at least one number");
+        }
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*")) {
+            throw new IllegalArgumentException("Password must contain at least one special character");
+        }
     }
 } 

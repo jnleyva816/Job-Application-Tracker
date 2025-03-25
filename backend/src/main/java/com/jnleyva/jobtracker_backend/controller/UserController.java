@@ -37,24 +37,59 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
+            // Check if account is locked
+            User user = userService.getUserByUsername(loginRequest.getUsername());
+            if (user.isAccountLocked()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new ErrorResponse("Account is temporarily locked. Please try again later."));
+            }
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Reset failed login attempts on successful login
+            user.resetFailedLoginAttempts();
+            userService.updateUser(user.getId(), user);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
             String token = jwtService.generateToken(userDetails);
 
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (AuthenticationException e) {
+            // Increment failed login attempts
+            try {
+                User user = userService.getUserByUsername(loginRequest.getUsername());
+                user.incrementFailedLoginAttempts();
+                userService.updateUser(user.getId(), user);
+            } catch (Exception ex) {
+                // Ignore if user not found
+            }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid credentials"));
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            User createdUser = userService.createUser(user);
+            // Create a simplified response with only id, username, and email
+            UserResponse userResponse = new UserResponse(
+                createdUser.getId(),
+                createdUser.getUsername(),
+                createdUser.getEmail()
+            );
+            return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid input data: " + e.getMessage()));
+        } catch (Exception e) {
+            if (e.getMessage().contains("already exists")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse("Username or email already exists"));
+            }
+            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid input data"));
+        }
     }
 
     @GetMapping
@@ -150,6 +185,43 @@ public class UserController {
 
         public void setMessage(String message) {
             this.message = message;
+        }
+    }
+
+    // Add this new inner class for the register response
+    static class UserResponse {
+        private Long id;
+        private String username;
+        private String email;
+
+        public UserResponse(Long id, String username, String email) {
+            this.id = id;
+            this.username = username;
+            this.email = email;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
         }
     }
 }

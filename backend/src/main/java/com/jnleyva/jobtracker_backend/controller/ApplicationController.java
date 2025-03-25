@@ -86,9 +86,8 @@ public class ApplicationController {
         
         Application savedApplication = applicationRepository.save(application);
         
-        // Return only the application ID to prevent circular reference issues
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedApplication.getId());
+                .body(savedApplication);
     }
 
     @PutMapping("/{id}")

@@ -41,7 +41,7 @@ class UserApplicationRelationshipTest {
         // Create a test user
         User user = new User();
         user.setUsername("relationshipuser");
-        user.setPassword("password123");
+        user.setPassword("Password123!");
         user.setEmail("relationship@example.com");
         user.setRole("ROLE_USER");
         user = userService.createUser(user);
@@ -75,7 +75,7 @@ class UserApplicationRelationshipTest {
         // Create a test user
         User user = new User();
         user.setUsername("cascadeuser");
-        user.setPassword("password123");
+        user.setPassword("Password123!");
         user.setEmail("cascade@example.com");
         user.setRole("ROLE_USER");
         user = userService.createUser(user);
@@ -123,7 +123,7 @@ class UserApplicationRelationshipTest {
         // Create a test user
         User user = new User();
         user.setUsername("cascadedeleteuser");
-        user.setPassword("password123");
+        user.setPassword("Password123!");
         user.setEmail("cascadedelete@example.com");
         user.setRole("ROLE_USER");
         user = userService.createUser(user);
@@ -172,7 +172,7 @@ class UserApplicationRelationshipTest {
         // Create a test user
         User user = new User();
         user.setUsername("addremoveuser");
-        user.setPassword("password123");
+        user.setPassword("Password123!");
         user.setEmail("addremove@example.com");
         user.setRole("ROLE_USER");
         user = userService.createUser(user);

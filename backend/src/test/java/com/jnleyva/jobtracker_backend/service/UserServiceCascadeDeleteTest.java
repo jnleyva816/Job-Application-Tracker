@@ -4,7 +4,6 @@ import com.jnleyva.jobtracker_backend.config.TestConfig;
 import com.jnleyva.jobtracker_backend.model.Application;
 import com.jnleyva.jobtracker_backend.model.User;
 import com.jnleyva.jobtracker_backend.repository.ApplicationRepository;
-import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +25,6 @@ class UserServiceCascadeDeleteTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -37,7 +34,7 @@ class UserServiceCascadeDeleteTest {
         // Create a test user
         User user = new User();
         user.setUsername("testuser");
-        user.setPassword("password");
+        user.setPassword("Password123!");
         user.setEmail("test@example.com");
         user.setRole("ROLE_USER");
         user = userService.createUser(user);

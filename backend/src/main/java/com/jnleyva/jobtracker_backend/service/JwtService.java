@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -21,9 +20,6 @@ public class JwtService {
 
     private final String secret;
     private final long expiration = 86400000; // 1 day (in milliseconds)
-
-    @Autowired
-    private MyUserDetailsService userDetailsService;
 
     public JwtService() {
         Dotenv dotenv = Dotenv.load();
