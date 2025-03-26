@@ -21,14 +21,16 @@ The backend is a Spring Boot application that provides a RESTful API for managin
 - Database configuration
 - Development guidelines
 
-## Frontend (Planned)
+## Frontend
 
-The frontend will be built using React and will provide a modern, responsive user interface for:
+The frontend is built using React with TypeScript and Vite, providing a modern, responsive user interface. It uses Tailwind CSS for styling and includes features for:
 - User authentication
 - Job application management
 - Profile management
 - Dashboard with application statistics
 - Search and filtering capabilities
+
+See [frontend/README.md](frontend/README.md) for detailed setup and development instructions.
 
 ## Getting Started
 
@@ -44,10 +46,11 @@ The frontend will be built using React and will provide a modern, responsive use
    # Follow instructions in backend/README.md
    ```
 
-3. Frontend setup (coming soon):
+3. Set up the frontend:
    ```bash
    cd frontend
-   # Instructions will be added when frontend is implemented
+   npm install
+   npm run dev
    ```
 
 ## Development Status
@@ -55,7 +58,8 @@ The frontend will be built using React and will provide a modern, responsive use
 - [x] Backend API implementation
 - [x] Database schema and migrations
 - [x] Authentication system
-- [ ] Frontend implementation
+- [x] Frontend project setup
+- [ ] Frontend feature implementation
 - [ ] Integration testing
 - [ ] Deployment configuration
 

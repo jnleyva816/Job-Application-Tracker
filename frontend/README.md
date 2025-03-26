@@ -1,54 +1,107 @@
-# React + TypeScript + Vite
+# Job Application Tracker - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for the Job Application Tracker, built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- ESLint
+- Prettier
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (v16 or higher)
+- npm (v7 or higher)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file in the root directory:
+   ```bash
+   VITE_API_URL=http://localhost:8080
+   VITE_APP_NAME="Job Application Tracker"
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The application will be available at `http://localhost:5173`
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+## Project Structure
+
+```
+frontend/
+├── src/              # Source files
+│   ├── components/   # Reusable components
+│   ├── pages/        # Page components
+│   ├── services/     # API services
+│   ├── hooks/        # Custom React hooks
+│   ├── types/        # TypeScript type definitions
+│   ├── utils/        # Utility functions
+│   └── App.tsx       # Root component
+├── public/           # Static assets
+└── index.html        # Entry HTML file
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Modern, responsive UI with Tailwind CSS
+- Type-safe development with TypeScript
+- Fast development with Vite
+- Code quality tools (ESLint, Prettier)
+- Environment configuration
+- Production build optimization
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Development Guidelines
+
+1. Follow the TypeScript best practices
+2. Use functional components with hooks
+3. Implement responsive design using Tailwind CSS
+4. Write clean, maintainable code
+5. Add proper documentation for components and functions
+
+## Building for Production
+
+1. Update the `.env.production` file with production values
+2. Run the build command:
+   ```bash
+   npm run build
+   ```
+3. The production build will be in the `dist` directory
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Run tests and linting
+4. Submit a pull request
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Clear the `node_modules` directory and run `npm install` again
+2. Check if all environment variables are set correctly
+3. Ensure you're using the correct Node.js version
+4. Check the browser console for any errors
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
