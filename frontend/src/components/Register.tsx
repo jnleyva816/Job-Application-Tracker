@@ -45,7 +45,7 @@ function Register() {
           password: formData.password,
         });
         navigate('/dashboard');
-      } catch (loginErr) {
+      } catch {
         // If auto-login fails, redirect to login page with success message
         console.log('Registration successful, please login');
         navigate('/login?message=Registration successful! Please login.');

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,6 +76,10 @@ public class InterviewService {
                     interview.setInterviewerEmail(interviewDTO.getInterviewerEmail());
                     interview.setLocation(interviewDTO.getLocation());
                     interview.setDurationMinutes(interviewDTO.getDurationMinutes());
+                    interview.setCancellationReason(interviewDTO.getCancellationReason());
+                    interview.setMeetingLink(interviewDTO.getMeetingLink());
+                    interview.setInterviewFeedback(interviewDTO.getInterviewFeedback());
+                    interview.setOriginalDate(interviewDTO.getOriginalDate());
                     return interviewRepository.save(interview);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Interview not found with id: " + interviewId + " for application: " + applicationId));
@@ -107,6 +112,63 @@ public class InterviewService {
                     if (interviewDetails.getDurationMinutes() != null) {
                         interview.setDurationMinutes(interviewDetails.getDurationMinutes());
                     }
+                    if (interviewDetails.getCancellationReason() != null) {
+                        interview.setCancellationReason(interviewDetails.getCancellationReason());
+                    }
+                    if (interviewDetails.getMeetingLink() != null) {
+                        interview.setMeetingLink(interviewDetails.getMeetingLink());
+                    }
+                    if (interviewDetails.getInterviewFeedback() != null) {
+                        interview.setInterviewFeedback(interviewDetails.getInterviewFeedback());
+                    }
+                    if (interviewDetails.getOriginalDate() != null) {
+                        interview.setOriginalDate(interviewDetails.getOriginalDate());
+                    }
+                    return interviewRepository.save(interview);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with id: " + interviewId + " for application: " + applicationId));
+    }
+
+    @Transactional
+    public Interview cancelInterview(Long applicationId, Long interviewId, String reason) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new ResourceNotFoundException("Application not found with id: " + applicationId);
+        }
+        
+        return interviewRepository.findById(interviewId)
+                .filter(interview -> interview.getApplication().getId().equals(applicationId))
+                .map(interview -> {
+                    interview.cancel(reason);
+                    return interviewRepository.save(interview);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with id: " + interviewId + " for application: " + applicationId));
+    }
+
+    @Transactional
+    public Interview rescheduleInterview(Long applicationId, Long interviewId, LocalDateTime newDate, String reason) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new ResourceNotFoundException("Application not found with id: " + applicationId);
+        }
+        
+        return interviewRepository.findById(interviewId)
+                .filter(interview -> interview.getApplication().getId().equals(applicationId))
+                .map(interview -> {
+                    interview.reschedule(newDate, reason);
+                    return interviewRepository.save(interview);
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found with id: " + interviewId + " for application: " + applicationId));
+    }
+
+    @Transactional
+    public Interview completeInterview(Long applicationId, Long interviewId, String feedback) {
+        if (!applicationRepository.existsById(applicationId)) {
+            throw new ResourceNotFoundException("Application not found with id: " + applicationId);
+        }
+        
+        return interviewRepository.findById(interviewId)
+                .filter(interview -> interview.getApplication().getId().equals(applicationId))
+                .map(interview -> {
+                    interview.complete(feedback);
                     return interviewRepository.save(interview);
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("Interview not found with id: " + interviewId + " for application: " + applicationId));

@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/177</span>
+                <span class='fraction'>0/173</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/177</span>
+                <span class='fraction'>0/173</span>
             </div>
         
             
@@ -274,11 +274,7 @@
 <a name='L209'></a><a href='#L209'>209</a>
 <a name='L210'></a><a href='#L210'>210</a>
 <a name='L211'></a><a href='#L211'>211</a>
-<a name='L212'></a><a href='#L212'>212</a>
-<a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L212'></a><a href='#L212'>212</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -306,20 +302,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -351,6 +336,11 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -477,13 +467,15 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -495,7 +487,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import { useState } from 'react';</span></span></span>
 <span class="cstat-no" title="statement not covered" >import { useNavigate } from 'react-router-dom';</span>
-<span class="cstat-no" title="statement not covered" >import { authService } from '../services/authService';</span>
+<span class="cstat-no" title="statement not covered" >import { applicationService } from '../services/applicationService';</span>
 <span class="cstat-no" title="statement not covered" >import MenuBar from './MenuBar';</span>
 &nbsp;
 interface ApplicationFormData {
@@ -505,7 +497,7 @@ interface ApplicationFormData {
   url: string;
   description: string;
   compensation: number;
-  status: string;
+  status: 'Applied' | 'Interviewing' | 'Offered' | 'Rejected';
   applicationDate: string;
 }
 &nbsp;
@@ -521,32 +513,21 @@ interface ApplicationFormData {
 <span class="cstat-no" title="statement not covered" >    status: 'Applied',</span>
 <span class="cstat-no" title="statement not covered" >    applicationDate: new Date().toISOString().split('T')[0],</span>
 <span class="cstat-no" title="statement not covered" >  });</span>
+<span class="cstat-no" title="statement not covered" >  const [isSubmitting, setIsSubmitting] = useState(false);</span>
+<span class="cstat-no" title="statement not covered" >  const [error, setError] = useState&lt;string | null&gt;(null);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  const handleSubmit = async (e: React.FormEvent) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
+<span class="cstat-no" title="statement not covered" >    setIsSubmitting(true);</span>
+<span class="cstat-no" title="statement not covered" >    setError(null);</span>
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      const token = authService.getToken();</span>
-<span class="cstat-no" title="statement not covered" >      if (!token) {</span>
-<span class="cstat-no" title="statement not covered" >        console.error('No authentication token found');</span>
-<span class="cstat-no" title="statement not covered" >        return;</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >      const response = await fetch(`${import.meta.env.VITE_API_URL}/applications`, {</span>
-<span class="cstat-no" title="statement not covered" >        method: 'POST',</span>
-<span class="cstat-no" title="statement not covered" >        headers: {</span>
-<span class="cstat-no" title="statement not covered" >          'Content-Type': 'application/json',</span>
-<span class="cstat-no" title="statement not covered" >          'Authorization': `Bearer ${token}`,</span>
-<span class="cstat-no" title="statement not covered" >        },</span>
-<span class="cstat-no" title="statement not covered" >        body: JSON.stringify(formData),</span>
-<span class="cstat-no" title="statement not covered" >      });</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >      if (response.ok) {</span>
-<span class="cstat-no" title="statement not covered" >        navigate('/dashboard'); // Redirect to dashboard after successful submission</span>
-<span class="cstat-no" title="statement not covered" >      } else {</span>
-<span class="cstat-no" title="statement not covered" >        console.error('Failed to create application');</span>
-<span class="cstat-no" title="statement not covered" >      }</span>
-<span class="cstat-no" title="statement not covered" >    } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >      console.error('Error creating application:', error);</span>
+<span class="cstat-no" title="statement not covered" >      await applicationService.createApplication(formData);</span>
+<span class="cstat-no" title="statement not covered" >      navigate('/dashboard'); // Redirect to dashboard after successful submission</span>
+<span class="cstat-no" title="statement not covered" >    } catch (err) {</span>
+<span class="cstat-no" title="statement not covered" >      setError(err instanceof Error ? err.message : 'Failed to create application');</span>
+<span class="cstat-no" title="statement not covered" >    } finally {</span>
+<span class="cstat-no" title="statement not covered" >      setIsSubmitting(false);</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" >  };</span>
 &nbsp;
@@ -566,6 +547,11 @@ interface ApplicationFormData {
 <span class="cstat-no" title="statement not covered" >        &lt;h2 className="text-2xl font-bold mb-6 text-light-text dark:text-dark-text"&gt;Add New Job Application&lt;/h2&gt;</span>
 <span class="cstat-no" title="statement not covered" >        &lt;div className="bg-light-surface dark:bg-dark-surface rounded-lg shadow p-6"&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;form onSubmit={handleSubmit} className="space-y-6"&gt;</span>
+<span class="cstat-no" title="statement not covered" >            {error &amp;&amp; (</span>
+<span class="cstat-no" title="statement not covered" >              &lt;div className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg p-3"&gt;</span>
+<span class="cstat-no" title="statement not covered" >                &lt;p className="text-red-800 dark:text-red-400 text-sm"&gt;{error}&lt;/p&gt;</span>
+<span class="cstat-no" title="statement not covered" >              &lt;/div&gt;</span>
+            )}
 <span class="cstat-no" title="statement not covered" >            &lt;div&gt;</span>
 <span class="cstat-no" title="statement not covered" >              &lt;label htmlFor="company" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary"&gt;</span>
                 Company *
@@ -690,15 +676,17 @@ interface ApplicationFormData {
 <span class="cstat-no" title="statement not covered" >              &lt;button</span>
 <span class="cstat-no" title="statement not covered" >                type="button"</span>
 <span class="cstat-no" title="statement not covered" >                onClick={() =&gt; navigate('/dashboard')}</span>
-<span class="cstat-no" title="statement not covered" >                className="px-4 py-2 border border-light-border dark:border-dark-border rounded-md shadow-sm text-sm font-medium text-light-text dark:text-dark-text bg-light-surface dark:bg-dark-surface hover:bg-light-background dark:hover:bg-dark-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"</span>
+<span class="cstat-no" title="statement not covered" >                disabled={isSubmitting}</span>
+<span class="cstat-no" title="statement not covered" >                className="px-4 py-2 border border-light-border dark:border-dark-border rounded-md shadow-sm text-sm font-medium text-light-text dark:text-dark-text bg-light-surface dark:bg-dark-surface hover:bg-light-background dark:hover:bg-dark-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"</span>
 <span class="cstat-no" title="statement not covered" >              &gt;</span>
                 Cancel
 <span class="cstat-no" title="statement not covered" >              &lt;/button&gt;</span>
 <span class="cstat-no" title="statement not covered" >              &lt;button</span>
 <span class="cstat-no" title="statement not covered" >                type="submit"</span>
-<span class="cstat-no" title="statement not covered" >                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"</span>
-<span class="cstat-no" title="statement not covered" >              &gt;</span>
-                Save Application
+<span class="cstat-no" title="statement not covered" >                disabled={isSubmitting}</span>
+<span class="cstat-no" title="statement not covered" >                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"</span>
+              &gt;
+<span class="cstat-no" title="statement not covered" >                {isSubmitting ? 'Saving...' : 'Save Application'}</span>
 <span class="cstat-no" title="statement not covered" >              &lt;/button&gt;</span>
 <span class="cstat-no" title="statement not covered" >            &lt;/div&gt;</span>
 <span class="cstat-no" title="statement not covered" >          &lt;/form&gt;</span>
@@ -715,7 +703,7 @@ interface ApplicationFormData {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-04T15:26:45.273Z
+                at 2025-06-04T16:41:59.119Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

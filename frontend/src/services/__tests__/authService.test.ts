@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { authService } from '../authService'
-import { mockUsers, validTokens, generateToken, createMockUser } from '../../test/mocks/handlers'
+import { 
+  mockUsers, 
+  validTokens, 
+  generateToken, 
+  createMockUser,
+  type MockUser
+} from '../../test/mocks/handlers'
 
 // Set up environment variable for tests
 Object.defineProperty(import.meta, 'env', {
@@ -30,7 +36,7 @@ describe('AuthService', () => {
       const userData = {
         username: 'testuser',
         email: 'test@example.com',
-        password: 'password123'
+        password: 'securepassword'
       }
 
       const result = await authService.register(userData)
@@ -47,14 +53,15 @@ describe('AuthService', () => {
       // Create existing user
       const existingUser = createMockUser({
         username: 'testuser',
-        email: 'existing@example.com'
+        email: 'existing@example.com',
+        password: 'password'
       })
       mockUsers.set(existingUser.id, existingUser)
 
       const userData = {
         username: 'testuser',
         email: 'new@example.com',
-        password: 'password123'
+        password: 'securepassword'
       }
 
       await expect(authService.register(userData)).rejects.toThrow('Username or email already exists')
@@ -64,14 +71,15 @@ describe('AuthService', () => {
       // Create existing user
       const existingUser = createMockUser({
         username: 'existinguser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(existingUser.id, existingUser)
 
       const userData = {
         username: 'newuser',
         email: 'test@example.com',
-        password: 'password123'
+        password: 'securepassword'
       }
 
       await expect(authService.register(userData)).rejects.toThrow('Username or email already exists')
@@ -83,7 +91,8 @@ describe('AuthService', () => {
       // Create a test user
       const user = createMockUser({
         username: 'testuser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(user.id, user)
     })
@@ -121,7 +130,7 @@ describe('AuthService', () => {
     it('should fail to login with non-existent user', async () => {
       const credentials = {
         username: 'nonexistent',
-        password: 'correctpassword'
+        password: 'password'
       }
 
       await expect(authService.login(credentials)).rejects.toThrow('Invalid username or password')
@@ -162,13 +171,14 @@ describe('AuthService', () => {
   })
 
   describe('Get Current User', () => {
-    let testUser: any
+    let testUser: MockUser
     let token: string
 
     beforeEach(() => {
       testUser = createMockUser({
         username: 'testuser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(testUser.id, testUser)
       token = generateToken('testuser')
@@ -195,13 +205,14 @@ describe('AuthService', () => {
   })
 
   describe('Update Current User', () => {
-    let testUser: any
+    let testUser: MockUser
     let token: string
 
     beforeEach(() => {
       testUser = createMockUser({
         username: 'testuser',
         email: 'test@example.com',
+        password: 'password',
         firstName: 'Test',
         lastName: 'User'
       })
@@ -238,7 +249,8 @@ describe('AuthService', () => {
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
-        email: 'other@example.com'
+        email: 'other@example.com',
+        password: 'password'
       })
       mockUsers.set(otherUser.id, otherUser)
 
@@ -251,7 +263,8 @@ describe('AuthService', () => {
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
-        email: 'other@example.com'
+        email: 'other@example.com',
+        password: 'password'
       })
       mockUsers.set(otherUser.id, otherUser)
 
@@ -262,13 +275,14 @@ describe('AuthService', () => {
   })
 
   describe('Update User by ID', () => {
-    let testUser: any
+    let testUser: MockUser
     let token: string
 
     beforeEach(() => {
       testUser = createMockUser({
         username: 'testuser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(testUser.id, testUser)
       token = generateToken('testuser')
@@ -303,7 +317,8 @@ describe('AuthService', () => {
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
-        email: 'other@example.com'
+        email: 'other@example.com',
+        password: 'password'
       })
       mockUsers.set(otherUser.id, otherUser)
 
@@ -314,13 +329,14 @@ describe('AuthService', () => {
   })
 
   describe('Delete User', () => {
-    let testUser: any
+    let testUser: MockUser
     let token: string
 
     beforeEach(() => {
       testUser = createMockUser({
         username: 'testuser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(testUser.id, testUser)
       token = generateToken('testuser')
@@ -349,7 +365,8 @@ describe('AuthService', () => {
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
-        email: 'other@example.com'
+        email: 'other@example.com',
+        password: 'password'
       })
       mockUsers.set(otherUser.id, otherUser)
 
@@ -358,13 +375,14 @@ describe('AuthService', () => {
   })
 
   describe('Get User by ID', () => {
-    let testUser: any
+    let testUser: MockUser
     let token: string
 
     beforeEach(() => {
       testUser = createMockUser({
         username: 'testuser',
-        email: 'test@example.com'
+        email: 'test@example.com',
+        password: 'password'
       })
       mockUsers.set(testUser.id, testUser)
       token = generateToken('testuser')
@@ -391,7 +409,8 @@ describe('AuthService', () => {
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
-        email: 'other@example.com'
+        email: 'other@example.com',
+        password: 'password'
       })
       mockUsers.set(otherUser.id, otherUser)
 
