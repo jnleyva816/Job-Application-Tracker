@@ -1,9 +1,12 @@
 package com.jnleyva.jobtracker_backend.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -44,6 +47,10 @@ public class Application {
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
     private User user;
+
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Interview> interviews = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -145,6 +152,24 @@ public class Application {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Interview> getInterviews() {
+        return interviews;
+    }
+
+    public void setInterviews(List<Interview> interviews) {
+        this.interviews = interviews;
+    }
+
+    public void addInterview(Interview interview) {
+        interviews.add(interview);
+        interview.setApplication(this);
+    }
+
+    public void removeInterview(Interview interview) {
+        interviews.remove(interview);
+        interview.setApplication(null);
     }
 
     public LocalDateTime getCreatedAt() {

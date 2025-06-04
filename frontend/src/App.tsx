@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Applications from './pages/Applications';
+import ApplicationDetail from './pages/ApplicationDetail';
 import Statistics from './pages/Statistics';
 import Profile from './pages/Profile';
 import Login from './components/Login';
@@ -53,6 +54,14 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <Applications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationDetail />
               </ProtectedRoute>
             }
           />

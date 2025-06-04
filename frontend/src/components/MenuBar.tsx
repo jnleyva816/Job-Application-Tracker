@@ -17,7 +17,7 @@ function MenuBar() {
         return;
       }
       
-      const logoutResponse = await fetch(`${import.meta.env.VITE_DEV_API_URL}/users/logout`, {
+      const logoutResponse = await fetch(`${import.meta.env.VITE_API_URL}/users/logout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,21 +40,21 @@ function MenuBar() {
   };
 
   const menuItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { label: 'Applications', href: '/applications', icon: '📝' },
-    { label: 'Statistics', href: '/statistics', icon: '📈' },
-    { label: 'Profile', href: '/profile', icon: '👤' },
-    { label: 'Logout', onClick: handleLogout, icon: '🚪' },
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Applications', href: '/applications' },
+    { label: 'Statistics', href: '/statistics' },
+    { label: 'Profile', href: '/profile' },
+    { label: 'Logout', onClick: handleLogout },
   ];
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-light-surface dark:bg-dark-surface shadow-sm border-b border-light-border dark:border-dark-border">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo and Desktop Menu */}
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-blue-600">JAT</span>
+              <span className="text-xl font-bold text-primary">JAT</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {menuItems.filter(item => !item.onClick).map((item) => (
@@ -65,9 +65,8 @@ function MenuBar() {
                     e.preventDefault();
                     navigate(item.href);
                   }}
-                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                  className="inline-flex items-center px-1 pt-1 text-sm font-medium text-light-text dark:text-dark-text hover:text-primary transition-colors"
                 >
-                  <span className="mr-2">{item.icon}</span>
                   {item.label}
                 </a>
               ))}
@@ -75,9 +74,8 @@ function MenuBar() {
               <button
                 onClick={handleLogout}
                 type="button"
-                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                className="inline-flex items-center px-1 pt-1 text-sm font-medium text-light-text dark:text-dark-text hover:text-primary transition-colors"
               >
-                <span className="mr-2">🚪</span>
                 Logout
               </button>
             </div>
@@ -87,7 +85,7 @@ function MenuBar() {
           <div className="flex items-center sm:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text hover:bg-light-background dark:hover:bg-dark-background focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
             >
               <span className="sr-only">Open main menu</span>
               {!isMenuOpen ? (
@@ -107,11 +105,11 @@ function MenuBar() {
             <div className="relative">
               <button 
                 onClick={() => navigate('/profile')}
-                className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 <span className="sr-only">Open user menu</span>
-                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <span className="text-blue-600 font-medium">JD</span>
+                <div className="h-8 w-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <span className="text-primary font-medium">JD</span>
                 </div>
               </button>
             </div>
@@ -122,7 +120,7 @@ function MenuBar() {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="sm:hidden">
-          <div className="pt-2 pb-3 space-y-1">
+          <div className="pt-2 pb-3 space-y-1 bg-light-surface dark:bg-dark-surface border-t border-light-border dark:border-dark-border">
             {menuItems.filter(item => !item.onClick).map((item) => (
               <a
                 key={item.label}
@@ -132,9 +130,8 @@ function MenuBar() {
                   navigate(item.href);
                   setIsMenuOpen(false);
                 }}
-                className="flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:text-blue-600 hover:bg-gray-50"
+                className="flex items-center px-3 py-2 text-base font-medium text-light-text dark:text-dark-text hover:text-primary hover:bg-light-background dark:hover:bg-dark-background"
               >
-                <span className="mr-2">{item.icon}</span>
                 {item.label}
               </a>
             ))}
@@ -142,9 +139,8 @@ function MenuBar() {
             <button
               onClick={handleLogout}
               type="button"
-              className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-gray-900 hover:text-blue-600 hover:bg-gray-50"
+              className="flex items-center w-full text-left px-3 py-2 text-base font-medium text-light-text dark:text-dark-text hover:text-primary hover:bg-light-background dark:hover:bg-dark-background"
             >
-              <span className="mr-2">🚪</span>
               Logout
             </button>
           </div>
