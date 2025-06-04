@@ -188,7 +188,19 @@ describe('AuthService', () => {
     it('should get current user profile successfully', async () => {
       const result = await authService.getCurrentUser()
 
-      expect(result).toEqual(testUser)
+      expect(result).toEqual({
+        id: testUser.id,
+        username: testUser.username,
+        email: testUser.email,
+        firstName: testUser.firstName,
+        lastName: testUser.lastName,
+        role: testUser.role,
+        accountLocked: testUser.accountLocked,
+        failedLoginAttempts: testUser.failedLoginAttempts,
+        lastLogin: testUser.lastLogin,
+        createdAt: testUser.createdAt,
+        updatedAt: testUser.updatedAt
+      })
     })
 
     it('should fail to get current user without token', async () => {
@@ -392,7 +404,19 @@ describe('AuthService', () => {
     it('should get user by ID successfully', async () => {
       const result = await authService.getUserById(testUser.id)
 
-      expect(result).toEqual(testUser)
+      expect(result).toEqual({
+        id: testUser.id,
+        username: testUser.username,
+        email: testUser.email,
+        firstName: testUser.firstName,
+        lastName: testUser.lastName,
+        role: testUser.role,
+        accountLocked: testUser.accountLocked,
+        failedLoginAttempts: testUser.failedLoginAttempts,
+        lastLogin: testUser.lastLogin,
+        createdAt: testUser.createdAt,
+        updatedAt: testUser.updatedAt
+      })
     })
 
     it('should fail to get user without token', async () => {

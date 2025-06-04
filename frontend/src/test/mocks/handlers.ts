@@ -36,7 +36,7 @@ interface MockApplication {
 interface UserRegistrationData {
   username: string
   email: string
-  password: string
+  password?: string
   firstName?: string
   lastName?: string
   role?: string
@@ -572,6 +572,291 @@ export const handlers = [
     }
     
     return HttpResponse.json({ message: 'Interview deleted successfully' })
+  }),
+
+  // Get current user profile
+  http.get(`${API_URL}/profile`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    return HttpResponse.json({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      accountLocked: user.accountLocked,
+      failedLoginAttempts: user.failedLoginAttempts,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    })
+  }),
+
+  // Update current user profile
+  http.put(`${API_URL}/profile`, async ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const updateData = await request.json() as Partial<MockUser>
+    
+    // Check for duplicate username or email
+    const existingUser = Array.from(mockUsers.values()).find((u: MockUser) => 
+      u.id !== user.id && (
+        (updateData.username && u.username === updateData.username) ||
+        (updateData.email && u.email === updateData.email)
+      )
+    )
+    
+    if (existingUser) {
+      if (updateData.username && existingUser.username === updateData.username) {
+        return HttpResponse.json(
+          { message: 'Username already exists' },
+          { status: 400 }
+        )
+      }
+      if (updateData.email && existingUser.email === updateData.email) {
+        return HttpResponse.json(
+          { message: 'Email already exists' },
+          { status: 400 }
+        )
+      }
+    }
+    
+    const updatedUser = {
+      ...user,
+      ...updateData,
+      id: user.id,
+      updatedAt: new Date().toISOString()
+    }
+    
+    mockUsers.set(user.id, updatedUser)
+    
+    return HttpResponse.json({
+      id: updatedUser.id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      role: updatedUser.role,
+      accountLocked: updatedUser.accountLocked,
+      failedLoginAttempts: updatedUser.failedLoginAttempts,
+      lastLogin: updatedUser.lastLogin,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt
+    })
+  }),
+
+  // Get user by ID
+  http.get(`${API_URL}/users/:id`, ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const currentUser = getUserFromToken(token)
+    if (!currentUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const userId = parseInt(params.id as string)
+    const targetUser = mockUsers.get(userId)
+    
+    if (!targetUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check permission - user can only get their own profile unless admin
+    if (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: "You don't have permission to access this resource" },
+        { status: 403 }
+      )
+    }
+    
+    return HttpResponse.json({
+      id: targetUser.id,
+      username: targetUser.username,
+      email: targetUser.email,
+      firstName: targetUser.firstName,
+      lastName: targetUser.lastName,
+      role: targetUser.role,
+      accountLocked: targetUser.accountLocked,
+      failedLoginAttempts: targetUser.failedLoginAttempts,
+      lastLogin: targetUser.lastLogin,
+      createdAt: targetUser.createdAt,
+      updatedAt: targetUser.updatedAt
+    })
+  }),
+
+  // Update user by ID
+  http.put(`${API_URL}/users/:id`, async ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const currentUser = getUserFromToken(token)
+    if (!currentUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const userId = parseInt(params.id as string)
+    const targetUser = mockUsers.get(userId)
+    
+    if (!targetUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check permission - user can only update their own profile unless admin
+    if (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: "You don't have permission to access this resource" },
+        { status: 403 }
+      )
+    }
+    
+    const updateData = await request.json() as Partial<MockUser>
+    
+    // Check for duplicate username or email
+    const existingUser = Array.from(mockUsers.values()).find((u: MockUser) => 
+      u.id !== userId && (
+        (updateData.username && u.username === updateData.username) ||
+        (updateData.email && u.email === updateData.email)
+      )
+    )
+    
+    if (existingUser) {
+      if (updateData.username && existingUser.username === updateData.username) {
+        return HttpResponse.json(
+          { message: 'Username already exists' },
+          { status: 400 }
+        )
+      }
+      if (updateData.email && existingUser.email === updateData.email) {
+        return HttpResponse.json(
+          { message: 'Email already exists' },
+          { status: 400 }
+        )
+      }
+    }
+    
+    const updatedUser = {
+      ...targetUser,
+      ...updateData,
+      id: userId,
+      updatedAt: new Date().toISOString()
+    }
+    
+    mockUsers.set(userId, updatedUser)
+    
+    return HttpResponse.json({
+      id: updatedUser.id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      role: updatedUser.role,
+      accountLocked: updatedUser.accountLocked,
+      failedLoginAttempts: updatedUser.failedLoginAttempts,
+      lastLogin: updatedUser.lastLogin,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt
+    })
+  }),
+
+  // Delete user by ID
+  http.delete(`${API_URL}/users/:id`, ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const currentUser = getUserFromToken(token)
+    if (!currentUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const userId = parseInt(params.id as string)
+    const targetUser = mockUsers.get(userId)
+    
+    if (!targetUser) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check permission - user can only delete their own profile unless admin
+    if (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: "You don't have permission to access this resource" },
+        { status: 403 }
+      )
+    }
+    
+    mockUsers.delete(userId)
+    
+    return HttpResponse.json(
+      { message: 'User deleted successfully' },
+      { status: 200 }
+    )
   }),
 ]
 
