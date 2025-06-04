@@ -1,14 +1,14 @@
-<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="1.9777920000000002">
-<testsuite name="example.spec.ts" timestamp="2025-06-04T15:26:23.010Z" hostname="chromium" tests="5" failures="0" skipped="0" time="1.877" errors="0">
-<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.351">
+<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="2.009808">
+<testsuite name="example.spec.ts" timestamp="2025-06-04T16:33:03.704Z" hostname="chromium" tests="5" failures="0" skipped="0" time="2.041" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.383">
 </testcase>
-<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.393">
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.438">
 </testcase>
-<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.359">
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.385">
 </testcase>
-<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.38">
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.407">
 </testcase>
-<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.394">
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.428">
 </testcase>
 </testsuite>
 </testsuites>

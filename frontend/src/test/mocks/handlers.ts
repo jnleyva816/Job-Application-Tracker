@@ -2,20 +2,75 @@ import { http, HttpResponse } from 'msw'
 
 const API_URL = 'http://localhost:8080/api'
 
-// Mock user data
-const mockUsers = new Map()
-let userIdCounter = 1
+// Type definitions
+interface MockUser {
+  id: number
+  username: string
+  email: string
+  firstName?: string
+  lastName?: string
+  role?: string
+  accountLocked: boolean
+  failedLoginAttempts: number
+  lastLogin: string
+  createdAt: string
+  updatedAt: string
+  password: null
+}
 
-// Mock application data
-const mockApplications = new Map()
+interface MockApplication {
+  id: number
+  company: string
+  jobTitle: string
+  status: string
+  applicationDate: string
+  location?: string
+  url?: string
+  description?: string
+  compensation?: string
+  userId: number
+  createdAt: string
+  updatedAt: string
+}
+
+interface UserRegistrationData {
+  username: string
+  email: string
+  password: string
+  firstName?: string
+  lastName?: string
+  role?: string
+}
+
+interface LoginCredentials {
+  username: string
+  password: string
+}
+
+interface ApplicationData {
+  id?: number
+  company: string
+  jobTitle: string
+  status: string
+  applicationDate: string
+  location?: string
+  url?: string
+  description?: string
+  compensation?: string
+}
+
+// Mock data
+const mockUsers = new Map<number, MockUser>()
+let userIdCounter = 1
+const mockApplications = new Map<number, MockApplication>()
 let applicationIdCounter = 1
 
 // Mock tokens
 const validTokens = new Set<string>()
 
 // Helper function to generate mock user
-const createMockUser = (userData: any) => ({
-  id: userData.id || userIdCounter++,
+const createMockUser = (userData: UserRegistrationData): MockUser => ({
+  id: userIdCounter++,
   username: userData.username,
   email: userData.email,
   firstName: userData.firstName || '',
@@ -30,7 +85,7 @@ const createMockUser = (userData: any) => ({
 })
 
 // Helper function to generate mock application
-const createMockApplication = (applicationData: any, userId: number) => ({
+const createMockApplication = (applicationData: ApplicationData, userId: number): MockApplication => ({
   id: applicationData.id || applicationIdCounter++,
   company: applicationData.company,
   jobTitle: applicationData.jobTitle,
@@ -60,18 +115,18 @@ const validateToken = (authorization: string | null) => {
 }
 
 // Helper function to get user from token
-const getUserFromToken = (token: string) => {
+const getUserFromToken = (token: string): MockUser | undefined => {
   const username = token.split('-')[3] // Extract username from mock token
-  return Array.from(mockUsers.values()).find((user: any) => user.username === username)
+  return Array.from(mockUsers.values()).find((user: MockUser) => user.username === username)
 }
 
 export const handlers = [
   // Register user
   http.post(`${API_URL}/users/register`, async ({ request }) => {
-    const userData = await request.json() as any
+    const userData = await request.json() as UserRegistrationData
     
     // Check if username already exists
-    const existingUser = Array.from(mockUsers.values()).find((user: any) => 
+    const existingUser = Array.from(mockUsers.values()).find((user: MockUser) => 
       user.username === userData.username || user.email === userData.email
     )
     
@@ -94,9 +149,9 @@ export const handlers = [
 
   // Login user
   http.post(`${API_URL}/users/login`, async ({ request }) => {
-    const credentials = await request.json() as any
+    const credentials = await request.json() as LoginCredentials
     
-    const user = Array.from(mockUsers.values()).find((user: any) => 
+    const user = Array.from(mockUsers.values()).find((user: MockUser) => 
       user.username === credentials.username
     )
     
@@ -139,7 +194,7 @@ export const handlers = [
     }
     
     // Return applications for the user (admin can see all)
-    const applications = Array.from(mockApplications.values()).filter((app: any) => 
+    const applications = Array.from(mockApplications.values()).filter((app: MockApplication) => 
       user.role === 'ROLE_ADMIN' || app.userId === user.id
     )
     
@@ -211,7 +266,7 @@ export const handlers = [
       )
     }
     
-    const applicationData = await request.json() as any
+    const applicationData = await request.json() as ApplicationData
     const newApplication = createMockApplication(applicationData, user.id)
     mockApplications.set(newApplication.id, newApplication)
     
@@ -241,9 +296,9 @@ export const handlers = [
     }
     
     const applicationId = parseInt(params.id as string)
-    const application = mockApplications.get(applicationId)
+    const existingApplication = mockApplications.get(applicationId)
     
-    if (!application) {
+    if (!existingApplication) {
       return HttpResponse.json(
         { message: 'Application not found' },
         { status: 404 }
@@ -251,20 +306,20 @@ export const handlers = [
     }
     
     // Check ownership or admin role
-    if (application.userId !== user.id && user.role !== 'ROLE_ADMIN') {
+    if (existingApplication.userId !== user.id && user.role !== 'ROLE_ADMIN') {
       return HttpResponse.json(
         { message: 'Forbidden' },
         { status: 403 }
       )
     }
     
-    const updateData = await request.json() as any
+    const updateData = await request.json() as Partial<ApplicationData>
     const updatedApplication = {
-      ...application,
+      ...existingApplication,
       ...updateData,
-      id: application.id, // Keep original ID
-      userId: application.userId, // Keep original user association
-      updatedAt: new Date().toISOString(),
+      id: applicationId,
+      userId: existingApplication.userId,
+      updatedAt: new Date().toISOString()
     }
     
     mockApplications.set(applicationId, updatedApplication)
@@ -314,146 +369,11 @@ export const handlers = [
     
     mockApplications.delete(applicationId)
     
-    return new HttpResponse(null, { status: 204 })
+    return HttpResponse.json({ message: 'Application deleted successfully' })
   }),
 
-  // Get user by ID
-  http.get(`${API_URL}/users/:id`, ({ params, request }) => {
-    const token = validateToken(request.headers.get('Authorization'))
-    
-    if (!token) {
-      return HttpResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-    
-    const userId = parseInt(params.id as string)
-    const user = mockUsers.get(userId)
-    
-    if (!user) {
-      return HttpResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      )
-    }
-    
-    const currentUser = getUserFromToken(token)
-    if (!currentUser || (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN')) {
-      return HttpResponse.json(
-        { message: 'You don\'t have permission to access this resource' },
-        { status: 403 }
-      )
-    }
-    
-    return HttpResponse.json(user)
-  }),
-
-  // Update user
-  http.put(`${API_URL}/users/:id`, async ({ params, request }) => {
-    const token = validateToken(request.headers.get('Authorization'))
-    
-    if (!token) {
-      return HttpResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-    
-    const userId = parseInt(params.id as string)
-    const user = mockUsers.get(userId)
-    
-    if (!user) {
-      return HttpResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      )
-    }
-    
-    const currentUser = getUserFromToken(token)
-    if (!currentUser || (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN')) {
-      return HttpResponse.json(
-        { message: 'You don\'t have permission to access this resource' },
-        { status: 403 }
-      )
-    }
-    
-    const updateData = await request.json() as any
-    
-    // Check for duplicate username/email if being changed
-    if (updateData.username && updateData.username !== user.username) {
-      const existing = Array.from(mockUsers.values()).find((u: any) => 
-        u.username === updateData.username && u.id !== userId
-      )
-      if (existing) {
-        return HttpResponse.json(
-          { message: 'Username already exists' },
-          { status: 400 }
-        )
-      }
-    }
-    
-    if (updateData.email && updateData.email !== user.email) {
-      const existing = Array.from(mockUsers.values()).find((u: any) => 
-        u.email === updateData.email && u.id !== userId
-      )
-      if (existing) {
-        return HttpResponse.json(
-          { message: 'Email already exists' },
-          { status: 400 }
-        )
-      }
-    }
-    
-    // Update user
-    const updatedUser = {
-      ...user,
-      ...updateData,
-      id: user.id, // Keep original ID
-      updatedAt: new Date().toISOString(),
-    }
-    
-    mockUsers.set(userId, updatedUser)
-    
-    return HttpResponse.json(updatedUser)
-  }),
-
-  // Delete user
-  http.delete(`${API_URL}/users/:id`, ({ params, request }) => {
-    const token = validateToken(request.headers.get('Authorization'))
-    
-    if (!token) {
-      return HttpResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
-    
-    const userId = parseInt(params.id as string)
-    const user = mockUsers.get(userId)
-    
-    if (!user) {
-      return HttpResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      )
-    }
-    
-    const currentUser = getUserFromToken(token)
-    if (!currentUser || (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN')) {
-      return HttpResponse.json(
-        { message: 'You don\'t have permission to access this resource' },
-        { status: 403 }
-      )
-    }
-    
-    mockUsers.delete(userId)
-    
-    return new HttpResponse(null, { status: 204 })
-  }),
-
-  // Get current user profile
-  http.get(`${API_URL}/profile`, ({ request }) => {
+  // Get statistics
+  http.get(`${API_URL}/statistics`, ({ request }) => {
     const token = validateToken(request.headers.get('Authorization'))
     
     if (!token) {
@@ -471,11 +391,57 @@ export const handlers = [
       )
     }
     
-    return HttpResponse.json(user)
+    // Return mock statistics
+    return HttpResponse.json({
+      total: 10,
+      byStatus: {
+        Applied: 4,
+        Interviewing: 3,
+        Offered: 2,
+        Rejected: 1
+      },
+      byMonth: {
+        'Jan 2024': 3,
+        'Feb 2024': 4,
+        'Mar 2024': 3
+      },
+      successRate: 20.0,
+      averageResponseTime: 14,
+      interviewStats: {
+        totalInterviews: 8,
+        upcoming: 2,
+        past: 6,
+        today: 0,
+        byType: {
+          Technical: 3,
+          HR: 2,
+          Final: 3
+        },
+        byStatus: {
+          SCHEDULED: 2,
+          COMPLETED: 6
+        },
+        byMonth: {
+          'Jan 2024': 2,
+          'Feb 2024': 3,
+          'Mar 2024': 3
+        },
+        conversionRate: 40.0,
+        averagePerApplication: 0.8
+      }
+    })
   }),
 
-  // Update current user profile
-  http.put(`${API_URL}/profile`, async ({ request }) => {
+  // Error endpoint for testing
+  http.get(`${API_URL}/statistics/error`, () => {
+    return HttpResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
+  }),
+
+  // Get interviews
+  http.get(`${API_URL}/interviews`, ({ request }) => {
     const token = validateToken(request.headers.get('Authorization'))
     
     if (!token) {
@@ -493,46 +459,122 @@ export const handlers = [
       )
     }
     
-    const updateData = await request.json() as any
-    
-    // Check for duplicate username/email if being changed
-    if (updateData.username && updateData.username !== user.username) {
-      const existing = Array.from(mockUsers.values()).find((u: any) => 
-        u.username === updateData.username && u.id !== user.id
-      )
-      if (existing) {
-        return HttpResponse.json(
-          { message: 'Username already exists' },
-          { status: 400 }
-        )
+    // Return mock interviews
+    return HttpResponse.json([
+      {
+        id: 1,
+        applicationId: 1,
+        type: 'Technical',
+        scheduledTime: '2024-01-15T10:00:00Z',
+        duration: 60,
+        location: 'Video Call',
+        interviewer: 'John Smith',
+        status: 'SCHEDULED',
+        notes: 'Technical interview with senior engineer',
+        createdAt: '2024-01-10T09:00:00Z',
+        updatedAt: '2024-01-10T09:00:00Z'
+      },
+      {
+        id: 2,
+        applicationId: 2,
+        type: 'HR',
+        scheduledTime: '2024-01-20T14:00:00Z',
+        duration: 30,
+        location: 'Office',
+        interviewer: 'Jane Doe',
+        status: 'COMPLETED',
+        notes: 'Initial screening went well',
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-20T15:00:00Z'
       }
+    ])
+  }),
+
+  // Create interview
+  http.post(`${API_URL}/interviews`, async ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
     }
     
-    if (updateData.email && updateData.email !== user.email) {
-      const existing = Array.from(mockUsers.values()).find((u: any) => 
-        u.email === updateData.email && u.id !== user.id
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
       )
-      if (existing) {
-        return HttpResponse.json(
-          { message: 'Email already exists' },
-          { status: 400 }
-        )
-      }
     }
     
-    // Update user
-    const updatedUser = {
-      ...user,
+    const interviewData = await request.json() as Record<string, unknown>
+    
+    const newInterview = {
+      id: Date.now(), // Simple ID generation
+      ...interviewData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    
+    return HttpResponse.json(newInterview, { status: 201 })
+  }),
+
+  // Update interview
+  http.put(`${API_URL}/interviews/:id`, async ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const interviewId = params.id as string
+    const updateData = await request.json() as Record<string, unknown>
+    
+    const updatedInterview = {
+      id: parseInt(interviewId),
       ...updateData,
-      id: user.id, // Keep original ID
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
     
-    mockUsers.set(user.id, updatedUser)
+    return HttpResponse.json(updatedInterview)
+  }),
+
+  // Delete interview
+  http.delete(`${API_URL}/interviews/:id`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
     
-    return HttpResponse.json(updatedUser)
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    return HttpResponse.json({ message: 'Interview deleted successfully' })
   }),
 ]
 
 // Export helper functions for tests
-export { mockUsers, mockApplications, validTokens, generateToken, createMockUser, createMockApplication } 
+export { validTokens, generateToken, createMockUser, createMockApplication, mockUsers, mockApplications };
+export type { MockUser, MockApplication, UserRegistrationData, LoginCredentials, ApplicationData }; 

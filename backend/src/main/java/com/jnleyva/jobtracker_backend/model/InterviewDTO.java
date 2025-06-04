@@ -26,6 +26,14 @@ public class InterviewDTO {
     
     private Integer durationMinutes;
 
+    private String cancellationReason;
+
+    private String meetingLink;
+
+    private String interviewFeedback;
+
+    private LocalDateTime originalDate;
+
     public InterviewDTO() {
     }
 
@@ -46,6 +54,10 @@ public class InterviewDTO {
         interview.setInterviewerEmail(this.interviewerEmail);
         interview.setLocation(this.location);
         interview.setDurationMinutes(this.durationMinutes);
+        interview.setCancellationReason(this.cancellationReason);
+        interview.setMeetingLink(this.meetingLink);
+        interview.setInterviewFeedback(this.interviewFeedback);
+        interview.setOriginalDate(this.originalDate);
         return interview;
     }
 
@@ -60,6 +72,10 @@ public class InterviewDTO {
         dto.setInterviewerEmail(interview.getInterviewerEmail());
         dto.setLocation(interview.getLocation());
         dto.setDurationMinutes(interview.getDurationMinutes());
+        dto.setCancellationReason(interview.getCancellationReason());
+        dto.setMeetingLink(interview.getMeetingLink());
+        dto.setInterviewFeedback(interview.getInterviewFeedback());
+        dto.setOriginalDate(interview.getOriginalDate());
         return dto;
     }
 } 

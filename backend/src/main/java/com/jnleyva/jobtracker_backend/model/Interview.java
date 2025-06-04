@@ -27,11 +27,14 @@ public class Interview {
     @NotNull(message = "Interview date is required")
     private LocalDateTime interviewDate;
 
+    @Column(name = "original_date")
+    private LocalDateTime originalDate; // For tracking rescheduled interviews
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 
     @Column(name = "status")
-    private String status = "SCHEDULED"; // SCHEDULED, COMPLETED, CANCELLED
+    private String status = "SCHEDULED"; // SCHEDULED, COMPLETED, CANCELLED, RESCHEDULED, NO_SHOW
 
     @Column(name = "interviewer_name")
     private String interviewerName;
@@ -44,6 +47,15 @@ public class Interview {
 
     @Column(name = "duration_minutes")
     private Integer durationMinutes;
+
+    @Column(name = "cancellation_reason")
+    private String cancellationReason; // Reason for cancellation
+
+    @Column(name = "meeting_link")
+    private String meetingLink; // For virtual interviews
+
+    @Column(name = "interview_feedback")
+    private String interviewFeedback; // Post-interview feedback
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false)
@@ -74,5 +86,27 @@ public class Interview {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    // Helper method to cancel interview
+    public void cancel(String reason) {
+        this.status = "CANCELLED";
+        this.cancellationReason = reason;
+    }
+
+    // Helper method to reschedule interview
+    public void reschedule(LocalDateTime newDate, String reason) {
+        if (this.originalDate == null) {
+            this.originalDate = this.interviewDate;
+        }
+        this.interviewDate = newDate;
+        this.status = "RESCHEDULED";
+        this.notes = (this.notes == null ? "" : this.notes + "\n") + "Rescheduled: " + reason;
+    }
+
+    // Helper method to mark as completed
+    public void complete(String feedback) {
+        this.status = "COMPLETED";
+        this.interviewFeedback = feedback;
     }
 } 

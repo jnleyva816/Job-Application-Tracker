@@ -2,10 +2,13 @@ package com.jnleyva.jobtracker_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jnleyva.jobtracker_backend.service.StatisticsService;
+import com.jnleyva.jobtracker_backend.service.JwtService;
+import com.jnleyva.jobtracker_backend.service.TokenBlacklistService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -27,6 +30,15 @@ public class StatisticsControllerTest {
 
     @MockBean
     private StatisticsService statisticsService;
+
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    @MockBean
+    private TokenBlacklistService tokenBlacklistService;
 
     @Autowired
     private ObjectMapper objectMapper;

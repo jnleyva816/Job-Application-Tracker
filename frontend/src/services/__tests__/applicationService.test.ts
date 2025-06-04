@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { applicationService, type JobApplication } from '../applicationService';
-import { mockUsers, mockApplications, validTokens, generateToken, createMockUser, createMockApplication } from '../../test/mocks/handlers';
+import { mockUsers, mockApplications, validTokens, generateToken, createMockUser, createMockApplication, type MockUser } from '../../test/mocks/handlers';
 
 // Set up environment variable for tests
 Object.defineProperty(import.meta, 'env', {
@@ -11,7 +11,7 @@ Object.defineProperty(import.meta, 'env', {
 });
 
 describe('ApplicationService', () => {
-  let testUser: any;
+  let testUser: MockUser;
   let testToken: string;
   
   beforeEach(() => {
@@ -24,7 +24,8 @@ describe('ApplicationService', () => {
     // Create test user
     testUser = createMockUser({
       username: 'testuser',
-      email: 'test@example.com'
+      email: 'test@example.com',
+      password: 'testpassword'
     });
     mockUsers.set(testUser.id, testUser);
     
@@ -46,7 +47,7 @@ describe('ApplicationService', () => {
         location: 'Remote',
         url: 'https://example.com/job',
         description: 'A great job opportunity',
-        compensation: 100000,
+        compensation: '100000',
       }, testUser.id);
       mockApplications.set(app1.id, app1);
 
@@ -83,7 +84,7 @@ describe('ApplicationService', () => {
         location: 'Remote',
         url: 'https://example.com/job',
         description: 'A great job opportunity',
-        compensation: 100000,
+        compensation: '100000',
       }, testUser.id);
       mockApplications.set(testApp.id, testApp);
 
@@ -103,10 +104,10 @@ describe('ApplicationService', () => {
 
   describe('createApplication', () => {
     it('should create application successfully', async () => {
-      const newApplication = {
+      const newApplication: Omit<JobApplication, 'id'> = {
         company: 'New Company',
         jobTitle: 'Senior Developer',
-        status: 'Applied' as const,
+        status: 'Applied',
         applicationDate: '2023-02-01',
         location: 'Remote',
         url: 'https://example.com/job2',
@@ -136,15 +137,20 @@ describe('ApplicationService', () => {
         location: 'Remote',
         url: 'https://example.com/job',
         description: 'A great job opportunity',
-        compensation: 100000,
+        compensation: '100000',
       }, testUser.id);
       mockApplications.set(testApp.id, testApp);
 
-      const updatedData = {
-        ...testApp,
+      const updatedData: JobApplication = {
         id: testApp.id.toString(),
+        company: testApp.company,
         jobTitle: 'Senior Software Engineer',
-        status: 'Interviewing' as const,
+        status: 'Interviewing',
+        applicationDate: testApp.applicationDate,
+        location: testApp.location || 'Remote',
+        url: testApp.url || '',
+        description: testApp.description || '',
+        compensation: 100000,
       };
 
       const result = await applicationService.updateApplication(testApp.id.toString(), updatedData);
@@ -167,7 +173,7 @@ describe('ApplicationService', () => {
         location: 'Remote',
         url: 'https://example.com/job',
         description: 'A great job opportunity',
-        compensation: 100000,
+        compensation: '100000',
       }, testUser.id);
       mockApplications.set(testApp.id, testApp);
 

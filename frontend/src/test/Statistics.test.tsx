@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import Statistics from '../pages/Statistics';
-import { statisticsService } from '../services/statisticsService';
+import { statisticsService, type ApplicationStats } from '../services/statisticsService';
 
 // Mock the services
 vi.mock('../services/statisticsService');
@@ -132,7 +132,7 @@ describe('Statistics Component', () => {
   });
 
   it('should display no statistics message when stats is null', async () => {
-    mockStatisticsService.getStatistics.mockResolvedValue(null as any);
+    mockStatisticsService.getStatistics.mockResolvedValue(null as unknown as ApplicationStats);
     
     renderStatistics();
     

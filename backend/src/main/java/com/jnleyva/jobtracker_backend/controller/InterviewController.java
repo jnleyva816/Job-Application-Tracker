@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,6 +137,49 @@ public class InterviewController {
         return ResponseEntity.ok(updatedInterview);
     }
 
+    @PutMapping(value = "/{interviewId}/cancel", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> cancelInterview(
+            @PathVariable Long applicationId,
+            @PathVariable Long interviewId,
+            @RequestBody(required = false) String reason) {
+        ResponseEntity<String> authCheck = checkApplicationOwnership(applicationId);
+        if (authCheck != null) {
+            return authCheck;
+        }
+        
+        Interview cancelledInterview = interviewService.cancelInterview(applicationId, interviewId, reason);
+        return ResponseEntity.ok(cancelledInterview);
+    }
+
+    @PutMapping(value = "/{interviewId}/reschedule", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> rescheduleInterview(
+            @PathVariable Long applicationId,
+            @PathVariable Long interviewId,
+            @RequestBody RescheduleRequest request) {
+        ResponseEntity<String> authCheck = checkApplicationOwnership(applicationId);
+        if (authCheck != null) {
+            return authCheck;
+        }
+        
+        Interview rescheduledInterview = interviewService.rescheduleInterview(
+                applicationId, interviewId, request.getNewDate(), request.getReason());
+        return ResponseEntity.ok(rescheduledInterview);
+    }
+
+    @PutMapping(value = "/{interviewId}/complete", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> completeInterview(
+            @PathVariable Long applicationId,
+            @PathVariable Long interviewId,
+            @RequestBody(required = false) String feedback) {
+        ResponseEntity<String> authCheck = checkApplicationOwnership(applicationId);
+        if (authCheck != null) {
+            return authCheck;
+        }
+        
+        Interview completedInterview = interviewService.completeInterview(applicationId, interviewId, feedback);
+        return ResponseEntity.ok(completedInterview);
+    }
+
     @DeleteMapping("/{interviewId}")
     public ResponseEntity<?> deleteInterview(
             @PathVariable Long applicationId,
@@ -147,5 +191,27 @@ public class InterviewController {
         
         interviewService.deleteInterview(applicationId, interviewId);
         return ResponseEntity.noContent().build();
+    }
+
+    // Inner class for reschedule request
+    public static class RescheduleRequest {
+        private LocalDateTime newDate;
+        private String reason;
+        
+        public LocalDateTime getNewDate() {
+            return newDate;
+        }
+        
+        public void setNewDate(LocalDateTime newDate) {
+            this.newDate = newDate;
+        }
+        
+        public String getReason() {
+            return reason;
+        }
+        
+        public void setReason(String reason) {
+            this.reason = reason;
+        }
     }
 } 
