@@ -1,0 +1,179 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.jnleyva:jobtracker-backend >-------------------
+[INFO] Building jobtracker-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] Parameter 'encoding' is unknown for plugin 'maven-checkstyle-plugin:3.3.0:check (validate)'
+[INFO] 
+[INFO] >>> spring-boot:3.2.3:run (default-cli) > test-compile @ jobtracker-backend >>>
+[INFO] 
+[INFO] --- checkstyle:3.3.0:check (validate) @ jobtracker-backend ---
+[INFO] Starting audit...
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/JobtrackerBackendApplication.java:9:1: File contains tab characters (this is the first instance). [FileTabCharacter]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/TestController.java:11:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/InterviewController.java:17:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/InterviewController.java:98: Line is longer than 120 characters (found 125). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/InterviewController.java:111: Line is longer than 120 characters (found 131). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/InterviewController.java:125: Line is longer than 120 characters (found 138). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/ApplicationController.java:12:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserProfileController.java:9:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserProfileController.java:78:9: Redundant 'public' modifier. [RedundantModifier]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:21:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:35:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:69: Line is longer than 120 characters (found 124). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:98: Line is longer than 120 characters (found 123). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:245: Line is longer than 120 characters (found 122). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:423:9: Redundant 'public' modifier. [RedundantModifier]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:439:9: Redundant 'public' modifier. [RedundantModifier]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:458:9: Redundant 'public' modifier. [RedundantModifier]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/UserController.java:493:9: Redundant 'public' modifier. [RedundantModifier]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/StatisticsController.java:10:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/StatisticsController.java:18:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/AdminController.java:18:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/ContactController.java:8:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/DebugController.java:10:47: Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/controller/DebugController.java:20:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DebugSecurityConfig.java:16:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseMigration.java:29: Line is longer than 120 characters (found 124). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseMigration.java:43: Line is longer than 120 characters (found 121). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseMigration.java:44: Line is longer than 120 characters (found 129). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseMigration.java:47: Line is longer than 120 characters (found 123). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseMigration.java:50: Line is longer than 120 characters (found 123). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/SecurityConfig.java:30:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseHealthCheck.java:17:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseHealthCheck.java:39: Line is longer than 120 characters (found 148). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/config/DatabaseHealthCheck.java:41: Line is longer than 120 characters (found 131). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/UserServiceImpl.java:18:8: Unused import - java.util.Optional. [UnusedImports]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/UserServiceImpl.java:23:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/UserServiceImpl.java:95: Line is longer than 120 characters (found 141). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/UserServiceImpl.java:168: Line is longer than 120 characters (found 122). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/InterviewService.java:80: Line is longer than 120 characters (found 152). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/InterviewService.java:112: Line is longer than 120 characters (found 152). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/InterviewService.java:123: Line is longer than 120 characters (found 152). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/MyUserDetailsService.java:21:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:17:17: Using the '.*' form of import should be avoided - java.util.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:22:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:44: Line is longer than 120 characters (found 123). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:66: Line is longer than 120 characters (found 128). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:77: Line is longer than 120 characters (found 125). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:130: Line is longer than 120 characters (found 122). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:190: Line is longer than 120 characters (found 130). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/StatisticsServiceImpl.java:258: Line is longer than 120 characters (found 130). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/JwtService.java:24:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/service/TokenBlacklistService.java:18:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/Interview.java:4:27: Using the '.*' form of import should be avoided - jakarta.persistence.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/User.java:4:27: Using the '.*' form of import should be avoided - jakarta.persistence.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/User.java:51:19: '{' is not followed by whitespace. [WhitespaceAround]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/User.java:51:20: '}' is not preceded with whitespace. [WhitespaceAround]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/Application.java:5:27: Using the '.*' form of import should be avoided - jakarta.persistence.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/Application.java:66: Line is longer than 120 characters (found 169). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/Application.java:66:12: More than 7 parameters (found 8). [ParameterNumber]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/model/Contact.java:3:27: Using the '.*' form of import should be avoided - jakarta.persistence.*. [AvoidStarImport]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/exception/ValidationErrorResponse.java:12: Line is longer than 120 characters (found 144). [LineLength]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/filter/JwtFilter.java:30:33: Name 'logger' must match pattern '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'. [ConstantName]
+[WARN] /home/jleyva/Documents/Java/Job-Application-Tracker/backend/src/main/java/com/jnleyva/jobtracker_backend/filter/JwtFilter.java:55: Line is longer than 120 characters (found 184). [LineLength]
+Audit done.
+[INFO] You have 0 Checkstyle violations.
+[INFO] 
+[INFO] --- enforcer:3.4.1:enforce (enforce-maven) @ jobtracker-backend ---
+[INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireMavenVersion passed
+[INFO] Rule 1: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+[INFO] 
+[INFO] --- jacoco:0.8.8:prepare-agent (default) @ jobtracker-backend ---
+[INFO] argLine set to -javaagent:/home/jleyva/.m2/repository/org/jacoco/org.jacoco.agent/0.8.8/org.jacoco.agent-0.8.8-runtime.jar=destfile=/home/jleyva/Documents/Java/Job-Application-Tracker/backend/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ jobtracker-backend ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] Copying 1 resource from  to target/classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ jobtracker-backend ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ jobtracker-backend ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ jobtracker-backend ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] <<< spring-boot:3.2.3:run (default-cli) < test-compile @ jobtracker-backend <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.3:run (default-cli) @ jobtracker-backend ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2025-06-04 16:05:03 [main] INFO  c.j.j.JobtrackerBackendApplication - Starting JobtrackerBackendApplication using Java 17.0.14 with PID 140928 (/home/jleyva/Documents/Java/Job-Application-Tracker/backend/target/classes started by jleyva in /home/jleyva/Documents/Java/Job-Application-Tracker/backend)
+2025-06-04 16:05:03 [main] DEBUG c.j.j.JobtrackerBackendApplication - Running with Spring Boot v3.2.3, Spring v6.1.4
+2025-06-04 16:05:03 [main] INFO  c.j.j.JobtrackerBackendApplication - The following 1 profile is active: "development"
+2025-06-04 16:05:03 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-04 16:05:03 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 33 ms. Found 4 JPA repository interfaces.
+2025-06-04 16:05:03 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-06-04 16:05:03 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-04 16:05:03 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-06-04 16:05:03 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-04 16:05:03 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 705 ms
+2025-06-04 16:05:03 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-04 16:05:03 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-06-04 16:05:03 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-06-04 16:05:04 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-04 16:05:04 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-04 16:05:04 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@7e18ced7
+2025-06-04 16:05:04 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-04 16:05:04 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-04 16:05:04 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-04 16:05:04 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-04 16:05:04 [main] INFO  c.j.j.service.TokenBlacklistService - TokenBlacklistService initialized with hourly cleanup schedule
+2025-06-04 16:05:04 [main] DEBUG c.j.j.filter.JwtFilter - Filter 'jwtFilter' configured for use
+Database schema is already up to date!
+2025-06-04 16:05:05 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-04 16:05:05 [main] INFO  c.j.j.config.SecurityConfig - Creating BCryptPasswordEncoder with strength: 10
+2025-06-04 16:05:05 [main] DEBUG c.j.j.config.SecurityConfig - Password encoder test - encoded length: 60, matches: true
+2025-06-04 16:05:05 [main] INFO  c.j.j.config.SecurityConfig - Authentication manager initialized
+2025-06-04 16:05:05 [main] INFO  c.j.j.config.SecurityConfig - Authentication provider configured with BCrypt strength: 10
+2025-06-04 16:05:05 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-06-04 16:05:05 [main] INFO  c.j.j.config.DebugSecurityConfig - Debug security configuration initialized - all debug endpoints are accessible
+2025-06-04 16:05:05 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure Or [Mvc [pattern='/debug/**']] with [org.springframework.security.web.session.DisableEncodeUrlFilter@55fc6344, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2df0a4c3, org.springframework.security.web.context.SecurityContextHolderFilter@7a7f5c44, org.springframework.security.web.header.HeaderWriterFilter@7f59f4e4, org.springframework.security.web.authentication.logout.LogoutFilter@520034a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@35e0d91e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3204146d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@267d9cc0, org.springframework.security.web.access.ExceptionTranslationFilter@36a59d8, org.springframework.security.web.access.intercept.AuthorizationFilter@197c3101]
+2025-06-04 16:05:05 [main] INFO  c.j.j.config.SecurityConfig - Main security configuration initialized
+2025-06-04 16:05:05 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5166fe7a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7a925ac4, org.springframework.security.web.context.SecurityContextHolderFilter@4a4979bf, org.springframework.security.web.header.HeaderWriterFilter@59fa5a39, org.springframework.web.filter.CorsFilter@3b09582d, org.springframework.security.web.authentication.logout.LogoutFilter@5687e92d, com.jnleyva.jobtracker_backend.filter.JwtFilter@3fcb737, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@539570b8, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6a2d0a19, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@29f72685, org.springframework.security.web.session.SessionManagementFilter@5d8c03cc, org.springframework.security.web.access.ExceptionTranslationFilter@25fb43a9, org.springframework.security.web.access.intercept.AuthorizationFilter@5c2f5dc]
+2025-06-04 16:05:05 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-06-04 16:05:05 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-04 16:05:05 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-06-04 16:05:05 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-06-04 16:05:05 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-06-04 16:05:05 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  05:10 min
+[INFO] Finished at: 2025-06-04T16:10:11Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.2.3:run (default-cli) on project jobtracker-backend: Process terminated with exit code: 143 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
