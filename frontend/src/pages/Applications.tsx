@@ -1,19 +1,7 @@
 import { useState, useEffect } from 'react';
 import MenuBar from '../components/MenuBar';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
-
-interface JobApplication {
-  id: string;
-  company: string;
-  jobTitle: string;
-  status: 'Applied' | 'Interviewing' | 'Offered' | 'Rejected';
-  applicationDate: string;
-  location: string;
-  url: string;
-  description: string;
-  compensation: number;
-}
+import { applicationService, type JobApplication } from '../services/applicationService';
 
 function Applications() {
   const navigate = useNavigate();
@@ -24,22 +12,7 @@ function Applications() {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const token = authService.getToken();
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
-
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/applications`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch applications');
-        }
-
-        const data = await response.json();
+        const data = await applicationService.getAllApplications();
         setApplications(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred while fetching applications');

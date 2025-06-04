@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BrowserRouter } from 'react-router-dom'
 import Register from '../Register'
@@ -183,7 +183,6 @@ describe('Register Component', () => {
   })
 
   it('should navigate to login page when sign in link is clicked', async () => {
-    const user = userEvent.setup()
     renderRegister()
 
     const signInLink = screen.getByText('Sign in to your account')
@@ -191,12 +190,12 @@ describe('Register Component', () => {
   })
 
   it('should require all fields to be filled', async () => {
-    const user = userEvent.setup()
     renderRegister()
 
     const submitButton = screen.getByRole('button', { name: 'Create account' })
     
     // Try to submit empty form
+    const user = userEvent.setup()
     await user.click(submitButton)
 
     // Form should not submit (HTML5 validation will prevent it)

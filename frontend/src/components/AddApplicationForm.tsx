@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { applicationService } from '../services/applicationService';
 import MenuBar from './MenuBar';
 
 interface ApplicationFormData {
@@ -10,7 +10,7 @@ interface ApplicationFormData {
   url: string;
   description: string;
   compensation: number;
-  status: string;
+  status: 'Applied' | 'Interviewing' | 'Offered' | 'Rejected';
   applicationDate: string;
 }
 
@@ -26,32 +26,21 @@ function AddApplicationForm() {
     status: 'Applied',
     applicationDate: new Date().toISOString().split('T')[0],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      const token = authService.getToken();
-      if (!token) {
-        console.error('No authentication token found');
-        return;
-      }
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/applications`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        navigate('/dashboard'); // Redirect to dashboard after successful submission
-      } else {
-        console.error('Failed to create application');
-      }
-    } catch (error) {
-      console.error('Error creating application:', error);
+      await applicationService.createApplication(formData);
+      navigate('/dashboard'); // Redirect to dashboard after successful submission
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create application');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -71,6 +60,11 @@ function AddApplicationForm() {
         <h2 className="text-2xl font-bold mb-6 text-light-text dark:text-dark-text">Add New Job Application</h2>
         <div className="bg-light-surface dark:bg-dark-surface rounded-lg shadow p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg p-3">
+                <p className="text-red-800 dark:text-red-400 text-sm">{error}</p>
+              </div>
+            )}
             <div>
               <label htmlFor="company" className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">
                 Company *
@@ -195,15 +189,17 @@ function AddApplicationForm() {
               <button
                 type="button"
                 onClick={() => navigate('/dashboard')}
-                className="px-4 py-2 border border-light-border dark:border-dark-border rounded-md shadow-sm text-sm font-medium text-light-text dark:text-dark-text bg-light-surface dark:bg-dark-surface hover:bg-light-background dark:hover:bg-dark-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                disabled={isSubmitting}
+                className="px-4 py-2 border border-light-border dark:border-dark-border rounded-md shadow-sm text-sm font-medium text-light-text dark:text-dark-text bg-light-surface dark:bg-dark-surface hover:bg-light-background dark:hover:bg-dark-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                disabled={isSubmitting}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
               >
-                Save Application
+                {isSubmitting ? 'Saving...' : 'Save Application'}
               </button>
             </div>
           </form>

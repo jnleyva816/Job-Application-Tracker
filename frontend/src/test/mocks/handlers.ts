@@ -6,6 +6,10 @@ const API_URL = 'http://localhost:8080/api'
 const mockUsers = new Map()
 let userIdCounter = 1
 
+// Mock application data
+const mockApplications = new Map()
+let applicationIdCounter = 1
+
 // Mock tokens
 const validTokens = new Set<string>()
 
@@ -25,6 +29,22 @@ const createMockUser = (userData: any) => ({
   password: null, // Password is never returned
 })
 
+// Helper function to generate mock application
+const createMockApplication = (applicationData: any, userId: number) => ({
+  id: applicationData.id || applicationIdCounter++,
+  company: applicationData.company,
+  jobTitle: applicationData.jobTitle,
+  status: applicationData.status,
+  applicationDate: applicationData.applicationDate,
+  location: applicationData.location,
+  url: applicationData.url,
+  description: applicationData.description,
+  compensation: applicationData.compensation,
+  userId,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+})
+
 // Helper function to generate JWT token
 const generateToken = (username: string) => {
   const token = `mock-jwt-token-${username}-${Date.now()}`
@@ -34,20 +54,15 @@ const generateToken = (username: string) => {
 
 // Helper function to validate token
 const validateToken = (authorization: string | null) => {
-  if (!authorization) return null
+  if (!authorization || !authorization.startsWith('Bearer ')) return null
   const token = authorization.replace('Bearer ', '')
   return validTokens.has(token) ? token : null
 }
 
 // Helper function to get user from token
 const getUserFromToken = (token: string) => {
-  // Extract username from mock token format
-  const parts = token.split('-')
-  if (parts.length >= 4) {
-    const username = parts[3]
-    return Array.from(mockUsers.values()).find((user: any) => user.username === username)
-  }
-  return null
+  const username = token.split('-')[3] // Extract username from mock token
+  return Array.from(mockUsers.values()).find((user: any) => user.username === username)
 }
 
 export const handlers = [
@@ -102,6 +117,204 @@ export const handlers = [
         email: user.email,
       }
     })
+  }),
+
+  // Get all applications
+  http.get(`${API_URL}/applications`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Return applications for the user (admin can see all)
+    const applications = Array.from(mockApplications.values()).filter((app: any) => 
+      user.role === 'ROLE_ADMIN' || app.userId === user.id
+    )
+    
+    return HttpResponse.json(applications.map(app => ({
+      ...app,
+      id: app.id.toString() // Convert to string for frontend compatibility
+    })))
+  }),
+
+  // Get application by ID
+  http.get(`${API_URL}/applications/:id`, ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationId = parseInt(params.id as string)
+    const application = mockApplications.get(applicationId)
+    
+    if (!application) {
+      return HttpResponse.json(
+        { message: 'Application not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check ownership or admin role
+    if (application.userId !== user.id && user.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: 'Forbidden' },
+        { status: 403 }
+      )
+    }
+    
+    return HttpResponse.json({
+      ...application,
+      id: application.id.toString() // Convert to string for frontend compatibility
+    })
+  }),
+
+  // Create application
+  http.post(`${API_URL}/applications`, async ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationData = await request.json() as any
+    const newApplication = createMockApplication(applicationData, user.id)
+    mockApplications.set(newApplication.id, newApplication)
+    
+    return HttpResponse.json({
+      ...newApplication,
+      id: newApplication.id.toString() // Convert to string for frontend compatibility
+    }, { status: 201 })
+  }),
+
+  // Update application
+  http.put(`${API_URL}/applications/:id`, async ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationId = parseInt(params.id as string)
+    const application = mockApplications.get(applicationId)
+    
+    if (!application) {
+      return HttpResponse.json(
+        { message: 'Application not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check ownership or admin role
+    if (application.userId !== user.id && user.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: 'Forbidden' },
+        { status: 403 }
+      )
+    }
+    
+    const updateData = await request.json() as any
+    const updatedApplication = {
+      ...application,
+      ...updateData,
+      id: application.id, // Keep original ID
+      userId: application.userId, // Keep original user association
+      updatedAt: new Date().toISOString(),
+    }
+    
+    mockApplications.set(applicationId, updatedApplication)
+    
+    return HttpResponse.json({
+      ...updatedApplication,
+      id: updatedApplication.id.toString() // Convert to string for frontend compatibility
+    })
+  }),
+
+  // Delete application
+  http.delete(`${API_URL}/applications/:id`, ({ params, request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationId = parseInt(params.id as string)
+    const application = mockApplications.get(applicationId)
+    
+    if (!application) {
+      return HttpResponse.json(
+        { message: 'Application not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Check ownership or admin role
+    if (application.userId !== user.id && user.role !== 'ROLE_ADMIN') {
+      return HttpResponse.json(
+        { message: 'Forbidden' },
+        { status: 403 }
+      )
+    }
+    
+    mockApplications.delete(applicationId)
+    
+    return new HttpResponse(null, { status: 204 })
   }),
 
   // Get user by ID
@@ -322,4 +535,4 @@ export const handlers = [
 ]
 
 // Export helper functions for tests
-export { mockUsers, validTokens, generateToken, createMockUser } 
+export { mockUsers, mockApplications, validTokens, generateToken, createMockUser, createMockApplication } 

@@ -1,20 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MenuBar from '../components/MenuBar';
-import { authService } from '../services/authService';
+import { applicationService, type JobApplication } from '../services/applicationService';
 import { interviewService, type Interview } from '../services/interviewService';
-
-interface JobApplication {
-  id: string;
-  company: string;
-  jobTitle: string;
-  status: 'Applied' | 'Interviewing' | 'Offered' | 'Rejected';
-  applicationDate: string;
-  location: string;
-  url: string;
-  description: string;
-  compensation: number;
-}
 
 function ApplicationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +13,7 @@ function ApplicationDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showAddInterview, setShowAddInterview] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
   const [editForm, setEditForm] = useState<JobApplication | null>(null);
@@ -44,27 +33,11 @@ function ApplicationDetail() {
     try {
       setIsLoading(true);
       setError(null); // Clear any previous errors
-      const token = authService.getToken();
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
 
       console.log('Fetching application and interviews for ID:', id);
 
-      // Fetch application details
-      const appResponse = await fetch(`${import.meta.env.VITE_API_URL}/applications/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!appResponse.ok) {
-        const errorText = await appResponse.text();
-        console.error('Failed to fetch application:', appResponse.status, errorText);
-        throw new Error(`Failed to fetch application: ${appResponse.status}`);
-      }
-
-      const appData = await appResponse.json();
+      // Fetch application details using the service
+      const appData = await applicationService.getApplicationById(id);
       console.log('Application data fetched successfully:', appData);
       setApplication(appData);
       setEditForm(appData);
@@ -97,29 +70,24 @@ function ApplicationDetail() {
     if (!editForm || !id) return;
 
     try {
-      const token = authService.getToken();
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/applications/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editForm),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update application');
-      }
-
-      const updatedApp = await response.json();
+      const updatedApp = await applicationService.updateApplication(id, editForm);
       setApplication(updatedApp);
       setIsEditing(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while saving');
+    }
+  };
+
+  const handleDeleteApplication = async () => {
+    if (!id) return;
+
+    try {
+      await applicationService.deleteApplication(id);
+      // Navigate back to applications list after successful deletion
+      navigate('/applications');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while deleting the application');
+      setShowDeleteConfirmation(false);
     }
   };
 
@@ -282,15 +250,52 @@ function ApplicationDetail() {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  Edit Application
-                </button>
+                <>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Edit Application
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirmation(true)}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Delete Application
+                  </button>
+                </>
               )}
             </div>
           </div>
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteConfirmation && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                <h3 className="text-lg font-semibold text-light-text dark:text-dark-text mb-4">
+                  Delete Application
+                </h3>
+                <p className="text-light-text-secondary dark:text-dark-text-secondary mb-6">
+                  Are you sure you want to delete this application for <strong>{application.jobTitle}</strong> at <strong>{application.company}</strong>? 
+                  This action cannot be undone and will also delete all associated interviews.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteConfirmation(false)}
+                    className="px-4 py-2 text-light-text dark:text-dark-text border border-light-border dark:border-dark-border rounded-lg hover:bg-light-background dark:hover:bg-dark-background transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteApplication}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                  >
+                    Delete Application
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Application Details */}
           <div className="bg-light-surface dark:bg-dark-surface rounded-lg shadow-sm p-6 mb-6">

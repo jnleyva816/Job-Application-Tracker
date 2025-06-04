@@ -8,9 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test": "vitest --exclude \"e2e-tests/**\"",
+    "test:ui": "vitest --ui --exclude \"e2e-tests/**\"",
+    "test:coverage": "vitest --coverage --exclude \"e2e-tests/**\"",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.16",
@@ -23,6 +25,7 @@
     "@eslint/js": "^9.21.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@types/node": "^20.11.0",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.21.0",
@@ -41,6 +44,7 @@
     "@vitest/coverage-v8": "^2.1.8",
     "vitest": "^2.1.8",
     "msw": "^2.8.0",
-    "jsdom": "^26.0.0"
+    "jsdom": "^26.0.0",
+    "@playwright/test": "^1.41.0"
   }
 }
