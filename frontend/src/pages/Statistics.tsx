@@ -1,38 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MenuBar from '../components/MenuBar';
-
-interface ApplicationStats {
-  total: number;
-  byStatus: {
-    Applied: number;
-    Interviewing: number;
-    Offered: number;
-    Rejected: number;
-  };
-  byMonth: {
-    [key: string]: number;
-  };
-  averageResponseTime: number;
-  successRate: number;
-}
+import { statisticsService, ApplicationStats } from '../services/statisticsService';
 
 function Statistics() {
-  const [stats] = useState<ApplicationStats>({
-    total: 25,
-    byStatus: {
-      Applied: 10,
-      Interviewing: 8,
-      Offered: 5,
-      Rejected: 2,
-    },
-    byMonth: {
-      'Jan 2024': 5,
-      'Feb 2024': 8,
-      'Mar 2024': 12,
-    },
-    averageResponseTime: 7,
-    successRate: 20,
-  });
+  const [stats, setStats] = useState<ApplicationStats | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await statisticsService.getStatistics();
+        setStats(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
+        console.error('Error fetching statistics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, []);
 
   const getStatusBarColor = (status: string) => {
     switch (status) {
@@ -48,6 +39,71 @@ function Statistics() {
         return 'oklch(var(--color-primary))';
     }
   };
+
+  const getInterviewStatusColor = (status: string) => {
+    switch (status) {
+      case 'SCHEDULED':
+        return 'oklch(var(--color-accent))';
+      case 'COMPLETED':
+        return 'oklch(var(--color-success))';
+      case 'CANCELLED':
+        return '#F87171';
+      default:
+        return 'oklch(var(--color-primary))';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-light-background dark:bg-dark-background">
+        <MenuBar />
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto" role="status" aria-label="Loading"></div>
+              <p className="text-light-text dark:text-dark-text mt-4">Loading statistics...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-light-background dark:bg-dark-background">
+        <MenuBar />
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="text-center">
+              <p className="text-red-500 text-lg">{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen bg-light-background dark:bg-dark-background">
+        <MenuBar />
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            <div className="text-center">
+              <p className="text-light-text dark:text-dark-text">No statistics available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-light-background dark:bg-dark-background">
@@ -79,6 +135,28 @@ function Statistics() {
             </div>
           </div>
 
+          {/* Interview Overview Cards */}
+          {stats.interviewStats && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm border-l-4 border-accent">
+                <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Total Interviews</h3>
+                <p className="text-2xl font-semibold text-light-text dark:text-dark-text">{stats.interviewStats.totalInterviews}</p>
+              </div>
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm border-l-4 border-accent">
+                <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Interview Rate</h3>
+                <p className="text-2xl font-semibold text-light-text dark:text-dark-text">{stats.interviewStats.conversionRate}%</p>
+              </div>
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm border-l-4 border-accent">
+                <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Upcoming Interviews</h3>
+                <p className="text-2xl font-semibold text-light-text dark:text-dark-text">{stats.interviewStats.upcoming}</p>
+              </div>
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm border-l-4 border-accent">
+                <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Avg per Application</h3>
+                <p className="text-2xl font-semibold text-light-text dark:text-dark-text">{stats.interviewStats.averagePerApplication}</p>
+              </div>
+            </div>
+          )}
+
           {/* Status Distribution */}
           <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm mb-8">
             <h2 className="text-lg font-medium text-light-text dark:text-dark-text mb-4">Status Distribution</h2>
@@ -90,8 +168,12 @@ function Statistics() {
                     <div className="h-2 bg-light-border dark:bg-dark-border rounded-full">
                       <div
                         className="h-2 rounded-full"
+                        role="progressbar"
+                        aria-valuenow={count}
+                        aria-valuemax={stats.total}
+                        aria-label={`${status} applications progress`}
                         style={{
-                          width: `${(count / stats.total) * 100}%`,
+                          width: stats.total > 0 ? `${(count / stats.total) * 100}%` : '0%',
                           backgroundColor: getStatusBarColor(status)
                         }}
                       />
@@ -102,6 +184,65 @@ function Statistics() {
               ))}
             </div>
           </div>
+
+          {/* Interview Statistics */}
+          {stats.interviewStats && stats.interviewStats.totalInterviews > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Interview Types */}
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
+                <h2 className="text-lg font-medium text-light-text dark:text-dark-text mb-4">Interview Types</h2>
+                <div className="space-y-4">
+                  {Object.entries(stats.interviewStats.byType).map(([type, count]) => {
+                    const maxCount = Math.max(...Object.values(stats.interviewStats.byType));
+                    return (
+                      <div key={type} className="flex items-center">
+                        <div className="w-20 text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">{type}</div>
+                        <div className="flex-1">
+                          <div className="h-2 bg-light-border dark:bg-dark-border rounded-full">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{
+                                width: maxCount > 0 ? `${(count / maxCount) * 100}%` : '0%',
+                                backgroundColor: 'oklch(var(--color-accent))'
+                              }}
+                            />
+                          </div>
+                          <div className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">{count} interviews</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Interview Status */}
+              <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
+                <h2 className="text-lg font-medium text-light-text dark:text-dark-text mb-4">Interview Status</h2>
+                <div className="space-y-4">
+                  {Object.entries(stats.interviewStats.byStatus).map(([status, count]) => {
+                    const maxCount = Math.max(...Object.values(stats.interviewStats.byStatus));
+                    return (
+                      <div key={status} className="flex items-center">
+                        <div className="w-20 text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">{status}</div>
+                        <div className="flex-1">
+                          <div className="h-2 bg-light-border dark:bg-dark-border rounded-full">
+                            <div
+                              className="h-2 rounded-full"
+                              style={{
+                                width: maxCount > 0 ? `${(count / maxCount) * 100}%` : '0%',
+                                backgroundColor: getInterviewStatusColor(status)
+                              }}
+                            />
+                          </div>
+                          <div className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-1">{count} interviews</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Monthly Applications */}
           <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
@@ -114,6 +255,10 @@ function Statistics() {
                     <div className="h-2 bg-light-border dark:bg-dark-border rounded-full">
                       <div
                         className="h-2 rounded-full"
+                        role="progressbar"
+                        aria-valuenow={count}
+                        aria-valuemax={Math.max(...Object.values(stats.byMonth))}
+                        aria-label={`${month} applications progress`}
                         style={{
                           width: `${(count / Math.max(...Object.values(stats.byMonth))) * 100}%`,
                           backgroundColor: 'oklch(var(--color-primary))'
