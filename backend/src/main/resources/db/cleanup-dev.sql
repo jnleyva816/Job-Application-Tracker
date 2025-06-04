@@ -6,11 +6,13 @@
 SET session_replication_role = 'replica';
 
 -- Clean up tables in reverse order of dependencies
+DELETE FROM interviews;
 DELETE FROM contacts;
 DELETE FROM applications;
 DELETE FROM users;
 
 -- Reset sequences
+ALTER SEQUENCE interviews_id_seq RESTART WITH 1;
 ALTER SEQUENCE contacts_contact_id_seq RESTART WITH 1;
 ALTER SEQUENCE applications_application_id_seq RESTART WITH 1;
 ALTER SEQUENCE users_user_id_seq RESTART WITH 1;

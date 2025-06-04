@@ -54,6 +54,7 @@ public class InterviewServiceTest {
 
     @Test
     void getAllInterviewsByApplicationId_ShouldReturnListOfInterviews() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findByApplicationId(applicationId))
                 .thenReturn(Arrays.asList(interview));
 
@@ -68,6 +69,7 @@ public class InterviewServiceTest {
 
     @Test
     void getInterviewById_ShouldReturnInterview_WhenFound() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.of(interview));
 
@@ -81,6 +83,7 @@ public class InterviewServiceTest {
 
     @Test
     void getInterviewById_ShouldReturnEmpty_WhenNotFound() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.empty());
 
@@ -119,6 +122,7 @@ public class InterviewServiceTest {
 
     @Test
     void updateInterview_ShouldUpdateAndReturnInterview() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.of(interview));
         when(interviewRepository.save(any(Interview.class)))
@@ -135,6 +139,7 @@ public class InterviewServiceTest {
 
     @Test
     void updateInterview_ShouldThrowException_WhenInterviewNotFound() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.empty());
 
@@ -146,6 +151,7 @@ public class InterviewServiceTest {
 
     @Test
     void deleteInterview_ShouldDeleteInterview_WhenFound() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.of(interview));
 
@@ -156,11 +162,13 @@ public class InterviewServiceTest {
 
     @Test
     void deleteInterview_ShouldNotDelete_WhenNotFound() {
+        when(applicationRepository.existsById(applicationId)).thenReturn(true);
         when(interviewRepository.findById(interviewId))
                 .thenReturn(Optional.empty());
 
-        interviewService.deleteInterview(applicationId, interviewId);
-
+        assertThrows(RuntimeException.class, () ->
+            interviewService.deleteInterview(applicationId, interviewId)
+        );
         verify(interviewRepository, never()).delete(any(Interview.class));
     }
 } 
