@@ -34,6 +34,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// Auth-aware root route component
+const RootRoute = () => {
+  if (!authService.isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  return <Navigate to="/dashboard" replace />;
+};
+
 function AppContent() {
   return (
     <Router>
@@ -89,7 +97,8 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/" element={<RootRoute />} />
+          <Route path="*" element={<RootRoute />} />
         </Routes>
         <ThemeToggle />
       </div>
