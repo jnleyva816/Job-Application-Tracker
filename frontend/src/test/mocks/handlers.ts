@@ -3,6 +3,25 @@ import { http, HttpResponse } from 'msw'
 const API_URL = 'http://localhost:8080/api'
 
 // Type definitions
+interface MockUserProfile {
+  id?: number
+  firstName?: string
+  lastName?: string
+  bio?: string
+  location?: string
+  skills?: string
+  jobTypes?: string
+  preferredLocations?: string
+  salaryMin?: number
+  salaryMax?: number
+  linkedinUrl?: string
+  githubUrl?: string
+  portfolioUrl?: string
+  phoneNumber?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
 interface MockUser {
   id: number
   username: string
@@ -16,6 +35,7 @@ interface MockUser {
   createdAt: string
   updatedAt: string
   password: null
+  profile?: MockUserProfile
 }
 
 interface MockApplication {
@@ -59,6 +79,24 @@ interface ApplicationData {
   compensation?: string
 }
 
+interface ProfileUpdateRequest {
+  username?: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  bio?: string
+  location?: string
+  skills?: string
+  jobTypes?: string
+  preferredLocations?: string
+  salaryMin?: number
+  salaryMax?: number
+  linkedinUrl?: string
+  githubUrl?: string
+  portfolioUrl?: string
+  phoneNumber?: string
+}
+
 // Mock data
 const mockUsers = new Map<number, MockUser>()
 let userIdCounter = 1
@@ -82,6 +120,13 @@ const createMockUser = (userData: UserRegistrationData): MockUser => ({
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   password: null, // Password is never returned
+  profile: {
+    id: userIdCounter,
+    firstName: userData.firstName || '',
+    lastName: userData.lastName || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
 })
 
 // Helper function to generate mock application
@@ -597,14 +642,8 @@ export const handlers = [
       id: user.id,
       username: user.username,
       email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
       role: user.role,
-      accountLocked: user.accountLocked,
-      failedLoginAttempts: user.failedLoginAttempts,
-      lastLogin: user.lastLogin,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      profile: user.profile
     })
   }),
 
@@ -627,57 +666,61 @@ export const handlers = [
       )
     }
     
-    const updateData = await request.json() as Partial<MockUser>
+    const updateData = await request.json() as ProfileUpdateRequest
     
-    // Check for duplicate username or email
-    const existingUser = Array.from(mockUsers.values()).find((u: MockUser) => 
-      u.id !== user.id && (
-        (updateData.username && u.username === updateData.username) ||
-        (updateData.email && u.email === updateData.email)
+    // Update basic user info if provided
+    if (updateData.username || updateData.email) {
+      // Check for duplicates
+      const existingUser = Array.from(mockUsers.values()).find((u: MockUser) => 
+        u.id !== user.id && (
+          (updateData.username && u.username === updateData.username) ||
+          (updateData.email && u.email === updateData.email)
+        )
       )
-    )
-    
-    if (existingUser) {
-      if (updateData.username && existingUser.username === updateData.username) {
-        return HttpResponse.json(
-          { message: 'Username already exists' },
-          { status: 400 }
-        )
+      
+      if (existingUser) {
+        if (updateData.username && existingUser.username === updateData.username) {
+          return HttpResponse.json(
+            { message: 'Username already exists' },
+            { status: 400 }
+          )
+        }
+        if (updateData.email && existingUser.email === updateData.email) {
+          return HttpResponse.json(
+            { message: 'Email already exists' },
+            { status: 400 }
+          )
+        }
       }
-      if (updateData.email && existingUser.email === updateData.email) {
-        return HttpResponse.json(
-          { message: 'Email already exists' },
-          { status: 400 }
-        )
-      }
+      
+      if (updateData.username) user.username = updateData.username
+      if (updateData.email) user.email = updateData.email
     }
     
-    const updatedUser = {
-      ...user,
+    // Update profile data
+    const updatedProfile = {
+      ...user.profile,
       ...updateData,
-      id: user.id,
-      updatedAt: new Date().toISOString()
+      id: user.profile?.id || user.id,
+      updatedAt: new Date().toISOString(),
     }
     
-    mockUsers.set(user.id, updatedUser)
+    user.profile = updatedProfile
+    user.updatedAt = new Date().toISOString()
+    
+    mockUsers.set(user.id, user)
     
     return HttpResponse.json({
-      id: updatedUser.id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      role: updatedUser.role,
-      accountLocked: updatedUser.accountLocked,
-      failedLoginAttempts: updatedUser.failedLoginAttempts,
-      lastLogin: updatedUser.lastLogin,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      profile: user.profile
     })
   }),
 
-  // Get user by ID
-  http.get(`${API_URL}/users/:id`, ({ params, request }) => {
+  // Complete user profile
+  http.post(`${API_URL}/profile/complete`, async ({ request }) => {
     const token = validateToken(request.headers.get('Authorization'))
     
     if (!token) {
@@ -687,44 +730,35 @@ export const handlers = [
       )
     }
     
-    const currentUser = getUserFromToken(token)
-    if (!currentUser) {
+    const user = getUserFromToken(token)
+    if (!user) {
       return HttpResponse.json(
         { message: 'User not found' },
         { status: 404 }
       )
     }
     
-    const userId = parseInt(params.id as string)
-    const targetUser = mockUsers.get(userId)
+    const profileData = await request.json() as ProfileUpdateRequest
     
-    if (!targetUser) {
-      return HttpResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      )
+    // Complete profile data
+    const completedProfile = {
+      ...user.profile,
+      ...profileData,
+      id: user.profile?.id || user.id,
+      updatedAt: new Date().toISOString(),
     }
     
-    // Check permission - user can only get their own profile unless admin
-    if (currentUser.id !== userId && currentUser.role !== 'ROLE_ADMIN') {
-      return HttpResponse.json(
-        { message: "You don't have permission to access this resource" },
-        { status: 403 }
-      )
-    }
+    user.profile = completedProfile
+    user.updatedAt = new Date().toISOString()
+    
+    mockUsers.set(user.id, user)
     
     return HttpResponse.json({
-      id: targetUser.id,
-      username: targetUser.username,
-      email: targetUser.email,
-      firstName: targetUser.firstName,
-      lastName: targetUser.lastName,
-      role: targetUser.role,
-      accountLocked: targetUser.accountLocked,
-      failedLoginAttempts: targetUser.failedLoginAttempts,
-      lastLogin: targetUser.lastLogin,
-      createdAt: targetUser.createdAt,
-      updatedAt: targetUser.updatedAt
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      profile: user.profile
     })
   }),
 
@@ -862,4 +896,4 @@ export const handlers = [
 
 // Export helper functions for tests
 export { validTokens, generateToken, createMockUser, createMockApplication, mockUsers, mockApplications };
-export type { MockUser, MockApplication, UserRegistrationData, LoginCredentials, ApplicationData }; 
+export type { MockUser, MockApplication, UserRegistrationData, LoginCredentials, ApplicationData, MockUserProfile, ProfileUpdateRequest }; 

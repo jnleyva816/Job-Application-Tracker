@@ -343,7 +343,7 @@ function ApplicationDetail() {
                   {application.jobTitle} at {application.company}
                 </h1>
                 <p className="text-light-text-secondary dark:text-dark-text-secondary">
-                  Applied on {new Date(application.applicationDate).toLocaleDateString()}
+                  Applied on {new Date(application.applicationDate + 'T00:00:00').toLocaleDateString()}
                 </p>
               </div>
               <div className="flex space-x-2">
@@ -701,10 +701,26 @@ function ApplicationDetail() {
                           </span>
                         </div>
                         <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mb-1">
-                          📅 {new Date(interview.interviewDate).toLocaleString()}
+                          📅 {new Date(interview.interviewDate).toLocaleString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
                           {interview.originalDate && interview.originalDate !== interview.interviewDate && (
                             <span className="ml-2 text-xs text-orange-600 dark:text-orange-400">
-                              (Rescheduled from {new Date(interview.originalDate).toLocaleString()})
+                              (Rescheduled from {new Date(interview.originalDate).toLocaleString('en-US', {
+                                weekday: 'short',
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                              })})
                             </span>
                           )}
                         </p>

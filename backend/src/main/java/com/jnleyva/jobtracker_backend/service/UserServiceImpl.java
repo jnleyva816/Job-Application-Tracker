@@ -31,6 +31,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private UserProfileService userProfileService;
+
     @Override
     public User createUser(User user) {
         logger.debug("Creating new user with username: {}", user.getUsername());
@@ -94,6 +97,15 @@ public class UserServiceImpl implements UserService {
             logger.error("Password verification failed for user: {}", savedUser.getUsername());
             logger.error("Stored password prefix: {}", savedUser.getPassword().substring(0, Math.min(20, savedUser.getPassword().length())));
             throw new RuntimeException("Password verification failed after user creation");
+        }
+        
+        // Create an empty profile for the new user
+        try {
+            userProfileService.createEmptyProfile(savedUser.getId());
+            logger.info("Empty profile created for user: {}", savedUser.getUsername());
+        } catch (Exception e) {
+            logger.warn("Failed to create profile for user {}: {}", savedUser.getUsername(), e.getMessage());
+            // Don't fail user creation if profile creation fails
         }
         
         return savedUser;
@@ -192,10 +204,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         User user = getUserById(id);
-        userRepository.delete(user);
-        logger.info("User deleted successfully: {}", user.getUsername());
+        
+        try {
+            // Let Hibernate handle cascade deletion automatically
+            userRepository.delete(user);
+            // Force the delete operation to be executed immediately
+            entityManager.flush();
+            logger.info("User deleted successfully: {}", user.getUsername());
+        } catch (Exception e) {
+            logger.error("Failed to delete user {}: {}", user.getUsername(), e.getMessage());
+            // If automatic cascade fails, try manual deletion
+            try {
+                // Manually delete profile first if it exists
+                if (user.getProfile() != null) {
+                    userProfileService.deleteProfile(user.getProfile().getId());
+                    logger.debug("User profile deleted manually for user: {}", user.getUsername());
+                }
+                
+                // Clear any cached data and try deletion again
+                entityManager.clear();
+                
+                // Re-fetch user and delete
+                User refreshedUser = getUserById(id);
+                userRepository.delete(refreshedUser);
+                entityManager.flush();
+                logger.info("User deleted successfully after manual cleanup: {}", user.getUsername());
+            } catch (Exception fallbackException) {
+                logger.error("Failed to delete user even with manual cleanup: {}", fallbackException.getMessage());
+                throw new RuntimeException("Could not delete user: " + user.getUsername(), fallbackException);
+            }
+        }
     }
 
     private void validatePassword(String password) {

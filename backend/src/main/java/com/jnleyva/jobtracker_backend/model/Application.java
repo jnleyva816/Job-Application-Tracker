@@ -19,16 +19,16 @@ public class Application {
     @Column(name = "application_id")
     private Long id;
 
-    @Column(name = "company", nullable = false)
+    @Column(name = "company", nullable = false, length = 500)
     private String company;
 
-    @Column(name = "job_title", nullable = false)
+    @Column(name = "job_title", nullable = false, length = 500)
     private String jobTitle;
 
-    @Column(name = "location")
+    @Column(name = "location", length = 1000)
     private String location;
 
-    @Column(name = "url")
+    @Column(name = "url", length = 2000)
     private String url;
 
     @Column(name = "description", columnDefinition = "TEXT")
@@ -37,7 +37,13 @@ public class Application {
     @Column(name = "compensation")
     private Double compensation;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "compensation_type", length = 100)
+    private String compensationType; // "ANNUAL", "HOURLY", "UNKNOWN"
+
+    @Column(name = "experience_level", length = 100)
+    private String experienceLevel;
+
+    @Column(name = "status", nullable = false, length = 100)
     private String status;
 
     @Column(name = "application_date", nullable = false)
@@ -128,6 +134,22 @@ public class Application {
 
     public void setCompensation(Double compensation) {
         this.compensation = compensation;
+    }
+
+    public String getCompensationType() {
+        return compensationType;
+    }
+
+    public void setCompensationType(String compensationType) {
+        this.compensationType = compensationType;
+    }
+
+    public String getExperienceLevel() {
+        return experienceLevel;
+    }
+
+    public void setExperienceLevel(String experienceLevel) {
+        this.experienceLevel = experienceLevel;
     }
 
     public String getStatus() {

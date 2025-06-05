@@ -12,15 +12,33 @@ interface JobApplication {
   compensation: number;
 }
 
-interface CalendarProps {
-  applications: JobApplication[];
-  onDateClick?: (date: Date, applications: JobApplication[]) => void;
+interface Interview {
+  id?: number;
+  type: string;
+  interviewDate: string;
+  notes?: string;
+  status?: string;
+  interviewerName?: string;
+  interviewerEmail?: string;
+  location?: string;
+  durationMinutes?: number;
+  cancellationReason?: string;
+  meetingLink?: string;
+  interviewFeedback?: string;
+  originalDate?: string;
+  applicationId?: string;
 }
 
-function Calendar({ applications, onDateClick }: CalendarProps) {
+interface CalendarProps {
+  applications: JobApplication[];
+  interviews?: Interview[];
+  onDateClick?: (date: Date, applications: JobApplication[], interviews?: Interview[]) => void;
+}
+
+function Calendar({ applications, interviews = [], onDateClick }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const { daysInMonth, firstDayOfMonth, applicationsByDate } = useMemo(() => {
+  const { daysInMonth, firstDayOfMonth, applicationsByDate, interviewsByDate } = useMemo(() => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
@@ -31,19 +49,44 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
     // Group applications by date
     const appsByDate: Record<string, JobApplication[]> = {};
     applications.forEach(app => {
-      const date = new Date(app.applicationDate).toDateString();
-      if (!appsByDate[date]) {
-        appsByDate[date] = [];
+      // Use a consistent date format to avoid timezone issues
+      const appDate = new Date(app.applicationDate + 'T00:00:00');
+      const dateKey = `${appDate.getFullYear()}-${String(appDate.getMonth() + 1).padStart(2, '0')}-${String(appDate.getDate()).padStart(2, '0')}`;
+      if (!appsByDate[dateKey]) {
+        appsByDate[dateKey] = [];
       }
-      appsByDate[date].push(app);
+      appsByDate[dateKey].push(app);
+    });
+
+    // Group interviews by date
+    const interviewsByDate: Record<string, Interview[]> = {};
+    interviews.forEach(interview => {
+      try {
+        // Parse interview date as local time to avoid timezone issues
+        // If the interviewDate includes time information, extract just the date part
+        let dateStr = interview.interviewDate;
+        if (dateStr.includes('T')) {
+          // Extract just the date part and treat as local time
+          dateStr = dateStr.split('T')[0] + 'T00:00:00';
+        }
+        const interviewDate = new Date(dateStr);
+        const dateKey = `${interviewDate.getFullYear()}-${String(interviewDate.getMonth() + 1).padStart(2, '0')}-${String(interviewDate.getDate()).padStart(2, '0')}`;
+        if (!interviewsByDate[dateKey]) {
+          interviewsByDate[dateKey] = [];
+        }
+        interviewsByDate[dateKey].push(interview);
+      } catch (error) {
+        console.warn('Invalid interview date:', interview.interviewDate, error);
+      }
     });
 
     return {
       daysInMonth: lastDay.getDate(),
       firstDayOfMonth: firstDayOfWeek,
-      applicationsByDate: appsByDate
+      applicationsByDate: appsByDate,
+      interviewsByDate: interviewsByDate
     };
-  }, [currentDate, applications]);
+  }, [currentDate, applications, interviews]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     setCurrentDate(prev => {
@@ -59,11 +102,12 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
 
   const handleDateClick = (day: number) => {
     const clickedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const dateKey = clickedDate.toDateString();
+    const dateKey = `${clickedDate.getFullYear()}-${String(clickedDate.getMonth() + 1).padStart(2, '0')}-${String(clickedDate.getDate()).padStart(2, '0')}`;
     const dayApplications = applicationsByDate[dateKey] || [];
+    const dayInterviews = interviewsByDate[dateKey] || [];
     
     if (onDateClick) {
-      onDateClick(clickedDate, dayApplications);
+      onDateClick(clickedDate, dayApplications, dayInterviews);
     }
   };
 
@@ -84,9 +128,11 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
     // Calendar days
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      const dateKey = date.toDateString();
+      const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       const dayApplications = applicationsByDate[dateKey] || [];
+      const dayInterviews = interviewsByDate[dateKey] || [];
       const hasApplications = dayApplications.length > 0;
+      const hasInterviews = dayInterviews.length > 0;
       const isToday = date.toDateString() === new Date().toDateString();
 
       days.push(
@@ -95,18 +141,27 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
           className={`
             aspect-square p-1 text-center text-sm cursor-pointer rounded-lg relative
             ${isToday ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-light-background dark:hover:bg-dark-background'}
-            ${hasApplications ? 'font-bold' : ''}
+            ${(hasApplications || hasInterviews) ? 'font-bold' : ''}
           `}
           onClick={() => handleDateClick(day)}
         >
           <span className="text-light-text dark:text-dark-text">{day}</span>
+          
+          {/* Application indicator - blue dot at bottom */}
           {hasApplications && (
-            <>
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-primary rounded-full" />
-              <div className="absolute top-0 right-0 text-xs text-primary font-bold">
-                {dayApplications.length}
-              </div>
-            </>
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-primary rounded-full" />
+          )}
+          
+          {/* Interview indicator - yellow dot at top-right */}
+          {hasInterviews && (
+            <div className="absolute top-0 right-0 w-2 h-2 bg-yellow-500 rounded-full" />
+          )}
+          
+          {/* Count indicator - only show if there are multiple items */}
+          {(dayApplications.length + dayInterviews.length) > 1 && (
+            <div className="absolute top-0 left-0 text-xs text-primary font-bold">
+              {dayApplications.length + dayInterviews.length}
+            </div>
           )}
         </div>
       );
@@ -132,6 +187,7 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
         <button
           onClick={() => navigateMonth('prev')}
           className="p-2 hover:bg-light-background dark:hover:bg-dark-background rounded-lg"
+          aria-label="Previous month"
         >
           <svg className="w-4 h-4 text-light-text dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -145,6 +201,7 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
         <button
           onClick={() => navigateMonth('next')}
           className="p-2 hover:bg-light-background dark:hover:bg-dark-background rounded-lg"
+          aria-label="Next month"
         >
           <svg className="w-4 h-4 text-light-text dark:text-dark-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -174,6 +231,10 @@ function Calendar({ applications, onDateClick }: CalendarProps) {
         <div className="flex items-center space-x-1">
           <div className="w-2 h-2 bg-primary rounded-full" />
           <span>Applications submitted</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <div className="w-2 h-2 bg-yellow-500 rounded-full" />
+          <span>Interviews scheduled</span>
         </div>
       </div>
     </div>
