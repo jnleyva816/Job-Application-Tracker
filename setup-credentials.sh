@@ -1,4 +1,4 @@
-#!/bin/bash
+
 
 # Job Application Tracker - CI/CD Credentials Setup Guide
 # This script will guide you through setting up all required credentials
