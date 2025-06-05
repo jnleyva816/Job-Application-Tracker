@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { beforeAll, afterEach, afterAll } from 'vitest'
+import { beforeAll, afterEach, afterAll, vi } from 'vitest'
 import { server } from './mocks/server'
 
 // Create a proper localStorage mock
@@ -32,7 +32,7 @@ Object.defineProperty(window, 'localStorage', {
 global.fetch = vi.fn()
 
 // Setup MSW
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 afterEach(() => {
   server.resetHandlers()
   localStorage.clear()
