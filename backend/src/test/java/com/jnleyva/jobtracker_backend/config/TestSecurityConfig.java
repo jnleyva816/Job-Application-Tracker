@@ -1,6 +1,7 @@
 package com.jnleyva.jobtracker_backend.config;
 
 import com.jnleyva.jobtracker_backend.filter.JwtFilter;
+import com.jnleyva.jobtracker_backend.service.JwtService;
 import com.jnleyva.jobtracker_backend.service.TokenBlacklistService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @TestConfiguration
 @EnableWebSecurity
@@ -62,6 +67,36 @@ public class TestSecurityConfig {
     }
 
     @Bean
+    public JwtService jwtService() {
+        return new JwtService() {
+            @Override
+            public String extractUsername(String token) {
+                return "testuser";
+            }
+
+            @Override
+            public Date extractExpiration(String token) {
+                return new Date(System.currentTimeMillis() + 86400000);
+            }
+
+            @Override
+            public Boolean validateToken(String token, UserDetails userDetails) {
+                return true;
+            }
+
+            @Override
+            public String generateToken(UserDetails userDetails) {
+                return "test-jwt-token";
+            }
+
+            @Override
+            public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+                return "test-jwt-token";
+            }
+        };
+    }
+
+    @Bean
     public JwtFilter jwtFilter() {
         return new JwtFilter();
     }
@@ -73,6 +108,7 @@ public class TestSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+                .requestMatchers("/api/job-parsing/**").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception

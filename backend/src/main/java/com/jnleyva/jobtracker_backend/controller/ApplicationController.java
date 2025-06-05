@@ -81,6 +81,9 @@ public class ApplicationController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         
+        // Validate and truncate fields to prevent database constraint violations
+        truncateApplicationFields(application);
+        
         // Set the user for this application
         application.setUser(currentUser.get());
         
@@ -111,12 +114,17 @@ public class ApplicationController {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
+            // Validate and truncate fields to prevent database constraint violations
+            truncateApplicationFields(application);
+            
             updatedApplication.setCompany(application.getCompany());
             updatedApplication.setJobTitle(application.getJobTitle());
             updatedApplication.setLocation(application.getLocation());
             updatedApplication.setUrl(application.getUrl());
             updatedApplication.setDescription(application.getDescription());
             updatedApplication.setCompensation(application.getCompensation());
+            updatedApplication.setCompensationType(application.getCompensationType());
+            updatedApplication.setExperienceLevel(application.getExperienceLevel());
             updatedApplication.setStatus(application.getStatus());
             updatedApplication.setApplicationDate(application.getApplicationDate());
             // Keep the original user
@@ -151,6 +159,33 @@ public class ApplicationController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Validates and truncates application fields to prevent database constraint violations
+     */
+    private void truncateApplicationFields(Application application) {
+        if (application.getCompany() != null && application.getCompany().length() > 500) {
+            application.setCompany(application.getCompany().substring(0, 500));
+        }
+        if (application.getJobTitle() != null && application.getJobTitle().length() > 500) {
+            application.setJobTitle(application.getJobTitle().substring(0, 500));
+        }
+        if (application.getLocation() != null && application.getLocation().length() > 1000) {
+            application.setLocation(application.getLocation().substring(0, 1000));
+        }
+        if (application.getUrl() != null && application.getUrl().length() > 2000) {
+            application.setUrl(application.getUrl().substring(0, 2000));
+        }
+        if (application.getCompensationType() != null && application.getCompensationType().length() > 100) {
+            application.setCompensationType(application.getCompensationType().substring(0, 100));
+        }
+        if (application.getExperienceLevel() != null && application.getExperienceLevel().length() > 100) {
+            application.setExperienceLevel(application.getExperienceLevel().substring(0, 100));
+        }
+        if (application.getStatus() != null && application.getStatus().length() > 100) {
+            application.setStatus(application.getStatus().substring(0, 100));
         }
     }
 }

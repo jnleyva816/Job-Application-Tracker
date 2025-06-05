@@ -10,6 +10,7 @@ export interface JobApplication {
   url: string;
   description: string;
   compensation: number;
+  experienceLevel?: string;
 }
 
 class ApplicationService {

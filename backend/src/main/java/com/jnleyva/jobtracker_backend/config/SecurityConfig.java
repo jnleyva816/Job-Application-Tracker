@@ -56,10 +56,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+                config.setAllowedOrigins(Arrays.asList("*")); // Allow all origins for debugging
                 config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(Arrays.asList("*"));
                 config.setExposedHeaders(Arrays.asList("Authorization"));
+                config.setAllowCredentials(false); // Set to false when allowing all origins
                 config.setMaxAge(3600L);
                 return config;
             }))
@@ -67,15 +68,28 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints
                 .requestMatchers("/api/users/login", "/api/users/register", "/api/users/token").permitAll()
+                // Debug endpoints (allow for testing)
+                .requestMatchers("/api/debug/**").permitAll()
+                // Job parsing endpoints (allow for testing)
+                .requestMatchers("/api/job-parsing/**").permitAll()
+                // Static resources (HTML, CSS, JS, images, etc.)
+                .requestMatchers("/", "/index.html", "/url-tester.html", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                // WebJars (if using any)
+                .requestMatchers("/webjars/**").permitAll()
+                // Actuator endpoints (if enabled)
+                .requestMatchers("/actuator/**").permitAll()
+                // Protected endpoints
                 .requestMatchers("/api/applications/**").authenticated()
                 .requestMatchers("/api/users/**").authenticated()
+                // Default: require authentication
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        logger.info("Main security configuration initialized");
+        logger.info("Security configuration initialized with debug and static resources access");
         return http.build();
     }
 

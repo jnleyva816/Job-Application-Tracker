@@ -42,6 +42,10 @@ public class User {
     @JsonManagedReference
     private List<Application> applications = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private UserProfile profile;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -113,6 +117,23 @@ public class User {
     public void removeApplication(Application application) {
         applications.remove(application);
         application.setUser(null);
+    }
+
+    public UserProfile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(UserProfile profile) {
+        this.profile = profile;
+        if (profile != null) {
+            profile.setUser(this);
+        }
+    }
+
+    public void createProfile() {
+        if (this.profile == null) {
+            this.profile = new UserProfile(this);
+        }
     }
 
     public LocalDateTime getCreatedAt() {

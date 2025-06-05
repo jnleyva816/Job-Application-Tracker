@@ -273,6 +273,49 @@ class InterviewService {
     return response.json();
   }
 
+  async getAllUserInterviews(): Promise<Array<Interview & { applicationId: string }>> {
+    const token = authService.getToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    // First, get all applications for the user
+    const applicationsResponse = await fetch(`${this.apiUrl}/applications`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!applicationsResponse.ok) {
+      const errorText = await applicationsResponse.text();
+      console.error('Failed to fetch applications:', applicationsResponse.status, errorText);
+      throw new Error(`Failed to fetch applications: ${applicationsResponse.status}`);
+    }
+
+    const applications = await applicationsResponse.json();
+    
+    // Then, fetch interviews for each application
+    const allInterviews: Array<Interview & { applicationId: string }> = [];
+    
+    for (const application of applications) {
+      try {
+        const interviews = await this.getInterviewsByApplicationId(application.id);
+        // Add applicationId to each interview for reference
+        const interviewsWithAppId = interviews.map(interview => ({
+          ...interview,
+          applicationId: application.id
+        }));
+        allInterviews.push(...interviewsWithAppId);
+      } catch (error) {
+        // Continue if an application doesn't have interviews or there's an error
+        console.warn(`Failed to fetch interviews for application ${application.id}:`, error);
+      }
+    }
+
+    return allInterviews;
+  }
+
   async deleteInterview(applicationId: string, interviewId: string): Promise<void> {
     const token = authService.getToken();
     if (!token) {

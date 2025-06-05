@@ -67,6 +67,10 @@ public class DatabaseMigration {
             } else {
                 System.out.println("Database schema is already up to date!");
             }
+            
+            // Update application column lengths to handle longer job data
+            updateApplicationColumnLengths();
+            
         } catch (DataAccessException e) {
             System.err.println("Data access error during database migration: " + e.getMessage());
             // Don't rethrow the exception - let tests continue if migration fails
@@ -76,6 +80,73 @@ public class DatabaseMigration {
             System.err.println("Error during database migration: " + e.getMessage());
             // Don't rethrow the exception - let tests continue if migration fails
             System.err.println("Migration skipped, assuming schema is correct");
+        }
+    }
+    
+    private void updateApplicationColumnLengths() {
+        try {
+            System.out.println("Updating application column lengths to handle longer job data...");
+            
+            // Check current column types and update if needed
+            if (shouldUpdateColumnLength("applications", "company", 500)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN company TYPE VARCHAR(500)");
+                System.out.println("Updated company column length to 500");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "job_title", 500)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN job_title TYPE VARCHAR(500)");
+                System.out.println("Updated job_title column length to 500");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "location", 1000)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN location TYPE VARCHAR(1000)");
+                System.out.println("Updated location column length to 1000");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "url", 2000)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN url TYPE VARCHAR(2000)");
+                System.out.println("Updated url column length to 2000");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "compensation_type", 100)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN compensation_type TYPE VARCHAR(100)");
+                System.out.println("Updated compensation_type column length to 100");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "experience_level", 100)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN experience_level TYPE VARCHAR(100)");
+                System.out.println("Updated experience_level column length to 100");
+            }
+            
+            if (shouldUpdateColumnLength("applications", "status", 100)) {
+                jdbcTemplate.execute("ALTER TABLE applications ALTER COLUMN status TYPE VARCHAR(100)");
+                System.out.println("Updated status column length to 100");
+            }
+            
+            System.out.println("Application column length updates completed!");
+            
+        } catch (Exception e) {
+            System.err.println("Error updating application column lengths: " + e.getMessage());
+            // Don't rethrow - let application continue if this fails
+        }
+    }
+    
+    private boolean shouldUpdateColumnLength(String tableName, String columnName, int targetLength) {
+        try {
+            // Check current column length in PostgreSQL
+            Integer currentLength = jdbcTemplate.queryForObject(
+                    "SELECT character_maximum_length FROM information_schema.columns " +
+                            "WHERE table_name = ? AND column_name = ?",
+                    Integer.class,
+                    tableName, columnName);
+            
+            // If current length is null (unlimited) or less than target, update it
+            return currentLength != null && currentLength < targetLength;
+            
+        } catch (Exception e) {
+            // If we can't determine the current length, assume we should update
+            System.err.println("Could not determine current column length for " + columnName + ": " + e.getMessage());
+            return true;
         }
     }
     

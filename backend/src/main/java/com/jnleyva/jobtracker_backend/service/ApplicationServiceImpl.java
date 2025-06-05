@@ -69,6 +69,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setUrl(applicationDetails.getUrl());
         application.setDescription(applicationDetails.getDescription());
         application.setCompensation(applicationDetails.getCompensation());
+        application.setCompensationType(applicationDetails.getCompensationType());
+        application.setExperienceLevel(applicationDetails.getExperienceLevel());
         application.setStatus(applicationDetails.getStatus());
         application.setApplicationDate(applicationDetails.getApplicationDate());
         
