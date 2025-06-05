@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { profileService, ProfileUpdateRequest } from '../services/profileService';
 
 interface ProfileSetupProps {
@@ -8,7 +7,6 @@ interface ProfileSetupProps {
 }
 
 function ProfileSetup({ onComplete, onSkip }: ProfileSetupProps) {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState<ProfileUpdateRequest>({
     firstName: '',
     lastName: '',

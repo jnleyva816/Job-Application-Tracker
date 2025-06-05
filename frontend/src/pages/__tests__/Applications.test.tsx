@@ -15,7 +15,7 @@ vi.mock('react-router-dom', async () => {
 
 // Mock the ApplicationsView component since we've already tested it thoroughly
 vi.mock('../../components/ApplicationsView', () => ({
-  default: ({ applications, isLoading, error }: any) => {
+  default: ({ applications, isLoading, error }: { applications: unknown[]; isLoading: boolean; error: string | null }) => {
     if (isLoading) return <div data-testid="loading">Loading applications...</div>
     if (error) return <div data-testid="error">{error}</div>
     return (

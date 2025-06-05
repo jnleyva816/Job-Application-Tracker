@@ -3,11 +3,9 @@ import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import AddApplicationForm from '../components/AddApplicationForm';
 import { jobParsingService } from '../services/jobParsingService';
-import { applicationService } from '../services/applicationService';
 
 // Mock the services
 vi.mock('../services/jobParsingService');
-vi.mock('../services/applicationService');
 vi.mock('../services/authService', () => ({
   authService: {
     getToken: () => 'mock-token',
@@ -15,7 +13,6 @@ vi.mock('../services/authService', () => ({
 }));
 
 const mockJobParsingService = vi.mocked(jobParsingService);
-const mockApplicationService = vi.mocked(applicationService);
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
@@ -134,7 +131,7 @@ describe('AddApplicationForm', () => {
     };
 
     // Create a promise that we can control
-    let resolvePromise: (value: any) => void;
+    let resolvePromise: (value: typeof mockParseResult) => void;
     const promise = new Promise<typeof mockParseResult>((resolve) => {
       resolvePromise = resolve;
     });

@@ -9,7 +9,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import AddApplicationForm from './components/AddApplicationForm';
 import { authService } from './services/authService';
-import { ThemeProvider, useTheme } from './theme/ThemeContext';
+import { ThemeProvider } from './theme/ThemeContext';
+import { useTheme } from './theme/useTheme';
 import './App.css';
 
 // Theme Toggle Button component
