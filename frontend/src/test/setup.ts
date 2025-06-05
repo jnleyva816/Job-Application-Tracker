@@ -28,8 +28,6 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 })
 
-// Mock fetch in case MSW fails to intercept
-const originalFetch = global.fetch
 let mswStarted = false
 
 // Setup MSW

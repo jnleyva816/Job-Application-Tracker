@@ -36,26 +36,22 @@ describe('AuthService', () => {
   describe('MSW Setup Verification', () => {
     it('should verify MSW is intercepting requests', async () => {
       // Try to make a simple request that should be intercepted
-      try {
-        const response = await fetch(`${API_URL}/users/register`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'password'
-          }),
-        })
-        
-        expect(response.status).toBe(201)
-        
-        const data = await response.json()
-        expect(data).toHaveProperty('username', 'testuser')
-      } catch (error) {
-        throw error
-      }
+      const response = await fetch(`${API_URL}/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: 'testuser',
+          email: 'test@example.com',
+          password: 'password'
+        }),
+      })
+      
+      expect(response.status).toBe(201)
+      
+      const data = await response.json()
+      expect(data).toHaveProperty('username', 'testuser')
     })
   })
 
