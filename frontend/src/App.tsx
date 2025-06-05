@@ -44,67 +44,74 @@ const RootRoute = () => {
   return <Navigate to="/dashboard" replace />;
 };
 
+// AppRoutes component that contains all routing logic without router wrapper
+export function AppRoutes() {
+  return (
+    <div className="min-h-screen bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text transition-colors duration-300">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile-setup" element={<ProfileSetupPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/applications"
+          element={
+            <ProtectedRoute>
+              <Applications />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/applications/:id"
+          element={
+            <ProtectedRoute>
+              <ApplicationDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/statistics"
+          element={
+            <ProtectedRoute>
+              <Statistics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-application"
+          element={
+            <ProtectedRoute>
+              <AddApplicationForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/" element={<RootRoute />} />
+        <Route path="*" element={<RootRoute />} />
+      </Routes>
+      <ThemeToggle />
+    </div>
+  );
+}
+
 function AppContent() {
   return (
     <Router>
-      <div className="min-h-screen bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text transition-colors duration-300">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile-setup" element={<ProfileSetupPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/applications"
-            element={
-              <ProtectedRoute>
-                <Applications />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/applications/:id"
-            element={
-              <ProtectedRoute>
-                <ApplicationDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/statistics"
-            element={
-              <ProtectedRoute>
-                <Statistics />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/add-application"
-            element={
-              <ProtectedRoute>
-                <AddApplicationForm />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<RootRoute />} />
-          <Route path="*" element={<RootRoute />} />
-        </Routes>
-        <ThemeToggle />
-      </div>
+      <AppRoutes />
     </Router>
   );
 }

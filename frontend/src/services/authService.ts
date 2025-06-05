@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+const getApiUrl = () => import.meta.env.VITE_API_URL;
 
 interface LoginCredentials {
   username: string;
@@ -69,7 +69,7 @@ interface UpdateUserData {
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     console.log('Attempting login with:', { ...credentials, password: '[REDACTED]' });
-    const response = await fetch(`${API_URL}/users/login`, {
+    const response = await fetch(`${getApiUrl()}/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const authService = {
 
   async register(data: RegisterData): Promise<RegisterResponse> {
     console.log('Attempting registration with:', { ...data, password: '[REDACTED]' });
-    const response = await fetch(`${API_URL}/users/register`, {
+    const response = await fetch(`${getApiUrl()}/users/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export const authService = {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/profile`, {
+    const response = await fetch(`${getApiUrl()}/profile`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -178,7 +178,7 @@ export const authService = {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/profile`, {
+    const response = await fetch(`${getApiUrl()}/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ export const authService = {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/users/${id}`, {
+    const response = await fetch(`${getApiUrl()}/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export const authService = {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/users/${id}`, {
+    const response = await fetch(`${getApiUrl()}/users/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -264,7 +264,7 @@ export const authService = {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/users/${id}`, {
+    const response = await fetch(`${getApiUrl()}/users/${id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
