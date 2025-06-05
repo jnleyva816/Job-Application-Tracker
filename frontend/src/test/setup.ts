@@ -28,9 +28,6 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 })
 
-// Mock fetch
-global.fetch = vi.fn()
-
 // Setup MSW
 beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
 afterEach(() => {
