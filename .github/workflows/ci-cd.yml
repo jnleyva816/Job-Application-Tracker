@@ -371,11 +371,63 @@ jobs:
     environment: staging
     
     steps:
-      - name: Deploy to staging
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy backend to ECS
         run: |
-          echo "Deploying to staging environment..."
-          # Add your staging deployment commands here
-          # Example: kubectl, AWS CLI, etc.
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster job-tracker-staging-cluster \
+            --service job-tracker-backend-staging \
+            --force-new-deployment \
+            --desired-count 1
+          
+          # Wait for deployment to complete
+          aws ecs wait services-stable \
+            --cluster job-tracker-staging-cluster \
+            --services job-tracker-backend-staging
+      
+      - name: Deploy frontend to ECS
+        run: |
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster job-tracker-staging-cluster \
+            --service job-tracker-frontend-staging \
+            --force-new-deployment \
+            --desired-count 1
+          
+          # Wait for deployment to complete
+          aws ecs wait services-stable \
+            --cluster job-tracker-staging-cluster \
+            --services job-tracker-frontend-staging
+      
+      - name: Run health checks
+        run: |
+          # Check backend health
+          BACKEND_URL=$(aws elbv2 describe-load-balancers \
+            --names job-tracker-staging-backend-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          echo "Checking backend health at: http://${BACKEND_URL}/actuator/health"
+          curl -f "http://${BACKEND_URL}/actuator/health" || exit 1
+          
+          # Check frontend health
+          FRONTEND_URL=$(aws elbv2 describe-load-balancers \
+            --names job-tracker-staging-frontend-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          echo "Checking frontend health at: http://${FRONTEND_URL}"
+          curl -f "http://${FRONTEND_URL}" || exit 1
 
   deploy-production:
     name: Deploy to Production
@@ -385,11 +437,70 @@ jobs:
     environment: production
     
     steps:
-      - name: Deploy to production
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      
+      - name: Deploy backend to ECS
         run: |
-          echo "Deploying to production environment..."
-          # Add your production deployment commands here
-          # Example: kubectl, AWS CLI, etc.
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster job-tracker-production-cluster \
+            --service job-tracker-backend-production \
+            --force-new-deployment \
+            --desired-count 2
+          
+          # Wait for deployment to complete
+          aws ecs wait services-stable \
+            --cluster job-tracker-production-cluster \
+            --services job-tracker-backend-production
+      
+      - name: Deploy frontend to ECS
+        run: |
+          # Update ECS service with new image
+          aws ecs update-service \
+            --cluster job-tracker-production-cluster \
+            --service job-tracker-frontend-production \
+            --force-new-deployment \
+            --desired-count 2
+          
+          # Wait for deployment to complete
+          aws ecs wait services-stable \
+            --cluster job-tracker-production-cluster \
+            --services job-tracker-frontend-production
+      
+      - name: Run health checks
+        run: |
+          # Check backend health
+          BACKEND_URL=$(aws elbv2 describe-load-balancers \
+            --names job-tracker-production-backend-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          echo "Checking backend health at: https://${BACKEND_URL}/actuator/health"
+          curl -f "https://${BACKEND_URL}/actuator/health" || exit 1
+          
+          # Check frontend health
+          FRONTEND_URL=$(aws elbv2 describe-load-balancers \
+            --names job-tracker-production-frontend-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          echo "Checking frontend health at: https://${FRONTEND_URL}"
+          curl -f "https://${FRONTEND_URL}" || exit 1
+      
+      - name: Create deployment tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v$(date +'%Y.%m.%d')-${GITHUB_SHA:0:7}" -m "Production deployment $(date +'%Y-%m-%d %H:%M:%S')"
+          git push origin --tags
 
   # Notification
   notify:

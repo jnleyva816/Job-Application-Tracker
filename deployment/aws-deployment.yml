@@ -1,0 +1,164 @@
+# AWS ECS Deployment Configuration
+# This file contains the deployment configuration for AWS ECS
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-deployment-config
+data:
+  # ECS Task Definition for Backend
+  backend-task-definition.json: |
+    {
+      "family": "job-tracker-backend",
+      "networkMode": "awsvpc",
+      "requiresCompatibilities": ["FARGATE"],
+      "cpu": "512",
+      "memory": "1024",
+      "executionRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
+      "taskRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskRole",
+      "containerDefinitions": [
+        {
+          "name": "backend",
+          "image": "${DOCKERHUB_USERNAME}/job-tracker-backend:${IMAGE_TAG}",
+          "portMappings": [
+            {
+              "containerPort": 8080,
+              "protocol": "tcp"
+            }
+          ],
+          "environment": [
+            {
+              "name": "SPRING_PROFILES_ACTIVE",
+              "value": "aws"
+            },
+            {
+              "name": "SPRING_DATASOURCE_URL",
+              "value": "jdbc:postgresql://${RDS_ENDPOINT}:5432/jobtracker"
+            }
+          ],
+          "secrets": [
+            {
+              "name": "SPRING_DATASOURCE_USERNAME",
+              "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:jobtracker/db:username::"
+            },
+            {
+              "name": "SPRING_DATASOURCE_PASSWORD",
+              "valueFrom": "arn:aws:secretsmanager:${AWS_REGION}:${AWS_ACCOUNT_ID}:secret:jobtracker/db:password::"
+            }
+          ],
+          "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+              "awslogs-group": "/ecs/job-tracker-backend",
+              "awslogs-region": "${AWS_REGION}",
+              "awslogs-stream-prefix": "ecs"
+            }
+          },
+          "healthCheck": {
+            "command": ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"],
+            "interval": 30,
+            "timeout": 5,
+            "retries": 3,
+            "startPeriod": 60
+          }
+        }
+      ]
+    }
+
+  # ECS Task Definition for Frontend
+  frontend-task-definition.json: |
+    {
+      "family": "job-tracker-frontend",
+      "networkMode": "awsvpc",
+      "requiresCompatibilities": ["FARGATE"],
+      "cpu": "256",
+      "memory": "512",
+      "executionRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
+      "containerDefinitions": [
+        {
+          "name": "frontend",
+          "image": "${DOCKERHUB_USERNAME}/job-tracker-frontend:${IMAGE_TAG}",
+          "portMappings": [
+            {
+              "containerPort": 80,
+              "protocol": "tcp"
+            }
+          ],
+          "environment": [
+            {
+              "name": "REACT_APP_API_URL",
+              "value": "https://${BACKEND_DOMAIN}"
+            }
+          ],
+          "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+              "awslogs-group": "/ecs/job-tracker-frontend",
+              "awslogs-region": "${AWS_REGION}",
+              "awslogs-stream-prefix": "ecs"
+            }
+          },
+          "healthCheck": {
+            "command": ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"],
+            "interval": 30,
+            "timeout": 5,
+            "retries": 3
+          }
+        }
+      ]
+    }
+
+  # ECS Service Configuration
+  backend-service.json: |
+    {
+      "serviceName": "job-tracker-backend-service",
+      "cluster": "job-tracker-cluster",
+      "taskDefinition": "job-tracker-backend",
+      "desiredCount": 2,
+      "launchType": "FARGATE",
+      "networkConfiguration": {
+        "awsvpcConfiguration": {
+          "subnets": ["${PRIVATE_SUBNET_1}", "${PRIVATE_SUBNET_2}"],
+          "securityGroups": ["${BACKEND_SECURITY_GROUP}"],
+          "assignPublicIp": "DISABLED"
+        }
+      },
+      "loadBalancers": [
+        {
+          "targetGroupArn": "${BACKEND_TARGET_GROUP_ARN}",
+          "containerName": "backend",
+          "containerPort": 8080
+        }
+      ],
+      "deploymentConfiguration": {
+        "maximumPercent": 200,
+        "minimumHealthyPercent": 50
+      }
+    }
+
+  frontend-service.json: |
+    {
+      "serviceName": "job-tracker-frontend-service",
+      "cluster": "job-tracker-cluster",
+      "taskDefinition": "job-tracker-frontend",
+      "desiredCount": 2,
+      "launchType": "FARGATE",
+      "networkConfiguration": {
+        "awsvpcConfiguration": {
+          "subnets": ["${PUBLIC_SUBNET_1}", "${PUBLIC_SUBNET_2}"],
+          "securityGroups": ["${FRONTEND_SECURITY_GROUP}"],
+          "assignPublicIp": "ENABLED"
+        }
+      },
+      "loadBalancers": [
+        {
+          "targetGroupArn": "${FRONTEND_TARGET_GROUP_ARN}",
+          "containerName": "frontend",
+          "containerPort": 80
+        }
+      ],
+      "deploymentConfiguration": {
+        "maximumPercent": 200,
+        "minimumHealthyPercent": 50
+      }
+    } 
