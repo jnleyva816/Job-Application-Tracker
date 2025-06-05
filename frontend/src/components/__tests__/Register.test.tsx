@@ -85,7 +85,7 @@ describe('Register Component', () => {
     expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
   })
 
-  it('should register user successfully and navigate to dashboard', async () => {
+  it('should register user successfully and navigate to profile setup', async () => {
     const user = userEvent.setup()
     renderRegister()
 
@@ -98,7 +98,7 @@ describe('Register Component', () => {
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/dashboard')
+      expect(mockNavigate).toHaveBeenCalledWith('/profile-setup')
     })
 
     // Check that user was created

@@ -44,7 +44,7 @@ function Register() {
           username: formData.username,
           password: formData.password,
         });
-        navigate('/dashboard');
+        navigate('/profile-setup');
       } catch {
         // If auto-login fails, redirect to login page with success message
         console.log('Registration successful, please login');
