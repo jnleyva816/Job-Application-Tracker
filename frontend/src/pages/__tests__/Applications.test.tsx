@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Applications from '../Applications'
 import { applicationService } from '../../services/applicationService'
@@ -70,10 +70,12 @@ describe('Applications Page', () => {
     vi.clearAllMocks()
   })
 
-  it('should render the page header with title and add button', () => {
+  it('should render the page header with title and add button', async () => {
     vi.mocked(applicationService.getAllApplications).mockResolvedValue(mockApplications)
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     expect(screen.getByText('All Applications')).toBeInTheDocument()
     expect(screen.getByText('Add Application')).toBeInTheDocument()
@@ -82,7 +84,9 @@ describe('Applications Page', () => {
   it('should fetch and display applications using ApplicationsView', async () => {
     vi.mocked(applicationService.getAllApplications).mockResolvedValue(mockApplications)
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     await waitFor(() => {
       expect(screen.getByTestId('applications-view')).toBeInTheDocument()
@@ -92,12 +96,14 @@ describe('Applications Page', () => {
     expect(applicationService.getAllApplications).toHaveBeenCalledTimes(1)
   })
 
-  it('should show loading state while fetching applications', () => {
+  it('should show loading state while fetching applications', async () => {
     vi.mocked(applicationService.getAllApplications).mockImplementation(
       () => new Promise(resolve => setTimeout(() => resolve(mockApplications), 100))
     )
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     expect(screen.getByTestId('loading')).toBeInTheDocument()
     expect(screen.getByText('Loading applications...')).toBeInTheDocument()
@@ -107,7 +113,9 @@ describe('Applications Page', () => {
     const errorMessage = 'Failed to fetch applications'
     vi.mocked(applicationService.getAllApplications).mockRejectedValue(new Error(errorMessage))
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     await waitFor(() => {
       expect(screen.getByTestId('error')).toBeInTheDocument()
@@ -115,10 +123,12 @@ describe('Applications Page', () => {
     })
   })
 
-  it('should navigate to add application when button is clicked', () => {
+  it('should navigate to add application when button is clicked', async () => {
     vi.mocked(applicationService.getAllApplications).mockResolvedValue(mockApplications)
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     const addButton = screen.getByText('Add Application')
     addButton.click()
@@ -126,10 +136,12 @@ describe('Applications Page', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/add-application')
   })
 
-  it('should have proper layout structure', () => {
+  it('should have proper layout structure', async () => {
     vi.mocked(applicationService.getAllApplications).mockResolvedValue(mockApplications)
     
-    renderApplications()
+    await act(async () => {
+      renderApplications()
+    })
     
     // Check for main layout elements
     const mainContainer = screen.getByText('All Applications').closest('.max-w-7xl')

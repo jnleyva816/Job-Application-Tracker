@@ -38,6 +38,25 @@ interface User {
   lastLogin: string;
   createdAt: string;
   updatedAt: string;
+  password: null;
+  profile?: {
+    id: number;
+    firstName?: string;
+    lastName?: string;
+    bio?: string;
+    location?: string;
+    skills?: string;
+    jobTypes?: string;
+    preferredLocations?: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    linkedinUrl?: string;
+    githubUrl?: string;
+    portfolioUrl?: string;
+    phoneNumber?: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 interface UpdateUserData {
