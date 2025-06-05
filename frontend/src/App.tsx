@@ -4,6 +4,7 @@ import Applications from './pages/Applications';
 import ApplicationDetail from './pages/ApplicationDetail';
 import Statistics from './pages/Statistics';
 import Profile from './pages/Profile';
+import ProfileSetupPage from './pages/ProfileSetupPage';
 import Login from './components/Login';
 import Register from './components/Register';
 import AddApplicationForm from './components/AddApplicationForm';
@@ -49,6 +50,7 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/profile-setup" element={<ProfileSetupPage />} />
           <Route
             path="/dashboard"
             element={
