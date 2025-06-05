@@ -197,8 +197,13 @@ describe('ApplicationsView Component', () => {
       const dateFromFilter = screen.getByTestId('date-from-filter')
       const dateToFilter = screen.getByTestId('date-to-filter')
       
+      await user.clear(dateFromFilter)
       await user.type(dateFromFilter, '2024-01-06')
+      await user.clear(dateToFilter)
       await user.type(dateToFilter, '2024-01-12')
+      
+      // Wait a moment for the filter to be applied
+      await new Promise(resolve => setTimeout(resolve, 100))
       
       // Should only show applications within date range (StartupXYZ - 2024-01-10)
       expect(screen.getByText('StartupXYZ')).toBeInTheDocument()

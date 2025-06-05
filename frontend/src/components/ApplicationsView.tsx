@@ -30,7 +30,7 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
         appDate.setHours(0, 0, 0, 0); // Normalize to start of day
         
         if (dateFromFilter) {
-          const fromDate = new Date(dateFromFilter);
+          const fromDate = new Date(dateFromFilter + 'T00:00:00');
           fromDate.setHours(0, 0, 0, 0);
           if (appDate < fromDate) {
             return false;
@@ -38,7 +38,7 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
         }
         
         if (dateToFilter) {
-          const toDate = new Date(dateToFilter);
+          const toDate = new Date(dateToFilter + 'T00:00:00');
           toDate.setHours(23, 59, 59, 999); // End of day
           if (appDate > toDate) {
             return false;

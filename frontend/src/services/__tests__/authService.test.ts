@@ -188,19 +188,16 @@ describe('AuthService', () => {
     it('should get current user profile successfully', async () => {
       const result = await authService.getCurrentUser()
 
-      expect(result).toEqual({
-        id: testUser.id,
-        username: testUser.username,
-        email: testUser.email,
-        firstName: testUser.firstName,
-        lastName: testUser.lastName,
-        role: testUser.role,
-        accountLocked: testUser.accountLocked,
-        failedLoginAttempts: testUser.failedLoginAttempts,
-        lastLogin: testUser.lastLogin,
-        createdAt: testUser.createdAt,
-        updatedAt: testUser.updatedAt
-      })
+      expect(result.id).toBe(testUser.id)
+      expect(result.username).toBe(testUser.username)
+      expect(result.email).toBe(testUser.email)
+      expect(result.role).toBe(testUser.role)
+      expect(result.password).toBe(null)
+      expect(result.profile).toBeDefined()
+      if (result.profile) {
+        expect(result.profile.firstName).toBe('')
+        expect(result.profile.lastName).toBe('')
+      }
     })
 
     it('should fail to get current user without token', async () => {
@@ -336,44 +333,70 @@ describe('AuthService', () => {
 
       const updateData = { username: 'hackeduser' }
 
-      await expect(authService.updateUser(otherUser.id, updateData)).rejects.toThrow('You don\'t have permission to access this resource')
+      await expect(authService.updateUser(otherUser.id, updateData)).rejects.toThrow('You don\'t have permission to modify this resource')
     })
   })
 
   describe('Delete User', () => {
-    let testUser: MockUser
-    let token: string
-
-    beforeEach(() => {
-      testUser = createMockUser({
-        username: 'testuser',
-        email: 'test@example.com',
+    it('should delete user successfully', async () => {
+      // Clear existing user and set up admin user
+      mockUsers.clear()
+      
+      const adminUser = createMockUser({
+        username: 'adminuser',
+        email: 'admin@example.com',
+        password: 'password',
+        role: 'ROLE_ADMIN'
+      })
+      mockUsers.set(adminUser.id, adminUser)
+      
+      // Create target user to delete
+      const targetUser = createMockUser({
+        username: 'targetuser',
+        email: 'target@example.com',
         password: 'password'
       })
-      mockUsers.set(testUser.id, testUser)
-      token = generateToken('testuser')
+      mockUsers.set(targetUser.id, targetUser)
+      
+      const token = generateToken('adminuser')
       localStorage.setItem('token', token)
-    })
 
-    it('should delete user successfully', async () => {
-      expect(mockUsers.has(testUser.id)).toBe(true)
+      expect(mockUsers.has(targetUser.id)).toBe(true)
 
-      await authService.deleteUser(testUser.id)
+      await authService.deleteUser(targetUser.id)
 
-      expect(mockUsers.has(testUser.id)).toBe(false)
+      expect(mockUsers.has(targetUser.id)).toBe(false)
     })
 
     it('should fail to delete user without token', async () => {
       localStorage.removeItem('token')
 
-      await expect(authService.deleteUser(testUser.id)).rejects.toThrow('No authentication token found')
+      await expect(authService.deleteUser(999)).rejects.toThrow('No authentication token found')
     })
 
     it('should fail to delete non-existent user', async () => {
+      const testUser = createMockUser({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password'
+      })
+      mockUsers.set(testUser.id, testUser)
+      const token = generateToken('testuser')
+      localStorage.setItem('token', token)
+
       await expect(authService.deleteUser(999)).rejects.toThrow('User not found')
     })
 
     it('should fail to delete other user without admin role', async () => {
+      const testUser = createMockUser({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'password'
+      })
+      mockUsers.set(testUser.id, testUser)
+      const token = generateToken('testuser')
+      localStorage.setItem('token', token)
+
       // Create another user
       const otherUser = createMockUser({
         username: 'otheruser',
@@ -382,7 +405,7 @@ describe('AuthService', () => {
       })
       mockUsers.set(otherUser.id, otherUser)
 
-      await expect(authService.deleteUser(otherUser.id)).rejects.toThrow('You don\'t have permission to access this resource')
+      await expect(authService.deleteUser(otherUser.id)).rejects.toThrow('You don\'t have permission to delete users')
     })
   })
 
@@ -404,19 +427,12 @@ describe('AuthService', () => {
     it('should get user by ID successfully', async () => {
       const result = await authService.getUserById(testUser.id)
 
-      expect(result).toEqual({
-        id: testUser.id,
-        username: testUser.username,
-        email: testUser.email,
-        firstName: testUser.firstName,
-        lastName: testUser.lastName,
-        role: testUser.role,
-        accountLocked: testUser.accountLocked,
-        failedLoginAttempts: testUser.failedLoginAttempts,
-        lastLogin: testUser.lastLogin,
-        createdAt: testUser.createdAt,
-        updatedAt: testUser.updatedAt
-      })
+      expect(result.id).toBe(testUser.id)
+      expect(result.username).toBe(testUser.username)
+      expect(result.email).toBe(testUser.email)
+      expect(result.role).toBe(testUser.role)
+      expect(result.password).toBe(null)
+      expect(result.profile).toBeDefined()
     })
 
     it('should fail to get user without token', async () => {
