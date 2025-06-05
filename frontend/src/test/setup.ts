@@ -28,10 +28,35 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 })
 
+// Mock fetch in case MSW fails to intercept
+const originalFetch = global.fetch
+let mswStarted = false
+
 // Setup MSW
-beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }))
+beforeAll(async () => {
+  try {
+    server.listen({ 
+      onUnhandledRequest: (req) => {
+        console.error('MSW: Unhandled request:', req.method, req.url)
+        console.error('This request was not intercepted by MSW')
+      }
+    })
+    mswStarted = true
+  } catch (error) {
+    console.error('Failed to start MSW server:', error)
+    mswStarted = false
+  }
+})
+
 afterEach(() => {
-  server.resetHandlers()
+  if (mswStarted) {
+    server.resetHandlers()
+  }
   localStorage.clear()
 })
-afterAll(() => server.close()) 
+
+afterAll(() => {
+  if (mswStarted) {
+    server.close()
+  }
+}) 

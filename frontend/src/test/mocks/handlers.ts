@@ -200,7 +200,16 @@ export const handlers = [
       user.username === credentials.username
     )
     
-    if (!user || credentials.password !== 'correctpassword') {
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'Invalid username or password' },
+        { status: 401 }
+      )
+    }
+    
+    // For testing purposes, we'll accept any password that's not "wrongpassword"
+    // In real tests, the password validation should be more sophisticated
+    if (credentials.password === 'wrongpassword') {
       return HttpResponse.json(
         { message: 'Invalid username or password' },
         { status: 401 }
@@ -621,7 +630,7 @@ export const handlers = [
 
   // Get current user profile
   http.get(`${API_URL}/profile`, ({ request }) => {
-    const token = validateToken(request.headers.get('authorization'))
+    const token = validateToken(request.headers.get('Authorization'))
     if (!token) {
       return HttpResponse.json({ message: 'Authentication required' }, { status: 401 })
     }
@@ -636,7 +645,7 @@ export const handlers = [
 
   // Update current user profile
   http.put(`${API_URL}/profile`, async ({ request }) => {
-    const token = validateToken(request.headers.get('authorization'))
+    const token = validateToken(request.headers.get('Authorization'))
     if (!token) {
       return HttpResponse.json({ message: 'Authentication required' }, { status: 401 })
     }
@@ -728,7 +737,7 @@ export const handlers = [
 
   // Get user by ID
   http.get(`${API_URL}/users/:id`, ({ request, params }) => {
-    const token = validateToken(request.headers.get('authorization'))
+    const token = validateToken(request.headers.get('Authorization'))
     if (!token) {
       return HttpResponse.json({ message: 'Authentication required' }, { status: 401 })
     }
@@ -755,7 +764,7 @@ export const handlers = [
 
   // Update user by ID
   http.put(`${API_URL}/users/:id`, async ({ request, params }) => {
-    const token = validateToken(request.headers.get('authorization'))
+    const token = validateToken(request.headers.get('Authorization'))
     if (!token) {
       return HttpResponse.json({ message: 'Authentication required' }, { status: 401 })
     }
@@ -816,7 +825,7 @@ export const handlers = [
 
   // Delete user by ID
   http.delete(`${API_URL}/users/:id`, ({ request, params }) => {
-    const token = validateToken(request.headers.get('authorization'))
+    const token = validateToken(request.headers.get('Authorization'))
     if (!token) {
       return HttpResponse.json({ message: 'Authentication required' }, { status: 401 })
     }

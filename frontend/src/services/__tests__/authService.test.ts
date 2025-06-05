@@ -8,10 +8,12 @@ import {
   type MockUser
 } from '../../test/mocks/handlers'
 
-// Set up environment variable for tests
+// Set up environment variable for tests - ensure it matches the MSW handlers
+const API_URL = 'http://localhost:8080/api'
+
 Object.defineProperty(import.meta, 'env', {
   value: {
-    VITE_API_URL: 'http://localhost:8080/api'
+    VITE_API_URL: API_URL
   },
   writable: true
 })
@@ -29,6 +31,32 @@ describe('AuthService', () => {
 
   afterEach(() => {
     localStorage.clear()
+  })
+
+  describe('MSW Setup Verification', () => {
+    it('should verify MSW is intercepting requests', async () => {
+      // Try to make a simple request that should be intercepted
+      try {
+        const response = await fetch(`${API_URL}/users/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: 'testuser',
+            email: 'test@example.com',
+            password: 'password'
+          }),
+        })
+        
+        expect(response.status).toBe(201)
+        
+        const data = await response.json()
+        expect(data).toHaveProperty('username', 'testuser')
+      } catch (error) {
+        throw error
+      }
+    })
   })
 
   describe('User Registration', () => {
