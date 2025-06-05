@@ -168,6 +168,9 @@ jobs:
       
       - name: Run unit tests
         run: npm run test:coverage
+        env:
+          VITE_API_URL: http://localhost:8080/api
+          CI: true
       
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
