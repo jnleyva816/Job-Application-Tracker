@@ -681,15 +681,133 @@ jobs:
   notify:
     name: Notify Team
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
-    if: always() && (needs.deploy-staging.result != 'skipped' || needs.deploy-production.result != 'skipped')
+    needs: [backend-build, frontend-build, docker-build, deploy-staging, deploy-production]
+    if: always() && (needs.backend-build.result == 'success' || needs.frontend-build.result == 'success' || needs.docker-build.result != 'skipped' || needs.deploy-staging.result != 'skipped' || needs.deploy-production.result != 'skipped')
     
     steps:
-      - name: Send notification
-        continue-on-error: true
-        uses: 8398a7/action-slack@v3
+      - name: Determine notification status
+        id: status
+        run: |
+          # Determine overall status
+          OVERALL_STATUS="success"
+          
+          # Check critical job results
+          if [[ "${{ needs.backend-build.result }}" == "failure" ]] || \
+             [[ "${{ needs.frontend-build.result }}" == "failure" ]]; then
+            OVERALL_STATUS="failure"
+          elif [[ "${{ needs.docker-build.result }}" == "failure" ]] || \
+               [[ "${{ needs.deploy-staging.result }}" == "failure" ]] || \
+               [[ "${{ needs.deploy-production.result }}" == "failure" ]]; then
+            OVERALL_STATUS="failure"
+          elif [[ "${{ needs.backend-build.result }}" == "cancelled" ]] || \
+               [[ "${{ needs.frontend-build.result }}" == "cancelled" ]]; then
+            OVERALL_STATUS="cancelled"
+          fi
+          
+          echo "status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          
+          # Determine deployment environment
+          ENVIRONMENT="none"
+          if [[ "${{ needs.deploy-production.result }}" != "skipped" ]]; then
+            ENVIRONMENT="production"
+          elif [[ "${{ needs.deploy-staging.result }}" != "skipped" ]]; then
+            ENVIRONMENT="staging"
+          elif [[ "${{ needs.docker-build.result }}" != "skipped" ]]; then
+            ENVIRONMENT="docker-build"
+          else
+            ENVIRONMENT="ci-only"
+          fi
+          
+          echo "environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+      
+      - name: Send Slack notification (if webhook configured)
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v2.1.0
         with:
-          status: ${{ job.status }}
-          channel: '#deployments'
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "🚀 Job Application Tracker CI/CD Update",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Job Application Tracker CI/CD Pipeline*\n${{ steps.status.outputs.status == 'success' && '✅' || steps.status.outputs.status == 'failure' && '❌' || '⚠️' }} *Status:* ${{ steps.status.outputs.status }}\n📍 *Environment:* ${{ steps.status.outputs.environment }}\n🌳 *Branch:* `${{ github.ref_name }}`\n👤 *Triggered by:* ${{ github.actor }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Backend Build:*\n${{ needs.backend-build.result == 'success' && '✅' || needs.backend-build.result == 'failure' && '❌' || needs.backend-build.result == 'skipped' && '⏭️' || '⚠️' }} ${{ needs.backend-build.result }}"
+                    },
+                    {
+                      "type": "mrkdwn", 
+                      "text": "*Frontend Build:*\n${{ needs.frontend-build.result == 'success' && '✅' || needs.frontend-build.result == 'failure' && '❌' || needs.frontend-build.result == 'skipped' && '⏭️' || '⚠️' }} ${{ needs.frontend-build.result }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Docker Build:*\n${{ needs.docker-build.result == 'success' && '✅' || needs.docker-build.result == 'failure' && '❌' || needs.docker-build.result == 'skipped' && '⏭️' || '⚠️' }} ${{ needs.docker-build.result }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Deployment:*\n${{ needs.deploy-production.result == 'success' && '✅ Production' || needs.deploy-staging.result == 'success' && '✅ Staging' || needs.deploy-production.result == 'failure' && '❌ Production' || needs.deploy-staging.result == 'failure' && '❌ Staging' || '⏭️ None' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Pipeline"
+                      },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Commit"
+                      },
+                      "url": "${{ github.event.head_commit.url || github.event.pull_request.html_url }}"
+                    }
+                  ]
+                }
+              ]
+            }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} 
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Fallback notification (always runs)
+        run: |
+          echo "🔔 Pipeline Notification Summary"
+          echo "================================"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Status: ${{ steps.status.outputs.status }}"
+          echo "Environment: ${{ steps.status.outputs.environment }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Pipeline URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "Job Results:"
+          echo "- Backend Build: ${{ needs.backend-build.result }}"
+          echo "- Frontend Build: ${{ needs.frontend-build.result }}"
+          echo "- Docker Build: ${{ needs.docker-build.result }}"
+          echo "- Deploy Staging: ${{ needs.deploy-staging.result }}"
+          echo "- Deploy Production: ${{ needs.deploy-production.result }}"
+          
+          if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo ""
+            echo "⚠️  SLACK_WEBHOOK_URL secret not configured."
+            echo "   Add it here: ${{ github.server_url }}/${{ github.repository }}/settings/secrets/actions"
+            echo "   Get webhook URL from: https://api.slack.com/messaging/webhooks"
+          else
+            echo ""
+            echo "✅ Slack webhook is configured - notification should have been sent."
+          fi 
