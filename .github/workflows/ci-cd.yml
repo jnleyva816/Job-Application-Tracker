@@ -219,38 +219,107 @@ jobs:
           name: backend-jar
           path: backend/target/
       
+      - name: Find available ports
+        run: |
+          # Function to find available port
+          find_free_port() {
+            local start_port=$1
+            local port=$start_port
+            while [ $port -lt $((start_port + 100)) ]; do
+              if ! netstat -tuln | grep -q ":$port "; then
+                echo $port
+                return
+              fi
+              port=$((port + 1))
+            done
+            echo "No free port found starting from $start_port" >&2
+            exit 1
+          }
+          
+          # Find free ports
+          BACKEND_PORT=$(find_free_port 8080)
+          FRONTEND_PORT=$(find_free_port 4173)
+          
+          echo "BACKEND_PORT=$BACKEND_PORT" >> $GITHUB_ENV
+          echo "FRONTEND_PORT=$FRONTEND_PORT" >> $GITHUB_ENV
+          echo "Using backend port: $BACKEND_PORT"
+          echo "Using frontend port: $FRONTEND_PORT"
+      
       - name: Start backend service
         run: |
           cd backend
-          java -jar target/*.jar --spring.profiles.active=test &
+          # Kill any existing processes on our target port
+          sudo lsof -ti:$BACKEND_PORT | xargs sudo kill -9 2>/dev/null || true
+          
+          # Start backend with dynamic port
+          java -jar target/*.jar \
+            --server.port=$BACKEND_PORT \
+            --spring.profiles.active=test \
+            --spring.datasource.url=jdbc:h2:mem:testdb \
+            --spring.datasource.driver-class-name=org.h2.Driver \
+            --spring.jpa.hibernate.ddl-auto=create-drop > backend.log 2>&1 &
+          
           echo $! > backend.pid
-          sleep 30
-        env:
-          SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
-          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
-          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+          echo "Backend started with PID: $(cat backend.pid) on port: $BACKEND_PORT"
       
       - name: Install frontend dependencies
         run: |
           cd frontend
           npm ci
       
-      - name: Build frontend
+      - name: Build frontend with dynamic API URL
         run: |
           cd frontend
-          npm run build
+          VITE_API_URL=http://localhost:$BACKEND_PORT/api npm run build
       
       - name: Start frontend service
         run: |
           cd frontend
-          npm run preview &
+          # Kill any existing processes on our target port
+          sudo lsof -ti:$FRONTEND_PORT | xargs sudo kill -9 2>/dev/null || true
+          
+          # Start frontend with dynamic port
+          npm run preview -- --port $FRONTEND_PORT --host 0.0.0.0 > frontend.log 2>&1 &
           echo $! > frontend.pid
-          sleep 10
+          echo "Frontend started with PID: $(cat frontend.pid) on port: $FRONTEND_PORT"
       
       - name: Wait for services to be ready
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:8080/actuator/health; do sleep 2; done'
-          timeout 60 bash -c 'until curl -f http://localhost:4173; do sleep 2; done'
+          # Wait for backend health check
+          echo "Waiting for backend on port $BACKEND_PORT..."
+          timeout 120 bash -c "
+            until curl -f http://localhost:$BACKEND_PORT/actuator/health >/dev/null 2>&1; do 
+              echo 'Backend not ready, waiting...'
+              if [ -f backend/backend.pid ] && ! kill -0 \$(cat backend/backend.pid) 2>/dev/null; then
+                echo 'Backend process died, showing logs:'
+                cat backend/backend.log || true
+                exit 1
+              fi
+              sleep 3
+            done
+          "
+          echo "✅ Backend is ready on port $BACKEND_PORT"
+          
+          # Wait for frontend
+          echo "Waiting for frontend on port $FRONTEND_PORT..."
+          timeout 60 bash -c "
+            until curl -f http://localhost:$FRONTEND_PORT >/dev/null 2>&1; do 
+              echo 'Frontend not ready, waiting...'
+              if [ -f frontend/frontend.pid ] && ! kill -0 \$(cat frontend/frontend.pid) 2>/dev/null; then
+                echo 'Frontend process died, showing logs:'
+                cat frontend/frontend.log || true
+                exit 1
+              fi
+              sleep 2
+            done
+          "
+          echo "✅ Frontend is ready on port $FRONTEND_PORT"
+          
+          # Verify services are responding
+          echo "🔍 Backend health check:"
+          curl -s http://localhost:$BACKEND_PORT/actuator/health | head -n 10
+          echo -e "\n🔍 Frontend response:"
+          curl -s http://localhost:$FRONTEND_PORT | head -n 5
       
       - name: Install Playwright
         run: |
@@ -260,7 +329,27 @@ jobs:
       - name: Run E2E tests
         run: |
           cd frontend
-          npx playwright test || true
+          # Set the base URL for Playwright using the dynamic port
+          export PLAYWRIGHT_BASE_URL=http://localhost:$FRONTEND_PORT
+          export VITE_API_URL=http://localhost:$BACKEND_PORT/api
+          
+          echo "Running E2E tests with:"
+          echo "  Frontend URL: $PLAYWRIGHT_BASE_URL"
+          echo "  Backend API URL: $VITE_API_URL"
+          
+          # Run tests and capture exit code
+          npx playwright test --reporter=html,junit,json || TEST_EXIT_CODE=$?
+          
+          # Show test results summary
+          if [ -f test-results/junit.xml ]; then
+            echo "📊 Test Results Summary:"
+            grep -o 'tests="[^"]*"' test-results/junit.xml || true
+            grep -o 'failures="[^"]*"' test-results/junit.xml || true
+            grep -o 'errors="[^"]*"' test-results/junit.xml || true
+          fi
+          
+          # Exit with test result code
+          exit ${TEST_EXIT_CODE:-0}
       
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
@@ -273,8 +362,47 @@ jobs:
       - name: Stop services
         if: always()
         run: |
-          [ -f backend/backend.pid ] && kill $(cat backend/backend.pid) || true
-          [ -f frontend/frontend.pid ] && kill $(cat frontend/frontend.pid) || true
+          echo "🧹 Cleaning up services..."
+          
+          # Stop frontend service
+          if [ -f frontend/frontend.pid ]; then
+            FRONTEND_PID=$(cat frontend/frontend.pid)
+            if kill -0 $FRONTEND_PID 2>/dev/null; then
+              echo "Stopping frontend service (PID: $FRONTEND_PID)"
+              kill $FRONTEND_PID || true
+              sleep 2
+              kill -9 $FRONTEND_PID 2>/dev/null || true
+            fi
+            rm -f frontend/frontend.pid
+          fi
+          
+          # Stop backend service
+          if [ -f backend/backend.pid ]; then
+            BACKEND_PID=$(cat backend/backend.pid)
+            if kill -0 $BACKEND_PID 2>/dev/null; then
+              echo "Stopping backend service (PID: $BACKEND_PID)"
+              kill $BACKEND_PID || true
+              sleep 2
+              kill -9 $BACKEND_PID 2>/dev/null || true
+            fi
+            rm -f backend/backend.pid
+          fi
+          
+          # Kill any remaining processes on our ports
+          [ ! -z "$BACKEND_PORT" ] && sudo lsof -ti:$BACKEND_PORT | xargs sudo kill -9 2>/dev/null || true
+          [ ! -z "$FRONTEND_PORT" ] && sudo lsof -ti:$FRONTEND_PORT | xargs sudo kill -9 2>/dev/null || true
+          
+          echo "✅ Service cleanup completed"
+      
+      - name: Upload service logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: service-logs
+          path: |
+            backend/backend.log
+            frontend/frontend.log
+          retention-days: 7
 
   # Security Scanning
   security-scan:
@@ -320,6 +448,23 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          logout: true
+      
+      - name: Configure AWS credentials for ECR
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+      
+      - name: Log in to Amazon ECR
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION || 'us-east-1' }}.amazonaws.com
       
       - name: Download backend artifact
         uses: actions/download-artifact@v4

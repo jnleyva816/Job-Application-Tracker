@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { beforeAll, afterEach, afterAll, vi } from 'vitest'
+import { beforeAll, afterEach, afterAll } from 'vitest'
 import { server } from './mocks/server'
 
 // Ensure environment variables are properly set for tests
@@ -13,11 +13,6 @@ Object.defineProperty(import.meta, 'env', {
   },
   writable: true,
 })
-
-// Mock fetch globally to ensure it's available and prevent real requests
-if (!global.fetch) {
-  global.fetch = vi.fn()
-}
 
 // Create a proper localStorage mock
 const localStorageMock = (() => {
@@ -45,41 +40,44 @@ Object.defineProperty(window, 'localStorage', {
   writable: true,
 })
 
-// Prevent any real network requests by mocking them globally
-const mockFetch = vi.fn()
-Object.defineProperty(global, 'fetch', {
-  value: mockFetch,
-  writable: true,
-})
-
 let mswStarted = false
 
 // Setup MSW
 beforeAll(async () => {
   console.log('🔧 Setting up MSW server...')
-  
-  // Reset the mock fetch before starting MSW
-  mockFetch.mockReset()
+  console.log('Environment:', {
+    NODE_ENV: process.env.NODE_ENV,
+    CI: process.env.CI,
+    VITEST: process.env.VITEST,
+    VITE_API_URL: import.meta.env.VITE_API_URL
+  })
   
   try {
+    // Start MSW server with proper error handling
     server.listen({ 
-      onUnhandledRequest: (req) => {
-        const isInternalTest = req.url.includes('localhost:8080/api')
+      onUnhandledRequest: (req, _print) => {
+        const url = req.url
+        const method = req.method
+        const isApiRequest = url.includes('/api/')
         
-        if (isInternalTest) {
-          console.error('❌ MSW: Unhandled API request:', req.method, req.url)
+        if (isApiRequest) {
+          console.error('❌ MSW: Unhandled API request:', method, url)
           console.error('This API request was not intercepted by MSW')
-          // In CI, we want tests to fail if there are unhandled API requests
+          
+          // In CI, be strict about unhandled API requests
           if (process.env.CI) {
-            throw new Error(`Unhandled API request: ${req.method} ${req.url}`)
+            throw new Error(`Unhandled API request in CI: ${method} ${url}`)
           }
         } else {
-          console.warn('⚠️ MSW: External request (allowed):', req.method, req.url)
+          // Log but don't fail for non-API requests
+          console.warn('⚠️ MSW: External request (allowed):', method, url)
         }
       }
     })
+    
     mswStarted = true
     console.log('✅ MSW server started successfully')
+    
   } catch (error) {
     console.error('❌ Failed to start MSW server:', error)
     mswStarted = false
