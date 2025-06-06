@@ -6,7 +6,6 @@ target/
 .env
 backend/.env
 frontend/.env
-frontend/.env.production
 
 ### STS ###
 .apt_generated
