@@ -55,7 +55,7 @@ beforeAll(async () => {
   try {
     // Start MSW server with proper error handling
     server.listen({ 
-      onUnhandledRequest: (req, _print) => {
+      onUnhandledRequest: (req) => {
         const url = req.url
         const method = req.method
         const isApiRequest = url.includes('/api/')
