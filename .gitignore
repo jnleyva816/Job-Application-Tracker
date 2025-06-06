@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 .env
 backend/.env
+frontend/.env
+frontend/.env.production
 
 ### STS ###
 .apt_generated
@@ -80,3 +82,6 @@ backend.log
 frontend.log
 backend.pid
 frontend.pid
+
+# Keep example files in repo
+!*.env.example
