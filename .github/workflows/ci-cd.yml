@@ -251,16 +251,39 @@ jobs:
           # Kill any existing processes on our target port
           sudo lsof -ti:$BACKEND_PORT | xargs sudo kill -9 2>/dev/null || true
           
-          # Start backend with dynamic port
+          # Wait a moment for port to be released
+          sleep 2
+          
+          echo "Starting backend with configuration:"
+          echo "  Port: $BACKEND_PORT"
+          echo "  Profile: test"
+          echo "  Database: H2 in-memory"
+          
+          # Start backend with dynamic port and explicit configuration
           java -jar target/*.jar \
             --server.port=$BACKEND_PORT \
             --spring.profiles.active=test \
             --spring.datasource.url=jdbc:h2:mem:testdb \
             --spring.datasource.driver-class-name=org.h2.Driver \
-            --spring.jpa.hibernate.ddl-auto=create-drop > backend.log 2>&1 &
+            --spring.jpa.hibernate.ddl-auto=create-drop \
+            --logging.level.com.jnleyva.jobtracker_backend=INFO \
+            --management.endpoints.web.exposure.include=health,info \
+            --management.endpoint.health.show-details=always > backend.log 2>&1 &
           
           echo $! > backend.pid
           echo "Backend started with PID: $(cat backend.pid) on port: $BACKEND_PORT"
+          
+          # Give the backend a moment to start up
+          sleep 5
+          echo "Backend startup initiated, checking process status..."
+          if kill -0 $(cat backend.pid) 2>/dev/null; then
+            echo "✅ Backend process is running"
+          else
+            echo "❌ Backend process failed to start"
+            echo "📄 Backend log:"
+            cat backend.log || true
+            exit 1
+          fi
       
       - name: Install frontend dependencies
         run: |
@@ -287,8 +310,26 @@ jobs:
         run: |
           # Wait for backend health check
           echo "Waiting for backend on port $BACKEND_PORT..."
+          
+          # Function to test backend availability
+          test_backend() {
+            # Try actuator health endpoint first
+            if curl -f -s http://localhost:$BACKEND_PORT/actuator/health >/dev/null 2>&1; then
+              return 0
+            fi
+            # Fallback to custom health endpoint
+            if curl -f -s http://localhost:$BACKEND_PORT/health >/dev/null 2>&1; then
+              return 0
+            fi
+            # Fallback to test endpoint
+            if curl -f -s http://localhost:$BACKEND_PORT/test >/dev/null 2>&1; then
+              return 0
+            fi
+            return 1
+          }
+          
           timeout 120 bash -c "
-            until curl -f http://localhost:$BACKEND_PORT/actuator/health >/dev/null 2>&1; do 
+            until test_backend; do 
               echo 'Backend not ready, waiting...'
               if [ -f backend/backend.pid ] && ! kill -0 \$(cat backend/backend.pid) 2>/dev/null; then
                 echo 'Backend process died, showing logs:'
@@ -297,7 +338,34 @@ jobs:
               fi
               sleep 3
             done
-          "
+          " || {
+            echo "❌ Backend health check timed out after 120 seconds"
+            echo "📋 Backend process status:"
+            if [ -f backend/backend.pid ]; then
+              BACKEND_PID=$(cat backend/backend.pid)
+              if kill -0 $BACKEND_PID 2>/dev/null; then
+                echo "Backend process (PID: $BACKEND_PID) is still running"
+                echo "📊 Port $BACKEND_PORT status:"
+                netstat -tuln | grep ":$BACKEND_PORT " || echo "Port $BACKEND_PORT not listening"
+                echo "🔍 Testing health endpoints:"
+                echo "  Actuator health:"
+                curl -v -m 10 http://localhost:$BACKEND_PORT/actuator/health || true
+                echo "  Custom health:"
+                curl -v -m 10 http://localhost:$BACKEND_PORT/health || true
+                echo "  Test endpoint:"
+                curl -v -m 10 http://localhost:$BACKEND_PORT/test || true
+                echo "📄 Last 50 lines of backend log:"
+                tail -n 50 backend/backend.log || true
+              else
+                echo "Backend process (PID: $BACKEND_PID) has died"
+                echo "📄 Backend log:"
+                cat backend/backend.log || true
+              fi
+            else
+              echo "No backend PID file found"
+            fi
+            exit 1
+          }
           echo "✅ Backend is ready on port $BACKEND_PORT"
           
           # Wait for frontend
@@ -316,8 +384,13 @@ jobs:
           echo "✅ Frontend is ready on port $FRONTEND_PORT"
           
           # Verify services are responding
-          echo "🔍 Backend health check:"
-          curl -s http://localhost:$BACKEND_PORT/actuator/health | head -n 10
+          echo "🔍 Backend health verification:"
+          echo "  Testing actuator health endpoint:"
+          curl -s http://localhost:$BACKEND_PORT/actuator/health | jq '.' || curl -s http://localhost:$BACKEND_PORT/actuator/health | head -n 10
+          echo -e "\n  Testing custom health endpoint:"
+          curl -s http://localhost:$BACKEND_PORT/health | jq '.' || curl -s http://localhost:$BACKEND_PORT/health | head -n 5
+          echo -e "\n  Testing basic connectivity:"
+          curl -s http://localhost:$BACKEND_PORT/test | head -n 3
           echo -e "\n🔍 Frontend response:"
           curl -s http://localhost:$FRONTEND_PORT | head -n 5
       

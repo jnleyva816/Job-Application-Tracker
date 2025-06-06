@@ -49,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.jnleyva.jobtracker.JobtrackerBackendApplication"] 
+ENTRYPOINT ["java","-cp","app:app/lib/*","com.jnleyva.jobtracker_backend.JobtrackerBackendApplication"] 
