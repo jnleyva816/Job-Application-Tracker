@@ -7,6 +7,7 @@ WORKDIR /workspace/app
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
+COPY checkstyle.xml .
 
 # Download dependencies for better layer caching
 RUN ./mvnw dependency:go-offline -B
