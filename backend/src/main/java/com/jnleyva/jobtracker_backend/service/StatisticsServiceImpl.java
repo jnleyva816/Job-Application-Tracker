@@ -81,20 +81,53 @@ public class StatisticsServiceImpl implements StatisticsService {
         stats.put("total", applications.size());
         logger.debug("Total applications: {}", applications.size());
         
-        // Status distribution
+        // Status distribution based on progression (highest status reached)
         Map<String, Integer> byStatus = new HashMap<>();
         byStatus.put("Applied", 0);
         byStatus.put("Interviewing", 0);
         byStatus.put("Offered", 0);
         byStatus.put("Rejected", 0);
         
+        // Track current status distribution separately for comparison
+        Map<String, Integer> currentStatusDistribution = new HashMap<>();
+        currentStatusDistribution.put("Applied", 0);
+        currentStatusDistribution.put("Interviewing", 0);
+        currentStatusDistribution.put("Offered", 0);
+        currentStatusDistribution.put("Rejected", 0);
+        
         for (Application app : applications) {
-            String status = app.getStatus();
-            logger.trace("Processing application ID: {}, Status: {}", app.getId(), status);
-            byStatus.put(status, byStatus.getOrDefault(status, 0) + 1);
+            // Count current status
+            String currentStatus = app.getStatus();
+            logger.trace("Processing application ID: {}, Current Status: {}", app.getId(), currentStatus);
+            currentStatusDistribution.put(currentStatus, currentStatusDistribution.getOrDefault(currentStatus, 0) + 1);
+            
+            // Count based on status progression
+            // Each application contributes to ALL statuses it has reached
+            if (app.hasReachedStatus("Applied")) {
+                byStatus.put("Applied", byStatus.get("Applied") + 1);
+            }
+            if (app.hasReachedStatus("Interviewing")) {
+                byStatus.put("Interviewing", byStatus.get("Interviewing") + 1);
+            }
+            if (app.hasReachedStatus("Offered")) {
+                byStatus.put("Offered", byStatus.get("Offered") + 1);
+            }
+            if (app.hasReachedStatus("Rejected")) {
+                byStatus.put("Rejected", byStatus.get("Rejected") + 1);
+            }
+            
+            logger.trace("Application {} has reached: Applied={}, Interviewing={}, Offered={}, Rejected={}", 
+                app.getId(),
+                app.hasReachedStatus("Applied"),
+                app.hasReachedStatus("Interviewing"), 
+                app.hasReachedStatus("Offered"),
+                app.hasReachedStatus("Rejected"));
         }
+        
         stats.put("byStatus", byStatus);
-        logger.debug("Status distribution: {}", byStatus);
+        stats.put("currentStatusDistribution", currentStatusDistribution);
+        logger.debug("Status progression distribution: {}", byStatus);
+        logger.debug("Current status distribution: {}", currentStatusDistribution);
         
         // Applications by month
         Map<String, Integer> byMonth = new HashMap<>();

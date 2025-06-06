@@ -26,6 +26,12 @@ export interface ApplicationStats {
     Offered: number;
     Rejected: number;
   };
+  currentStatusDistribution?: {
+    Applied: number;
+    Interviewing: number;
+    Offered: number;
+    Rejected: number;
+  };
   byMonth: {
     [key: string]: number;
   };

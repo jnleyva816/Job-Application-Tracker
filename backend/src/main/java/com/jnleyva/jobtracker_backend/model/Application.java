@@ -58,6 +58,10 @@ public class Application {
     @JsonManagedReference
     private List<Interview> interviews = new ArrayList<>();
 
+    @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<ApplicationStatusHistory> statusHistory = new ArrayList<>();
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -192,6 +196,77 @@ public class Application {
     public void removeInterview(Interview interview) {
         interviews.remove(interview);
         interview.setApplication(null);
+    }
+
+    public List<ApplicationStatusHistory> getStatusHistory() {
+        return statusHistory;
+    }
+
+    public void setStatusHistory(List<ApplicationStatusHistory> statusHistory) {
+        this.statusHistory = statusHistory;
+    }
+
+    public void addStatusHistory(ApplicationStatusHistory statusHistory) {
+        this.statusHistory.add(statusHistory);
+        statusHistory.setApplication(this);
+    }
+
+    public void removeStatusHistory(ApplicationStatusHistory statusHistory) {
+        this.statusHistory.remove(statusHistory);
+        statusHistory.setApplication(null);
+    }
+
+    /**
+     * Gets the highest status reached based on the progression:
+     * Applied -> Interviewing -> Offered (or Rejected can happen at any point)
+     */
+    public String getHighestStatusReached() {
+        if (statusHistory.isEmpty()) {
+            return status; // Return current status if no history
+        }
+        
+        // Status hierarchy (higher number = higher in progression)
+        java.util.Map<String, Integer> statusHierarchy = java.util.Map.of(
+            "Applied", 1,
+            "Interviewing", 2,
+            "Offered", 3,
+            "Rejected", 0 // Rejected can happen at any point, so we track it separately
+        );
+        
+        int highestLevel = statusHierarchy.getOrDefault(status, 0);
+        boolean hasBeenRejected = "Rejected".equals(status);
+        
+        for (ApplicationStatusHistory history : statusHistory) {
+            int historyLevel = statusHierarchy.getOrDefault(history.getStatus(), 0);
+            if (historyLevel > highestLevel) {
+                highestLevel = historyLevel;
+            }
+            if ("Rejected".equals(history.getStatus())) {
+                hasBeenRejected = true;
+            }
+        }
+        
+        // Return the status corresponding to the highest level reached
+        for (java.util.Map.Entry<String, Integer> entry : statusHierarchy.entrySet()) {
+            if (entry.getValue() == highestLevel && !entry.getKey().equals("Rejected")) {
+                return entry.getKey();
+            }
+        }
+        
+        // If rejected is the current status and nothing higher was reached
+        return hasBeenRejected ? "Rejected" : status;
+    }
+
+    /**
+     * Checks if this application has ever reached a specific status
+     */
+    public boolean hasReachedStatus(String targetStatus) {
+        if (targetStatus.equals(status)) {
+            return true;
+        }
+        
+        return statusHistory.stream()
+                .anyMatch(history -> targetStatus.equals(history.getStatus()));
     }
 
     public LocalDateTime getCreatedAt() {

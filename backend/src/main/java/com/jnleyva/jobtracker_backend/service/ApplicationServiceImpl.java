@@ -2,8 +2,10 @@ package com.jnleyva.jobtracker_backend.service;
 
 import com.jnleyva.jobtracker_backend.exception.ResourceNotFoundException;
 import com.jnleyva.jobtracker_backend.model.Application;
+import com.jnleyva.jobtracker_backend.model.ApplicationStatusHistory;
 import com.jnleyva.jobtracker_backend.model.User;
 import com.jnleyva.jobtracker_backend.repository.ApplicationRepository;
+import com.jnleyva.jobtracker_backend.repository.ApplicationStatusHistoryRepository;
 import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,11 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ApplicationStatusHistoryRepository statusHistoryRepository;
+
     @Override
+    @Transactional
     public Application createApplication(Application application, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
@@ -35,7 +41,18 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setUser(user);
         user.addApplication(application);
 
-        return applicationRepository.save(application);
+        // Save the application first to get the ID
+        Application savedApplication = applicationRepository.save(application);
+
+        // Create initial status history entry
+        ApplicationStatusHistory initialStatus = new ApplicationStatusHistory(
+            savedApplication, 
+            savedApplication.getStatus(), 
+            user.getUsername()
+        );
+        statusHistoryRepository.save(initialStatus);
+
+        return savedApplication;
     }
 
     @Override
@@ -59,8 +76,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public Application updateApplication(Long id, Application applicationDetails) {
         Application application = getApplicationById(id);
+        
+        // Check if status is changing
+        String oldStatus = application.getStatus();
+        String newStatus = applicationDetails.getStatus();
+        boolean statusChanged = !oldStatus.equals(newStatus);
 
         // Update fields
         application.setCompany(applicationDetails.getCompany());
@@ -77,8 +100,20 @@ public class ApplicationServiceImpl implements ApplicationService {
         // Update timestamp
         application.setUpdatedAt(LocalDateTime.now());
 
-        // Don't change the user association
-        return applicationRepository.save(application);
+        // Save the application
+        Application savedApplication = applicationRepository.save(application);
+
+        // If status changed, create a new status history entry
+        if (statusChanged) {
+            ApplicationStatusHistory statusChange = new ApplicationStatusHistory(
+                savedApplication, 
+                newStatus, 
+                savedApplication.getUser().getUsername()
+            );
+            statusHistoryRepository.save(statusChange);
+        }
+
+        return savedApplication;
     }
 
     @Override

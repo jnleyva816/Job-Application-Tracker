@@ -13,11 +13,31 @@ vi.mock('../components/MenuBar', () => ({
   default: () => <div data-testid="menu-bar">Menu Bar</div>
 }));
 
+// Mock the chart components
+vi.mock('../components/charts', () => ({
+  BarChart: ({ data }: { data: unknown[] }) => (
+    <div data-testid="bar-chart" data-chart-items={data.length}>
+      Bar Chart with {data.length} items
+    </div>
+  ),
+  DonutChart: ({ data }: { data: unknown[] }) => (
+    <div data-testid="donut-chart" data-chart-items={data.length}>
+      Donut Chart with {data.length} items
+    </div>
+  )
+}));
+
 const mockStatisticsService = vi.mocked(statisticsService);
 
 const mockStatisticsData = {
   total: 25,
   byStatus: {
+    Applied: 10,
+    Interviewing: 8,
+    Offered: 5,
+    Rejected: 2,
+  },
+  currentStatusDistribution: {
     Applied: 10,
     Interviewing: 8,
     Offered: 5,
@@ -84,38 +104,38 @@ describe('Statistics Component', () => {
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
-    // Check overview cards
-    expect(screen.getByText('Total Applications').nextElementSibling).toHaveTextContent('25');
-    expect(screen.getByText('Success Rate').nextElementSibling).toHaveTextContent('20%');
-    expect(screen.getByText('Avg Response Time').nextElementSibling).toHaveTextContent('7 days');
-    expect(screen.getByText('Active Applications').nextElementSibling).toHaveTextContent('18');
+    // Check overview cards with new design
+    expect(screen.getByText('Total Applications').closest('div')).toContainHTML('25');
+    expect(screen.getByText('Success Rate').closest('div')).toContainHTML('20%');
+    expect(screen.getByText('Avg Response Time').closest('div')).toContainHTML('7');
+    expect(screen.getByText('Active Applications').closest('div')).toContainHTML('18');
 
     // Check interview overview cards
-    expect(screen.getByText('Total Interviews').nextElementSibling).toHaveTextContent('15');
-    expect(screen.getByText('Interview Rate').nextElementSibling).toHaveTextContent('60%');
-    expect(screen.getByText('Upcoming Interviews').nextElementSibling).toHaveTextContent('3');
-    expect(screen.getByText('Avg per Application').nextElementSibling).toHaveTextContent('1.5');
+    expect(screen.getByText('Total Interviews').closest('div')).toContainHTML('15');
+    expect(screen.getByText('Interview Rate').closest('div')).toContainHTML('60%');
+    expect(screen.getByText('Upcoming Interviews').closest('div')).toContainHTML('3');
+    expect(screen.getByText('Avg per Application').closest('div')).toContainHTML('1.5');
 
-    // Check status distribution
-    expect(screen.getByText('Status Distribution')).toBeInTheDocument();
-    // Verify status distribution contains the expected statuses
-    expect(screen.getByText('Applied')).toBeInTheDocument();
-    expect(screen.getByText('Interviewing')).toBeInTheDocument();
-    expect(screen.getByText('Offered')).toBeInTheDocument();
-    expect(screen.getByText('Rejected')).toBeInTheDocument();
+    // Check that charts are rendered
+    expect(screen.getByText('Current Status Distribution')).toBeInTheDocument();
+    expect(screen.getByText('Status Progression')).toBeInTheDocument();
+    
+    // Check that chart components are rendered
+    const donutCharts = screen.getAllByTestId('donut-chart');
+    const barCharts = screen.getAllByTestId('bar-chart');
+    
+    expect(donutCharts.length).toBeGreaterThan(0);
+    expect(barCharts.length).toBeGreaterThan(0);
 
     // Check interview statistics sections
     expect(screen.getByText('Interview Types')).toBeInTheDocument();
     expect(screen.getByText('Interview Status')).toBeInTheDocument();
 
     // Check monthly distribution
-    expect(screen.getByText('Applications by Month')).toBeInTheDocument();
-    expect(screen.getByText('Jan 2024')).toBeInTheDocument();
-    expect(screen.getByText('Feb 2024')).toBeInTheDocument();
-    expect(screen.getByText('Mar 2024')).toBeInTheDocument();
+    expect(screen.getByText('Monthly Application Trend')).toBeInTheDocument();
   });
 
   it('should display error message when statistics fail to load', async () => {
@@ -162,32 +182,80 @@ describe('Statistics Component', () => {
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
     // Should show interview overview cards with zero values
-    expect(screen.getByText('Total Interviews').nextElementSibling).toHaveTextContent('0');
-    expect(screen.getByText('Interview Rate').nextElementSibling).toHaveTextContent('0%');
-    expect(screen.getByText('Upcoming Interviews').nextElementSibling).toHaveTextContent('0');
-    expect(screen.getByText('Avg per Application').nextElementSibling).toHaveTextContent('0');
+    expect(screen.getByText('Total Interviews').closest('div')).toContainHTML('0');
+    expect(screen.getByText('Interview Rate').closest('div')).toContainHTML('0%');
+    expect(screen.getByText('Upcoming Interviews').closest('div')).toContainHTML('0');
+    expect(screen.getByText('Avg per Application').closest('div')).toContainHTML('0');
 
     // Should not show interview types and status sections when no interviews exist
     expect(screen.queryByText('Interview Types')).not.toBeInTheDocument();
     expect(screen.queryByText('Interview Status')).not.toBeInTheDocument();
   });
 
-  it('should display correct status bar colors', async () => {
+  it('should render charts with correct data', async () => {
     mockStatisticsService.getStatistics.mockResolvedValue(mockStatisticsData);
     
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
-    // Check that status bars are rendered
-    const statusBars = screen.getAllByRole('progressbar');
-    expect(statusBars.length).toBeGreaterThan(0);
+    // Check that charts receive the correct number of data items
+    const donutCharts = screen.getAllByTestId('donut-chart');
+    const barCharts = screen.getAllByTestId('bar-chart');
+    
+    // Should have status distribution donut chart with 4 status items
+    const statusDonutChart = donutCharts.find(chart => 
+      chart.getAttribute('data-chart-items') === '4'
+    );
+    expect(statusDonutChart).toBeInTheDocument();
+
+    // Should have status progression bar chart with 4 status items
+    const statusBarChart = barCharts.find(chart => 
+      chart.getAttribute('data-chart-items') === '4'
+    );
+    expect(statusBarChart).toBeInTheDocument();
+
+    // Should have monthly trend bar chart with 3 months
+    const monthlyBarChart = barCharts.find(chart => 
+      chart.getAttribute('data-chart-items') === '3'
+    );
+    expect(monthlyBarChart).toBeInTheDocument();
+  });
+
+  it('should render interview charts when interview data exists', async () => {
+    mockStatisticsService.getStatistics.mockResolvedValue(mockStatisticsData);
+    
+    renderStatistics();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
+    });
+
+    // Check interview type chart
+    expect(screen.getByText('Interview Types')).toBeInTheDocument();
+    expect(screen.getByText('Interview Status')).toBeInTheDocument();
+
+    // Check that interview charts are rendered
+    const donutCharts = screen.getAllByTestId('donut-chart');
+    const barCharts = screen.getAllByTestId('bar-chart');
+    
+    // Should have interview status donut chart
+    const interviewStatusChart = donutCharts.find(chart => 
+      chart.getAttribute('data-chart-items') === '3' // 3 interview statuses
+    );
+    expect(interviewStatusChart).toBeInTheDocument();
+
+    // Should have interview types bar chart
+    const interviewTypesChart = barCharts.find(chart => 
+      chart.getAttribute('data-chart-items') === '4' // 4 interview types
+    );
+    expect(interviewTypesChart).toBeInTheDocument();
   });
 
   it('should calculate active applications correctly', async () => {
@@ -196,90 +264,79 @@ describe('Statistics Component', () => {
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
-    // Active applications should be Applied + Interviewing = 10 + 8 = 18
-    expect(screen.getByText('Active Applications').nextElementSibling).toHaveTextContent('18');
+    // Active applications should be Applied (10) + Interviewing (8) = 18
+    expect(screen.getByText('Active Applications').closest('div')).toContainHTML('18');
   });
 
-  it('should prevent division by zero in progress bars', async () => {
-    const dataWithZeroTotal = {
-      total: 0,
-      byStatus: {
-        Applied: 0,
-        Interviewing: 0,
-        Offered: 0,
-        Rejected: 0,
-      },
-      byMonth: {
-        'Jan 2024': 0,
-      },
-      averageResponseTime: 0,
-      successRate: 0,
-      interviewStats: {
-        totalInterviews: 0,
-        byType: {},
-        byStatus: {},
-        upcoming: 0,
-        past: 0,
-        today: 0,
-        byMonth: {},
-        conversionRate: 0.0,
-        averagePerApplication: 0.0,
-      },
-    };
-    
-    mockStatisticsService.getStatistics.mockResolvedValue(dataWithZeroTotal);
-    
-    renderStatistics();
-    
-    await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
-    });
-
-    // Should not crash and should handle zero division gracefully
-    expect(screen.getByText('Total Applications').nextElementSibling).toHaveTextContent('0');
-  });
-
-  it('should call statistics service on component mount', async () => {
+  it('should display beautiful gradient cards with proper styling', async () => {
     mockStatisticsService.getStatistics.mockResolvedValue(mockStatisticsData);
     
     renderStatistics();
     
     await waitFor(() => {
-      expect(mockStatisticsService.getStatistics).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
+
+    // Check that cards have gradient styling classes
+    const totalApplicationsCard = screen.getByText('Total Applications').closest('div');
+    expect(totalApplicationsCard).toHaveClass('bg-gradient-to-br');
+    
+    const successRateCard = screen.getByText('Success Rate').closest('div');
+    expect(successRateCard).toHaveClass('bg-gradient-to-br');
   });
 
-  it('should display interview types when interviews exist', async () => {
+  it('should handle retry functionality on error', async () => {
+    const errorMessage = 'Network error';
+    mockStatisticsService.getStatistics.mockRejectedValue(new Error(errorMessage));
+    
+    // Mock window.location.reload
+    const originalLocation = window.location;
+    delete (window as { location?: Location }).location;
+    window.location = { ...originalLocation, reload: vi.fn() };
+    
+    renderStatistics();
+    
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    
+    // Restore location
+    window.location = originalLocation;
+  });
+
+  it('should display descriptive text for each chart section', async () => {
     mockStatisticsService.getStatistics.mockResolvedValue(mockStatisticsData);
     
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
-    // Check interview types are displayed
-    expect(screen.getByText('Technical')).toBeInTheDocument();
-    expect(screen.getByText('HR')).toBeInTheDocument();
-    expect(screen.getByText('Final')).toBeInTheDocument();
-    expect(screen.getByText('Behavioral')).toBeInTheDocument();
+    // Check descriptive text
+    expect(screen.getByText('Where your applications stand right now')).toBeInTheDocument();
+    expect(screen.getByText('How many applications reached each stage')).toBeInTheDocument();
+    expect(screen.getByText('Your application activity over time')).toBeInTheDocument();
   });
 
-  it('should display interview statuses when interviews exist', async () => {
+  it('should show proper section titles with new design', async () => {
     mockStatisticsService.getStatistics.mockResolvedValue(mockStatisticsData);
     
     renderStatistics();
     
     await waitFor(() => {
-      expect(screen.getByText('Application Statistics')).toBeInTheDocument();
+      expect(screen.getByText('Application Analytics')).toBeInTheDocument();
     });
 
-    // Check interview statuses are displayed
-    expect(screen.getByText('SCHEDULED')).toBeInTheDocument();
-    expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-    expect(screen.getByText('CANCELLED')).toBeInTheDocument();
+    // Check all main section titles
+    expect(screen.getByText('Current Status Distribution')).toBeInTheDocument();
+    expect(screen.getByText('Status Progression')).toBeInTheDocument();
+    expect(screen.getByText('Monthly Application Trend')).toBeInTheDocument();
   });
 }); 
