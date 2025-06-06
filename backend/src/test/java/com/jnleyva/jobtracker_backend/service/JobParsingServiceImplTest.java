@@ -9,8 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.util.Arrays;
 import java.util.Collections;

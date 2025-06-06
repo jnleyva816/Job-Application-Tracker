@@ -12,7 +12,6 @@ import com.jnleyva.jobtracker_backend.service.MyUserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,7 +69,6 @@ public class InterviewControllerAuthorizationTest {
     private Interview user1Interview;
     private Interview user2Interview;
     private String user1Token;
-    private String user2Token;
 
     @BeforeEach
     void setUp() {
@@ -137,9 +135,7 @@ public class InterviewControllerAuthorizationTest {
 
         // Generate JWT tokens for both users
         UserDetails user1Details = userDetailsService.loadUserByUsername(user1.getUsername());
-        UserDetails user2Details = userDetailsService.loadUserByUsername(user2.getUsername());
         user1Token = jwtService.generateToken(user1Details);
-        user2Token = jwtService.generateToken(user2Details);
     }
 
     @Test

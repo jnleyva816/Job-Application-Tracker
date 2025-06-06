@@ -20,8 +20,6 @@ import java.io.IOException;
 @SpringJUnitConfig
 public class UrlStructureTester {
     
-    private static final Logger logger = LoggerFactory.getLogger(UrlStructureTester.class);
-    
     @Autowired
     private WebScrapingUtils webScrapingUtils;
     

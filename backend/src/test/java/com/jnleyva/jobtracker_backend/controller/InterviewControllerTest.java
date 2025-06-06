@@ -38,7 +38,6 @@ public class InterviewControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @SuppressWarnings("deprecation")
     @MockBean
     private InterviewService interviewService;
 

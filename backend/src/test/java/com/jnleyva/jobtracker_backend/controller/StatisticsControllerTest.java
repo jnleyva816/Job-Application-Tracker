@@ -1,6 +1,5 @@
 package com.jnleyva.jobtracker_backend.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jnleyva.jobtracker_backend.service.StatisticsService;
 import com.jnleyva.jobtracker_backend.service.JwtService;
 import com.jnleyva.jobtracker_backend.service.TokenBlacklistService;
@@ -39,9 +38,6 @@ public class StatisticsControllerTest {
 
     @MockBean
     private TokenBlacklistService tokenBlacklistService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @WithMockUser(username = "testuser", roles = "USER")

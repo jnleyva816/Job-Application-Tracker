@@ -2,7 +2,6 @@ package com.jnleyva.jobtracker_backend.service;
 
 import com.jnleyva.jobtracker_backend.model.Application;
 import com.jnleyva.jobtracker_backend.model.ApplicationStatusHistory;
-import com.jnleyva.jobtracker_backend.model.Interview;
 import com.jnleyva.jobtracker_backend.model.User;
 import com.jnleyva.jobtracker_backend.repository.ApplicationRepository;
 import com.jnleyva.jobtracker_backend.repository.ApplicationStatusHistoryRepository;
@@ -256,7 +255,7 @@ class StatusProgressionStatisticsTest {
         when(applicationRepository.save(any(Application.class))).thenReturn(newApp);
 
         // When: Application is created
-        Application result = applicationService.createApplication(newApp, 1L);
+        applicationService.createApplication(newApp, 1L);
 
         // Then: Status history should be tracked
         verify(statusHistoryRepository).save(any(ApplicationStatusHistory.class));
@@ -275,7 +274,7 @@ class StatusProgressionStatisticsTest {
         when(applicationRepository.save(any(Application.class))).thenReturn(updatedApp);
 
         // When: Application status is updated
-        Application result = applicationService.updateApplication(1L, updatedApp);
+        applicationService.updateApplication(1L, updatedApp);
 
         // Then: Status history should be tracked for the change
         verify(statusHistoryRepository).save(any(ApplicationStatusHistory.class));

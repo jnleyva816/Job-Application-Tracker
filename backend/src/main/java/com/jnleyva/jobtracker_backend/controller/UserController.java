@@ -367,7 +367,7 @@ public class UserController {
 
             // Use authentication manager for consistent password validation
             try {
-                Authentication authentication = authenticationManager.authenticate(
+                authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
                 );
                 

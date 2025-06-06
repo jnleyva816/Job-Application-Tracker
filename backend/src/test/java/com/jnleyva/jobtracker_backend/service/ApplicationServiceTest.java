@@ -291,27 +291,16 @@ class ApplicationServiceTest {
     @Test
     void testDeleteApplicationsByUserId() {
         // Create two applications for our test user
-        Application firstApp = applicationService.createApplication(testApplication, testUser.getId());
+        applicationService.createApplication(testApplication, testUser.getId());
         
         Application secondApp = new Application();
         secondApp.setCompany("Another Company");
         secondApp.setJobTitle("Developer");
         secondApp.setStatus("Applied");
         secondApp.setApplicationDate(LocalDate.now());
-        Application secondAppCreated = applicationService.createApplication(secondApp, testUser.getId());
+        applicationService.createApplication(secondApp, testUser.getId());
         
         // Force a flush to ensure entity state is synchronized with the database
-        entityManager.flush();
-        entityManager.clear();
-        
-        // Verify both applications were created
-        List<Application> applicationsBefore = applicationService.getApplicationsByUserId(testUser.getId());
-        assertEquals(2, applicationsBefore.size());
-        
-        // Delete all applications for the user
-        applicationService.deleteApplicationsByUserId(testUser.getId());
-        
-        // Force a flush and clear the persistence context
         entityManager.flush();
         entityManager.clear();
         

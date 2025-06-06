@@ -1,16 +1,13 @@
 package com.jnleyva.jobtracker_backend.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jnleyva.jobtracker_backend.service.JobParsingService;
-import com.jnleyva.jobtracker_backend.service.WebScrapingUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Duration;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +67,7 @@ public class UrlScrapingIntegrationTest {
             // Then: Should return successful response
             assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
             
-            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
             assertThat(responseBody).containsKey("url");
             assertThat(responseBody.get("url")).isEqualTo(validUrl);
         } catch (org.springframework.web.client.ResourceAccessException e) {
@@ -132,7 +128,7 @@ public class UrlScrapingIntegrationTest {
         // Then: Should successfully extract job data
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         
-        Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+        Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
         assertThat(responseBody).containsKey("canParse");
         assertThat(responseBody.get("canParse")).isEqualTo(true);
         assertThat(responseBody).containsKey("jobTitle");
@@ -165,7 +161,7 @@ public class UrlScrapingIntegrationTest {
         // Then: Should return structured job data ready for form population
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         
-        Map<String, Object> jobData = objectMapper.readValue(response.getBody(), Map.class);
+        Map<String, Object> jobData = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
         
         // Verify form-ready data structure
         assertThat(jobData).containsKey("successful");
@@ -209,7 +205,7 @@ public class UrlScrapingIntegrationTest {
         // Then: Should indicate that it cannot parse non-Greenhouse URLs
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
         
-        Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+        Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
         assertThat(responseBody).containsKey("canParse");
         assertThat(responseBody.get("canParse")).isEqualTo(false);
     }
@@ -237,7 +233,7 @@ public class UrlScrapingIntegrationTest {
                     String.class
                 );
 
-                Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+                Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
                 assertThat(responseBody.get("canParse"))
                     .withFailMessage("URL %s should be detected as Greenhouse URL", url)
                     .isEqualTo(true);
@@ -284,7 +280,7 @@ public class UrlScrapingIntegrationTest {
             // Then: Should return actual HTML content if connection succeeds
             assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
             
-            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
             assertThat(responseBody).containsKey("successful");
             
             // The test should pass regardless of whether it successfully connects or fails gracefully
@@ -371,7 +367,7 @@ public class UrlScrapingIntegrationTest {
 
         // Then: Should handle network error gracefully
         if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
-            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), Map.class);
+            Map<String, Object> responseBody = objectMapper.readValue(response.getBody(), new TypeReference<Map<String, Object>>() {});
             assertThat(responseBody).containsKey("error");
         }
     }

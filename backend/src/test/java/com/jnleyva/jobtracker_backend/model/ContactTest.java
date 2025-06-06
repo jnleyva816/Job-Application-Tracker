@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ContactTest {
 
     private Application testApplication;
-    private Contact contact;
 
     @BeforeEach
     void setUp() {

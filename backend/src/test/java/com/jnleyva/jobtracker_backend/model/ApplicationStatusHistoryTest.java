@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ApplicationStatusHistoryTest {
 
     private Application testApplication;
-    private ApplicationStatusHistory statusHistory;
 
     @BeforeEach
     void setUp() {
