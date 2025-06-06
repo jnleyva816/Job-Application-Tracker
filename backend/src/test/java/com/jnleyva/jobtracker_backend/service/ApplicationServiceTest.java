@@ -300,6 +300,13 @@ class ApplicationServiceTest {
         secondApp.setApplicationDate(LocalDate.now());
         applicationService.createApplication(secondApp, testUser.getId());
         
+        // Verify applications were created
+        List<Application> applicationsBefore = applicationService.getApplicationsByUserId(testUser.getId());
+        assertEquals(2, applicationsBefore.size(), "Expected 2 applications before deletion");
+        
+        // Delete all applications for the user
+        applicationService.deleteApplicationsByUserId(testUser.getId());
+        
         // Force a flush to ensure entity state is synchronized with the database
         entityManager.flush();
         entityManager.clear();

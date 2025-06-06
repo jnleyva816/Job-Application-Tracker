@@ -10,8 +10,11 @@ import com.jnleyva.jobtracker_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +28,9 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Autowired
     private ApplicationStatusHistoryRepository statusHistoryRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @Transactional
@@ -117,6 +123,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
+    @Transactional
     public void deleteApplication(Long id) {
         Application application = getApplicationById(id);
         applicationRepository.delete(application);
@@ -130,19 +137,26 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ResourceNotFoundException("User", "id", userId);
         }
         
-        // Load applications first to enable JPA cascade handling
-        List<Application> applications = applicationRepository.findByUserId(userId);
+        // Use bulk delete queries in the correct order to avoid foreign key constraint violations
+        // First delete all status history entries for applications owned by this user
+        entityManager.createQuery(
+            "DELETE FROM ApplicationStatusHistory ash WHERE ash.application.user.id = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
         
-        // Delete each application individually to trigger cascade deletes
-        for (Application application : applications) {
-            // First delete status history entries manually to avoid constraint issues
-            statusHistoryRepository.deleteByApplicationId(application.getId());
-            
-            // Then delete the application
-            applicationRepository.delete(application);
-        }
+        // Then delete all interviews for applications owned by this user
+        entityManager.createQuery(
+            "DELETE FROM Interview i WHERE i.application.user.id = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
         
-        // Flush to ensure all deletes are persisted immediately
-        applicationRepository.flush();
+        // Finally delete all applications for this user
+        entityManager.createQuery(
+            "DELETE FROM Application a WHERE a.user.id = :userId")
+            .setParameter("userId", userId)
+            .executeUpdate();
+        
+        // Flush to ensure all deletes are committed
+        entityManager.flush();
     }
 } 

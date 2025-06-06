@@ -15,11 +15,6 @@ import java.util.List;
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     List<Application> findByUserId(Long userId);
     
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Application a WHERE a.user.id = :userId")
-    void deleteByUserId(@Param("userId") Long userId);
-    
     Long countByUserId(Long userId);
     
     List<Application> findByCreatedAtBefore(LocalDateTime date);

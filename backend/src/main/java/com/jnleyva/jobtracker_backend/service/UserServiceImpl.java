@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserProfileService userProfileService;
 
+    @Autowired
+    private ApplicationService applicationService;
+
     @Override
     public User createUser(User user) {
         logger.debug("Creating new user with username: {}", user.getUsername());
@@ -207,35 +210,43 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = getUserById(id);
         
-        try {
-            // Let Hibernate handle cascade deletion automatically
-            userRepository.delete(user);
-            // Force the delete operation to be executed immediately
-            entityManager.flush();
-            logger.info("User deleted successfully: {}", user.getUsername());
-        } catch (Exception e) {
-            logger.error("Failed to delete user {}: {}", user.getUsername(), e.getMessage());
-            // If automatic cascade fails, try manual deletion
-            try {
-                // Manually delete profile first if it exists
-                if (user.getProfile() != null) {
-                    userProfileService.deleteProfile(user.getProfile().getId());
-                    logger.debug("User profile deleted manually for user: {}", user.getUsername());
-                }
-                
-                // Clear any cached data and try deletion again
-                entityManager.clear();
-                
-                // Re-fetch user and delete
-                User refreshedUser = getUserById(id);
-                userRepository.delete(refreshedUser);
-                entityManager.flush();
-                logger.info("User deleted successfully after manual cleanup: {}", user.getUsername());
-            } catch (Exception fallbackException) {
-                logger.error("Failed to delete user even with manual cleanup: {}", fallbackException.getMessage());
-                throw new RuntimeException("Could not delete user: " + user.getUsername(), fallbackException);
-            }
-        }
+        // Use bulk delete operations in the correct order to avoid ALL foreign key constraint violations
+        
+        // 1. Delete ApplicationStatusHistory records first (no dependencies)
+        int statusHistoryDeleted = entityManager.createQuery(
+            "DELETE FROM ApplicationStatusHistory ash WHERE ash.application.user.id = :userId")
+            .setParameter("userId", id)
+            .executeUpdate();
+        
+        // 2. Delete Interview records (no dependencies on ApplicationStatusHistory)
+        int interviewsDeleted = entityManager.createQuery(
+            "DELETE FROM Interview i WHERE i.application.user.id = :userId")
+            .setParameter("userId", id)
+            .executeUpdate();
+        
+        // 3. Delete Application records (depends on ApplicationStatusHistory and Interview being deleted)
+        int applicationsDeleted = entityManager.createQuery(
+            "DELETE FROM Application a WHERE a.user.id = :userId")
+            .setParameter("userId", id)
+            .executeUpdate();
+        
+        // 4. Delete UserProfile (depends only on User)
+        int profileDeleted = entityManager.createQuery(
+            "DELETE FROM UserProfile up WHERE up.user.id = :userId")
+            .setParameter("userId", id)
+            .executeUpdate();
+        
+        // 5. Finally delete the User
+        entityManager.createQuery(
+            "DELETE FROM User u WHERE u.id = :userId")
+            .setParameter("userId", id)
+            .executeUpdate();
+        
+        // Clear the session cache to ensure subsequent queries don't find the deleted entities
+        entityManager.clear();
+        
+        logger.info("User deleted successfully: {} (deleted {} applications, {} interviews, {} status histories, {} profile)", 
+                    user.getUsername(), applicationsDeleted, interviewsDeleted, statusHistoryDeleted, profileDeleted);
     }
 
     private void validatePassword(String password) {
@@ -248,10 +259,10 @@ public class UserServiceImpl implements UserService {
         if (!password.matches(".*[a-z].*")) {
             throw new IllegalArgumentException("Password must contain at least one lowercase letter");
         }
-        if (!password.matches(".*\\d.*")) {
-            throw new IllegalArgumentException("Password must contain at least one number");
+        if (!password.matches(".*[0-9].*")) {
+            throw new IllegalArgumentException("Password must contain at least one digit");
         }
-        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*")) {
+        if (!password.matches(".*[!@#$%^&*()].*")) {
             throw new IllegalArgumentException("Password must contain at least one special character");
         }
     }
