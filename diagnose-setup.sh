@@ -1,9 +1,12 @@
-# Diagnostic script for CI/CD setup troubleshooting
-# Run this to check your current configuration
+#!/bin/bash
 
-echo "🔍 CI/CD Setup Diagnostics"
-echo "=========================="
-echo ""
+# Job Application Tracker - Setup Diagnosis Script
+# This script helps diagnose common setup issues
+
+set -e
+
+echo "🔍 Job Application Tracker - Setup Diagnosis"
+echo "=============================================="
 
 # Color codes
 RED='\033[0;31m'
@@ -176,4 +179,13 @@ echo "https://github.com/jnleyva816/Job-Application-Tracker/actions"
 
 echo ""
 echo "🆘 If you're still getting errors, check the specific error message in GitHub Actions"
-echo "   and share it for more targeted help." 
+echo "   and share it for more targeted help."
+
+# Run Docker authentication checks
+check_github_secrets
+check_docker_auth
+check_workflow_config
+
+echo ""
+echo "🔍 Diagnosis Complete!"
+echo "=====================" 
