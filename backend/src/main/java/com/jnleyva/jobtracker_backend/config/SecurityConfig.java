@@ -80,6 +80,8 @@ public class SecurityConfig {
                 .requestMatchers("/webjars/**").permitAll()
                 // Actuator endpoints (if enabled)
                 .requestMatchers("/actuator/**").permitAll()
+                // Admin endpoints - require ADMIN role
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Protected endpoints
                 .requestMatchers("/api/applications/**").authenticated()
                 .requestMatchers("/api/users/**").authenticated()

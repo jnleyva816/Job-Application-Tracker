@@ -109,10 +109,13 @@ public class TestSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/users/login", "/api/users/register").permitAll()
                 .requestMatchers("/api/job-parsing/**").permitAll()
+                // Admin endpoints - require ADMIN role
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) -> response.setStatus(401))
+                .accessDeniedHandler((request, response, accessDeniedException) -> response.setStatus(403))
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

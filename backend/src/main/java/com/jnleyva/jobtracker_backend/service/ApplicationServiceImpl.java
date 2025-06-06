@@ -129,7 +129,20 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User", "id", userId);
         }
-        applicationRepository.deleteByUserId(userId);
-        applicationRepository.flush(); // Ensures the delete is immediately persisted
+        
+        // Load applications first to enable JPA cascade handling
+        List<Application> applications = applicationRepository.findByUserId(userId);
+        
+        // Delete each application individually to trigger cascade deletes
+        for (Application application : applications) {
+            // First delete status history entries manually to avoid constraint issues
+            statusHistoryRepository.deleteByApplicationId(application.getId());
+            
+            // Then delete the application
+            applicationRepository.delete(application);
+        }
+        
+        // Flush to ensure all deletes are persisted immediately
+        applicationRepository.flush();
     }
 } 

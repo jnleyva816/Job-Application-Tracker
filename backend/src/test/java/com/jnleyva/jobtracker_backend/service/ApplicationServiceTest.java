@@ -5,6 +5,7 @@ import com.jnleyva.jobtracker_backend.exception.ResourceNotFoundException;
 import com.jnleyva.jobtracker_backend.model.Application;
 import com.jnleyva.jobtracker_backend.model.User;
 import com.jnleyva.jobtracker_backend.repository.ApplicationRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,19 @@ class ApplicationServiceTest {
 
     private User testUser;
     private Application testApplication;
+    private static int testCounter = 0;
 
     @BeforeEach
     void setUp() {
+        // Create a unique username for each test method to avoid conflicts
+        testCounter++;
+        String uniqueUsername = "applicationtestuser" + testCounter + "_" + System.nanoTime();
+        
         // Create a test user
         testUser = new User();
-        testUser.setUsername("applicationtestuser");
+        testUser.setUsername(uniqueUsername);
         testUser.setPassword("Password123!");
-        testUser.setEmail("apptest@example.com");
+        testUser.setEmail("apptest" + testCounter + "@example.com");
         testUser.setRole("ROLE_USER");
         testUser = userService.createUser(testUser);
 
@@ -61,6 +67,21 @@ class ApplicationServiceTest {
         testApplication.setCompensation(100000.0);
         testApplication.setStatus("Applied");
         testApplication.setApplicationDate(LocalDate.now());
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Clean up test data after each test
+        try {
+            if (testUser != null && testUser.getId() != null) {
+                // First delete all applications for the user
+                applicationService.deleteApplicationsByUserId(testUser.getId());
+                // Then delete the user
+                userService.deleteUser(testUser.getId());
+            }
+        } catch (Exception e) {
+            // Ignore cleanup errors in tests
+        }
     }
 
     // CREATE tests
@@ -152,9 +173,9 @@ class ApplicationServiceTest {
         
         // Create a second user
         User secondUser = new User();
-        secondUser.setUsername("seconduser");
+        secondUser.setUsername("seconduser" + testCounter + "_" + System.nanoTime());
         secondUser.setPassword("Password456!");
-        secondUser.setEmail("second@example.com");
+        secondUser.setEmail("second" + testCounter + "@example.com");
         secondUser.setRole("ROLE_USER");
         secondUser = userService.createUser(secondUser);
         
@@ -270,21 +291,22 @@ class ApplicationServiceTest {
     @Test
     void testDeleteApplicationsByUserId() {
         // Create two applications for our test user
-        applicationService.createApplication(testApplication, testUser.getId());
+        Application firstApp = applicationService.createApplication(testApplication, testUser.getId());
         
         Application secondApp = new Application();
         secondApp.setCompany("Another Company");
         secondApp.setJobTitle("Developer");
         secondApp.setStatus("Applied");
         secondApp.setApplicationDate(LocalDate.now());
-        applicationService.createApplication(secondApp, testUser.getId());
-        
-        // Verify both applications were created
-        List<Application> applications = applicationService.getApplicationsByUserId(testUser.getId());
-        assertEquals(2, applications.size());
+        Application secondAppCreated = applicationService.createApplication(secondApp, testUser.getId());
         
         // Force a flush to ensure entity state is synchronized with the database
         entityManager.flush();
+        entityManager.clear();
+        
+        // Verify both applications were created
+        List<Application> applicationsBefore = applicationService.getApplicationsByUserId(testUser.getId());
+        assertEquals(2, applicationsBefore.size());
         
         // Delete all applications for the user
         applicationService.deleteApplicationsByUserId(testUser.getId());
@@ -295,7 +317,11 @@ class ApplicationServiceTest {
         
         // Check if all applications are deleted
         Long count = applicationRepository.countByUserId(testUser.getId());
-        assertEquals(0L, count);
+        assertEquals(0L, count, "Expected 0 applications after deletion, but found " + count);
+        
+        // Also verify using the service method
+        List<Application> applicationsAfter = applicationService.getApplicationsByUserId(testUser.getId());
+        assertEquals(0, applicationsAfter.size(), "Expected 0 applications after deletion via service, but found " + applicationsAfter.size());
     }
 
     @Test
