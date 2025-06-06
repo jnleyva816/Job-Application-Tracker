@@ -311,25 +311,8 @@ jobs:
           # Wait for backend health check
           echo "Waiting for backend on port $BACKEND_PORT..."
           
-          # Function to test backend availability
-          test_backend() {
-            # Try actuator health endpoint first
-            if curl -f -s http://localhost:$BACKEND_PORT/actuator/health >/dev/null 2>&1; then
-              return 0
-            fi
-            # Fallback to custom health endpoint
-            if curl -f -s http://localhost:$BACKEND_PORT/health >/dev/null 2>&1; then
-              return 0
-            fi
-            # Fallback to test endpoint
-            if curl -f -s http://localhost:$BACKEND_PORT/test >/dev/null 2>&1; then
-              return 0
-            fi
-            return 1
-          }
-          
           timeout 120 bash -c "
-            until test_backend; do 
+            until curl -f -s http://localhost:$BACKEND_PORT/actuator/health >/dev/null 2>&1 || curl -f -s http://localhost:$BACKEND_PORT/health >/dev/null 2>&1 || curl -f -s http://localhost:$BACKEND_PORT/test >/dev/null 2>&1; do 
               echo 'Backend not ready, waiting...'
               if [ -f backend/backend.pid ] && ! kill -0 \$(cat backend/backend.pid) 2>/dev/null; then
                 echo 'Backend process died, showing logs:'
