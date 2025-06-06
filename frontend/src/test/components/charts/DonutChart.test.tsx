@@ -42,9 +42,11 @@ vi.mock('d3', () => ({
     centroid: vi.fn().mockReturnValue([50, 50]),
   }),
   scaleOrdinal: vi.fn(() => {
-    const colorFunc = vi.fn((_label: string) => '#667eea') as any;
-    colorFunc.domain = vi.fn().mockReturnValue(colorFunc);
-    colorFunc.range = vi.fn().mockReturnValue(colorFunc);
+    const colorFunc = vi.fn(() => '#667eea');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (colorFunc as any).domain = vi.fn().mockReturnValue(colorFunc);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (colorFunc as any).range = vi.fn().mockReturnValue(colorFunc);
     return colorFunc;
   }),
   sum: vi.fn().mockReturnValue(25),
