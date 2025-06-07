@@ -50,7 +50,7 @@ vi.mock('../../components/Calendar', () => ({
   default: ({ applications, interviews, onDateClick }: CalendarMockProps) => (
     <div data-testid="calendar">
       <div>Calendar Component</div>
-      <button onClick={() => onDateClick(new Date('2024-01-15'), applications.slice(0, 2), interviews.slice(0, 1))}>
+      <button onClick={() => onDateClick(new Date(2024, 0, 15), applications.slice(0, 2), interviews.slice(0, 1))}>
         Mock Date Click
       </button>
     </div>
@@ -312,7 +312,10 @@ describe('Dashboard Component', () => {
       fireEvent.click(screen.getByText('Mock Date Click'));
 
       await waitFor(() => {
-        expect(screen.getByText('1/14/2024')).toBeInTheDocument();
+        // Use a more flexible approach to find the date, since toLocaleDateString() 
+        // can vary between environments due to timezone differences
+        const expectedDate = new Date(2024, 0, 15).toLocaleDateString();
+        expect(screen.getByText(expectedDate)).toBeInTheDocument();
       });
 
       expect(screen.getByText('Applications (2)')).toBeInTheDocument();
