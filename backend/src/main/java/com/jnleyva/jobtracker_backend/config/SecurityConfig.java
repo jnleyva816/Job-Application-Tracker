@@ -61,11 +61,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(Arrays.asList("*")); // Allow all origins for debugging
+                config.setAllowedOriginPatterns(Arrays.asList("*")); // Use patterns for server deployment
                 config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(Arrays.asList("*"));
                 config.setExposedHeaders(Arrays.asList("Authorization"));
-                config.setAllowCredentials(false); // Set to false when allowing all origins
+                config.setAllowCredentials(true); // Enable credentials for server deployment
                 config.setMaxAge(3600L);
                 return config;
             }))
