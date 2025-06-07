@@ -30,7 +30,7 @@ function DashboardApplicationsView({ applications }: DashboardApplicationsViewPr
     .slice(0, 5);
 
   return (
-    <div className="bg-light-surface dark:bg-dark-surface shadow-sm rounded-lg overflow-hidden">
+    <div className="bg-light-surface dark:bg-dark-surface shadow-sm rounded-lg overflow-hidden" data-testid="dashboard-applications-view">
       <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
         <h2 className="text-lg font-medium text-light-text dark:text-dark-text">Recent Applications</h2>
         <button

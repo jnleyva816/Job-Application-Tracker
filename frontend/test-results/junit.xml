@@ -1,14 +1,686 @@
-<testsuites id="" name="" tests="5" failures="0" skipped="0" errors="0" time="1.9821769999999996">
-<testsuite name="example.spec.ts" timestamp="2025-06-06T18:36:04.832Z" hostname="chromium" tests="5" failures="0" skipped="0" time="1.897" errors="0">
-<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.343">
+<testsuites id="" name="" tests="35" failures="20" skipped="0" errors="0" time="6.172138000000001">
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="chromium" tests="5" failures="0" skipped="0" time="3.36" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.698">
 </testcase>
-<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.395">
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.628">
 </testcase>
-<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.368">
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.666">
 </testcase>
-<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.406">
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.678">
 </testcase>
-<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.385">
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.69">
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="firefox" tests="5" failures="0" skipped="0" time="6.595" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="1.234">
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="1.029">
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="1.706">
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="1.071">
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="1.555">
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="webkit" tests="5" failures="5" skipped="0" time="0.029" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:9:3 should redirect to login page when not authenticated" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:9:3 › Job Application Tracker › should redirect to login page when not authenticated 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-76927-page-when-not-authenticated-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:15:3 should display login form elements" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:15:3 › Job Application Tracker › should display login form elements ───
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-e4ca4-display-login-form-elements-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:25:3 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:25:3 › Job Application Tracker › should be responsive on mobile ───────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:35:3 should handle 404 pages gracefully" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:35:3 › Job Application Tracker › should handle 404 pages gracefully ───
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-95511-handle-404-pages-gracefully-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:44:3 should show register link" type="FAILURE">
+<![CDATA[  [webkit] › example.spec.ts:44:3 › Job Application Tracker › should show register link ────────────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tracker-should-show-register-link-webkit/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tracker-should-show-register-link-webkit/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="Mobile Chrome" tests="5" failures="0" skipped="0" time="2.736" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.681">
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.492">
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.519">
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.549">
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.495">
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="Mobile Safari" tests="5" failures="5" skipped="0" time="0.034" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:9:3 should redirect to login page when not authenticated" type="FAILURE">
+<![CDATA[  [Mobile Safari] › example.spec.ts:9:3 › Job Application Tracker › should redirect to login page when not authenticated 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-76927-page-when-not-authenticated-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:15:3 should display login form elements" type="FAILURE">
+<![CDATA[  [Mobile Safari] › example.spec.ts:15:3 › Job Application Tracker › should display login form elements 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-e4ca4-display-login-form-elements-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:25:3 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [Mobile Safari] › example.spec.ts:25:3 › Job Application Tracker › should be responsive on mobile 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.007">
+<failure message="example.spec.ts:35:3 should handle 404 pages gracefully" type="FAILURE">
+<![CDATA[  [Mobile Safari] › example.spec.ts:35:3 › Job Application Tracker › should handle 404 pages gracefully 
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-95511-handle-404-pages-gracefully-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.006">
+<failure message="example.spec.ts:44:3 should show register link" type="FAILURE">
+<![CDATA[  [Mobile Safari] › example.spec.ts:44:3 › Job Application Tracker › should show register link ─────
+
+    Error: browserType.launch: 
+    ╔══════════════════════════════════════════════════════╗
+    ║ Host system is missing dependencies to run browsers. ║
+    ║ Missing libraries:                                   ║
+    ║     libicudata.so.66                                 ║
+    ║     libicui18n.so.66                                 ║
+    ║     libicuuc.so.66                                   ║
+    ║     libxml2.so.2                                     ║
+    ║     libsqlite3.so.0                                  ║
+    ║     libxslt.so.1                                     ║
+    ║     liblcms2.so.2                                    ║
+    ║     libwoff2dec.so.1.0.2                             ║
+    ║     libevent-2.1.so.7                                ║
+    ║     libopus.so.0                                     ║
+    ║     libwebpdemux.so.2                                ║
+    ║     libharfbuzz-icu.so.0                             ║
+    ║     libepoxy.so.0                                    ║
+    ║     libjpeg.so.8                                     ║
+    ║     libpng16.so.16                                   ║
+    ║     libwebpmux.so.3                                  ║
+    ║     libwebp.so.6                                     ║
+    ║     libenchant-2.so.2                                ║
+    ║     libtasn1.so.6                                    ║
+    ║     libhyphen.so.0                                   ║
+    ║     libpcre2-8.so.0                                  ║
+    ║     libpsl.so.5                                      ║
+    ║     libnghttp2.so.14                                 ║
+    ║     libgudev-1.0.so.0                                ║
+    ║     libffi.so.7                                      ║
+    ║     libevdev.so.2                                    ║
+    ║     libjson-glib-1.0.so.0                            ║
+    ║     libgnutls.so.30                                  ║
+    ║     libx264.so                                       ║
+    ╚══════════════════════════════════════════════════════╝
+
+    Error Context: ../test-results/example-Job-Application-Tracker-should-show-register-link-Mobile-Safari/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tracker-should-show-register-link-Mobile-Safari/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="Microsoft Edge" tests="5" failures="5" skipped="0" time="0.038" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.008">
+<failure message="example.spec.ts:9:3 should redirect to login page when not authenticated" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › example.spec.ts:9:3 › Job Application Tracker › should redirect to login page when not authenticated 
+
+    Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge
+    Run "npx playwright install msedge"
+
+    Error Context: ../test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Microsoft-Edge/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-76927-page-when-not-authenticated-Microsoft-Edge/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.009">
+<failure message="example.spec.ts:15:3 should display login form elements" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › example.spec.ts:15:3 › Job Application Tracker › should display login form elements 
+
+    Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge
+    Run "npx playwright install msedge"
+
+    Error Context: ../test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Microsoft-Edge/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-e4ca4-display-login-form-elements-Microsoft-Edge/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.008">
+<failure message="example.spec.ts:25:3 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › example.spec.ts:25:3 › Job Application Tracker › should be responsive on mobile 
+
+    Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge
+    Run "npx playwright install msedge"
+
+    Error Context: ../test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Microsoft-Edge/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Microsoft-Edge/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.008">
+<failure message="example.spec.ts:35:3 should handle 404 pages gracefully" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › example.spec.ts:35:3 › Job Application Tracker › should handle 404 pages gracefully 
+
+    Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge
+    Run "npx playwright install msedge"
+
+    Error Context: ../test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Microsoft-Edge/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-95511-handle-404-pages-gracefully-Microsoft-Edge/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:44:3 should show register link" type="FAILURE">
+<![CDATA[  [Microsoft Edge] › example.spec.ts:44:3 › Job Application Tracker › should show register link ────
+
+    Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge
+    Run "npx playwright install msedge"
+
+    Error Context: ../test-results/example-Job-Application-Tracker-should-show-register-link-Microsoft-Edge/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tracker-should-show-register-link-Microsoft-Edge/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+<testsuite name="example.spec.ts" timestamp="2025-06-07T17:15:59.040Z" hostname="Google Chrome" tests="5" failures="5" skipped="0" time="0.026" errors="0">
+<testcase name="Job Application Tracker › should redirect to login page when not authenticated" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:9:3 should redirect to login page when not authenticated" type="FAILURE">
+<![CDATA[  [Google Chrome] › example.spec.ts:9:3 › Job Application Tracker › should redirect to login page when not authenticated 
+
+    Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    Run "npx playwright install chrome"
+
+    Error Context: ../test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Google-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-76927-page-when-not-authenticated-Google-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should display login form elements" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:15:3 should display login form elements" type="FAILURE">
+<![CDATA[  [Google Chrome] › example.spec.ts:15:3 › Job Application Tracker › should display login form elements 
+
+    Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    Run "npx playwright install chrome"
+
+    Error Context: ../test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Google-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-e4ca4-display-login-form-elements-Google-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should be responsive on mobile" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:25:3 should be responsive on mobile" type="FAILURE">
+<![CDATA[  [Google Chrome] › example.spec.ts:25:3 › Job Application Tracker › should be responsive on mobile 
+
+    Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    Run "npx playwright install chrome"
+
+    Error Context: ../test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Google-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Google-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should handle 404 pages gracefully" classname="example.spec.ts" time="0.006">
+<failure message="example.spec.ts:35:3 should handle 404 pages gracefully" type="FAILURE">
+<![CDATA[  [Google Chrome] › example.spec.ts:35:3 › Job Application Tracker › should handle 404 pages gracefully 
+
+    Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    Run "npx playwright install chrome"
+
+    Error Context: ../test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Google-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tr-95511-handle-404-pages-gracefully-Google-Chrome/error-context.md]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Job Application Tracker › should show register link" classname="example.spec.ts" time="0.005">
+<failure message="example.spec.ts:44:3 should show register link" type="FAILURE">
+<![CDATA[  [Google Chrome] › example.spec.ts:44:3 › Job Application Tracker › should show register link ─────
+
+    Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome
+    Run "npx playwright install chrome"
+
+    Error Context: ../test-results/example-Job-Application-Tracker-should-show-register-link-Google-Chrome/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|example-Job-Application-Tracker-should-show-register-link-Google-Chrome/error-context.md]]
+]]>
+</system-out>
 </testcase>
 </testsuite>
 </testsuites>

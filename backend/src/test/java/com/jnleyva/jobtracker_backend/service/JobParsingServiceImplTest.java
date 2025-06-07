@@ -168,7 +168,7 @@ class JobParsingServiceImplTest {
         
         assertFalse(result.isSuccessful());
         assertEquals("UNKNOWN", result.getSource());
-        assertEquals("No suitable parser found for this URL. Only Meta and Greenhouse URLs are supported.", result.getErrorMessage());
+        assertEquals("No suitable parser found for this URL. Only Meta, Greenhouse, and Microsoft URLs are supported.", result.getErrorMessage());
         
         verify(metaParser).canParse(url);
         verify(greenhouseParser).canParse(url);
@@ -252,7 +252,7 @@ class JobParsingServiceImplTest {
         JobParseResult result = service.parseJobUrl("https://example.com");
         
         assertFalse(result.isSuccessful());
-        assertEquals("No suitable parser found for this URL. Only Meta and Greenhouse URLs are supported.", result.getErrorMessage());
+        assertEquals("No suitable parser found for this URL. Only Meta, Greenhouse, and Microsoft URLs are supported.", result.getErrorMessage());
     }
 
     @Test

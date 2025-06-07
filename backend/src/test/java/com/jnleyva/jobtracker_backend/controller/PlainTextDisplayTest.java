@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,25 +33,25 @@ public class PlainTextDisplayTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private WebScrapingUtils webScrapingUtils;
 
-    @MockBean
+    @MockitoBean
     private com.jnleyva.jobtracker_backend.service.UserService userService;
 
-    @MockBean
+    @MockitoBean
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @MockitoBean
     private com.jnleyva.jobtracker_backend.service.JobParsingService jobParsingService;
 
-    @MockBean
+    @MockitoBean
     private com.jnleyva.jobtracker_backend.service.JwtService jwtService;
 
-    @MockBean
+    @MockitoBean
     private org.springframework.security.core.userdetails.UserDetailsService userDetailsService;
 
-    @MockBean
+    @MockitoBean
     private com.jnleyva.jobtracker_backend.service.TokenBlacklistService tokenBlacklistService;
 
     @Autowired

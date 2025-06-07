@@ -1,10 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
+import { profileService, ProfileResponse } from '../services/profileService';
 
 function MenuBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load profile data to get user initials
+    const loadProfile = async () => {
+      try {
+        const data = await profileService.getProfile();
+        setProfileData(data);
+      } catch (error) {
+        console.error('Failed to load profile data:', error);
+      }
+    };
+    loadProfile();
+  }, []);
+
+  const getUserInitials = () => {
+    if (!profileData) return 'U'; // Default fallback
+    
+    const firstName = profileData.profile?.firstName;
+    const lastName = profileData.profile?.lastName;
+    const username = profileData.username;
+    
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    } else if (firstName) {
+      return firstName.charAt(0).toUpperCase();
+    } else if (username) {
+      return username.charAt(0).toUpperCase();
+    }
+    
+    return 'U'; // Final fallback
+  };
+
+  const getProfilePicture = () => {
+    return profileData?.profile?.profilePicture || null;
+  };
 
   const handleLogout = async () => {
     console.log('Logout button clicked');
@@ -108,8 +145,16 @@ function MenuBar() {
                 className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
               >
                 <span className="sr-only">Open user menu</span>
-                <div className="h-8 w-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                  <span className="text-primary font-medium">JD</span>
+                <div className="h-8 w-8 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center overflow-hidden">
+                  {getProfilePicture() ? (
+                    <img 
+                      src={getProfilePicture()!} 
+                      alt="Profile" 
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-primary font-medium">{getUserInitials()}</span>
+                  )}
                 </div>
               </button>
             </div>

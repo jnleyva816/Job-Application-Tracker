@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MenuBar from '../components/MenuBar';
 import { profileService, ProfileResponse, ProfileUpdateRequest } from '../services/profileService';
 
@@ -8,6 +8,8 @@ function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [saveLoading, setSaveLoading] = useState(false);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Temporary state for editing
   const [editForm, setEditForm] = useState<ProfileUpdateRequest>({});
@@ -68,6 +70,35 @@ function Profile() {
     }
   };
 
+  const handleProfilePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File size must be less than 5MB');
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file');
+      return;
+    }
+
+    setUploadLoading(true);
+    setError('');
+
+    try {
+      const updatedProfile = await profileService.uploadProfilePicture(file);
+      setProfileData(updatedProfile);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload profile picture');
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     if (profileData) {
       setEditForm({
@@ -95,6 +126,24 @@ function Profile() {
   const parseSkills = () => profileService.parseSkills(profileData?.profile.skills);
   const parseJobTypes = () => profileService.parseJobTypes(profileData?.profile.jobTypes);
   const parsePreferredLocations = () => profileService.parsePreferredLocations(profileData?.profile.preferredLocations);
+
+  const getUserInitials = () => {
+    if (!profileData) return 'U';
+    
+    const firstName = profileData.profile?.firstName;
+    const lastName = profileData.profile?.lastName;
+    const username = profileData.username;
+    
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    } else if (firstName) {
+      return firstName.charAt(0).toUpperCase();
+    } else if (username) {
+      return username.charAt(0).toUpperCase();
+    }
+    
+    return 'U';
+  };
 
   if (isLoading) {
     return (
@@ -148,6 +197,44 @@ function Profile() {
           <div className="bg-light-surface dark:bg-dark-surface shadow rounded-lg p-6">
             <form onSubmit={handleSubmit}>
               <div className="space-y-6">
+                {/* Profile Picture Section */}
+                <div>
+                  <h2 className="text-lg font-medium text-light-text dark:text-dark-text mb-4">Profile Picture</h2>
+                  <div className="flex items-center space-x-6">
+                    <div className="h-20 w-20 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center overflow-hidden">
+                      {profileData?.profile?.profilePicture ? (
+                        <img 
+                          src={profileData.profile.profilePicture} 
+                          alt="Profile" 
+                          className="h-20 w-20 rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-primary font-medium text-2xl">{getUserInitials()}</span>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleProfilePictureUpload}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadLoading}
+                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {uploadLoading ? 'Uploading...' : 'Change Picture'}
+                      </button>
+                      <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mt-2">
+                        JPG, PNG or GIF (max 5MB)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Basic Information */}
                 <div>
                   <h2 className="text-lg font-medium text-light-text dark:text-dark-text mb-4">Basic Information</h2>

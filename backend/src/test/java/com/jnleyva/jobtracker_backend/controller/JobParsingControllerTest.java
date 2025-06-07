@@ -8,7 +8,7 @@ import com.jnleyva.jobtracker_backend.service.WebScrapingUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,21 +20,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(JobParsingController.class)
-@ActiveProfiles("test")
 @Import(TestSecurityConfig.class)
-class JobParsingControllerTest {
+@ActiveProfiles("test")
+public class JobParsingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private JobParsingService jobParsingService;
-    
-    @MockBean
-    private WebScrapingUtils webScrapingUtils;
-
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private JobParsingService jobParsingService;
+
+    @MockitoBean
+    private WebScrapingUtils webScrapingUtils;
 
     @Test
     void testParseJobUrl_Success() throws Exception {

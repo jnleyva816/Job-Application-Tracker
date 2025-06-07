@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 5
+      "actualWorkers": 16
     },
     "preserveOutput": "always",
     "reporter": [
@@ -30,6 +30,10 @@
         {
           "outputFile": "test-results/results.json"
         }
+      ],
+      [
+        "list",
+        null
       ]
     ],
     "reportSlowTests": {
@@ -43,7 +47,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 5
+          "actualWorkers": 16
         },
         "id": "chromium",
         "name": "chromium",
@@ -52,7 +56,103 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Microsoft Edge",
+        "name": "Microsoft Edge",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 16
+        },
+        "id": "Google Chrome",
+        "name": "Google Chrome",
+        "testDir": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/e2e-tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
       }
     ],
     "shard": null,
@@ -62,9 +162,11 @@
     "workers": 16,
     "webServer": {
       "command": "npm run preview",
-      "port": 4173,
+      "port": 5173,
       "reuseExistingServer": true,
-      "timeout": 120000
+      "timeout": 120000,
+      "stdout": "ignore",
+      "stderr": "pipe"
     }
   },
   "suites": [
@@ -87,7 +189,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -97,12 +199,12 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 343,
+                      "duration": 698,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-06-06T18:36:05.410Z",
+                      "startTime": "2025-06-07T17:15:59.737Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -121,7 +223,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -131,12 +233,12 @@
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 395,
+                      "duration": 628,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-06-06T18:36:05.417Z",
+                      "startTime": "2025-06-07T17:15:59.712Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -155,7 +257,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -165,12 +267,12 @@
                       "workerIndex": 2,
                       "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 368,
+                      "duration": 666,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-06-06T18:36:05.425Z",
+                      "startTime": "2025-06-07T17:15:59.743Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -189,7 +291,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -199,12 +301,12 @@
                       "workerIndex": 3,
                       "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 406,
+                      "duration": 678,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-06-06T18:36:05.421Z",
+                      "startTime": "2025-06-07T17:15:59.749Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -223,7 +325,7 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 30000,
+                  "timeout": 60000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
@@ -233,12 +335,12 @@
                       "workerIndex": 4,
                       "parallelIndex": 4,
                       "status": "passed",
-                      "duration": 385,
+                      "duration": 690,
                       "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-06-06T18:36:05.421Z",
+                      "startTime": "2025-06-07T17:15:59.712Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -250,6 +352,1306 @@
               "file": "example.spec.ts",
               "line": 44,
               "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 1234,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.735Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-7cab516d7945a2936c45",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 1029,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.747Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-6fe2284fa7f9ecbade61",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 7,
+                      "status": "passed",
+                      "duration": 1706,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.707Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-6b2fb22c4b9caf9c76ce",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 8,
+                      "status": "passed",
+                      "duration": 1071,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.731Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-880481c022103dacc26f",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 9,
+                      "status": "passed",
+                      "duration": 1555,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.728Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-3d4cf4ad2e1ace618d38",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 10,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.736Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-webkit/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-581b9850757ffeea825d",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 11,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.774Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-webkit/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-f942c5562d41daea2aca",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 12,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.749Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-webkit/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-ba012beb04041228a510",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 13,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.739Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-webkit/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-bd8114d7d944ba083db5",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 14,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.815Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tracker-should-show-register-link-webkit/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-ac8c1ee28c4cd9ed27e0",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 15,
+                      "status": "passed",
+                      "duration": 681,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:15:59.745Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-c37b98103e54fc460dc2",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 492,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.484Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-2f27240615c388501e67",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 19,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 519,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.519Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-21922d368c53b799896a",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 10,
+                      "status": "passed",
+                      "duration": 549,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.485Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-333a34c22b84b16bb4ab",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 18,
+                      "parallelIndex": 13,
+                      "status": "passed",
+                      "duration": 495,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.517Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-e888344cfe3f13ffbd83",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 20,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.509Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Mobile-Safari/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-58f47cb628b3e065aced",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 21,
+                      "parallelIndex": 15,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.537Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Mobile-Safari/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-f942a62857c22699216f",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 24,
+                      "parallelIndex": 4,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.546Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Mobile-Safari/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-a17f6f3ce006123025f3",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 23,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.527Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Mobile-Safari/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-9430aba2f6d3eb282040",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 22,
+                      "parallelIndex": 12,
+                      "status": "failed",
+                      "duration": 6,
+                      "error": {
+                        "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝",
+                        "stack": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: \n╔══════════════════════════════════════════════════════╗\n║ Host system is missing dependencies to run browsers. ║\n║ Missing libraries:                                   ║\n║     libicudata.so.66                                 ║\n║     libicui18n.so.66                                 ║\n║     libicuuc.so.66                                   ║\n║     libxml2.so.2                                     ║\n║     libsqlite3.so.0                                  ║\n║     libxslt.so.1                                     ║\n║     liblcms2.so.2                                    ║\n║     libwoff2dec.so.1.0.2                             ║\n║     libevent-2.1.so.7                                ║\n║     libopus.so.0                                     ║\n║     libwebpdemux.so.2                                ║\n║     libharfbuzz-icu.so.0                             ║\n║     libepoxy.so.0                                    ║\n║     libjpeg.so.8                                     ║\n║     libpng16.so.16                                   ║\n║     libwebpmux.so.3                                  ║\n║     libwebp.so.6                                     ║\n║     libenchant-2.so.2                                ║\n║     libtasn1.so.6                                    ║\n║     libhyphen.so.0                                   ║\n║     libpcre2-8.so.0                                  ║\n║     libpsl.so.5                                      ║\n║     libnghttp2.so.14                                 ║\n║     libgudev-1.0.so.0                                ║\n║     libffi.so.7                                      ║\n║     libevdev.so.2                                    ║\n║     libjson-glib-1.0.so.0                            ║\n║     libgnutls.so.30                                  ║\n║     libx264.so                                       ║\n╚══════════════════════════════════════════════════════╝"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.528Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tracker-should-show-register-link-Mobile-Safari/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-1b3503e52f02cf41ebe1",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 25,
+                      "parallelIndex": 11,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.549Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Microsoft-Edge/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-feeae3946cf5bb579c29",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 26,
+                      "parallelIndex": 14,
+                      "status": "failed",
+                      "duration": 9,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:01.606Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Microsoft-Edge/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-960682ac7e41b173b029",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 27,
+                      "parallelIndex": 11,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:02.538Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Microsoft-Edge/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-5c451e74f6ca4d890a54",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 28,
+                      "parallelIndex": 14,
+                      "status": "failed",
+                      "duration": 8,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:02.605Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Microsoft-Edge/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-996d58ca6e338981cd2d",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Microsoft Edge",
+                  "projectName": "Microsoft Edge",
+                  "results": [
+                    {
+                      "workerIndex": 29,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'msedge' is not found at /opt/microsoft/msedge/msedge\nRun \"npx playwright install msedge\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.001Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tracker-should-show-register-link-Microsoft-Edge/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-38172ecf33220ecb33f7",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
+            },
+            {
+              "title": "should redirect to login page when not authenticated",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 30,
+                      "parallelIndex": 13,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.079Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-76927-page-when-not-authenticated-Google-Chrome/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-54211a9077b50d6a4cea",
+              "file": "example.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "should display login form elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 31,
+                      "parallelIndex": 10,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.074Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-e4ca4-display-login-form-elements-Google-Chrome/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-cf053a1183e88516d533",
+              "file": "example.spec.ts",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "should be responsive on mobile",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 32,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.123Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-08845-uld-be-responsive-on-mobile-Google-Chrome/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-bb9420b381af90ba7140",
+              "file": "example.spec.ts",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "should handle 404 pages gracefully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 33,
+                      "parallelIndex": 11,
+                      "status": "failed",
+                      "duration": 6,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.338Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tr-95511-handle-404-pages-gracefully-Google-Chrome/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-fe68d53b2e8f88e91f4a",
+              "file": "example.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "should show register link",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Google Chrome",
+                  "projectName": "Google Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 34,
+                      "parallelIndex": 14,
+                      "status": "failed",
+                      "duration": 5,
+                      "error": {
+                        "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\"",
+                        "stack": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                      },
+                      "errors": [
+                        {
+                          "message": "Error: browserType.launch: Chromium distribution 'chrome' is not found at /opt/google/chrome/chrome\nRun \"npx playwright install chrome\""
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-07T17:16:03.390Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/home/jleyva/Documents/Java/Job-Application-Tracker/frontend/test-results/example-Job-Application-Tracker-should-show-register-link-Google-Chrome/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a30a6eba6312f6b87ea5-1bd96889df03327e8602",
+              "file": "example.spec.ts",
+              "line": 44,
+              "column": 3
             }
           ]
         }
@@ -258,11 +1660,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-06-06T18:36:03.950Z",
-    "duration": 1982.1769999999997,
-    "expected": 5,
+    "startTime": "2025-06-07T17:15:59.000Z",
+    "duration": 6172.138000000001,
+    "expected": 15,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 20,
     "flaky": 0
   }
 }

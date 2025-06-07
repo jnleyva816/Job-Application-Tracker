@@ -15,6 +15,7 @@ export interface UserProfile {
   githubUrl?: string;
   portfolioUrl?: string;
   phoneNumber?: string;
+  profilePicture?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -43,6 +44,7 @@ export interface ProfileUpdateRequest {
   githubUrl?: string;
   portfolioUrl?: string;
   phoneNumber?: string;
+  profilePicture?: string;
 }
 
 class ProfileService {
@@ -107,6 +109,27 @@ class ProfileService {
       const errorText = await response.text();
       console.error('Failed to complete profile:', response.status, errorText);
       throw new Error(`Failed to complete profile: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async uploadProfilePicture(file: File): Promise<ProfileResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${this.apiUrl}/profile/picture`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.getToken()}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Failed to upload profile picture:', response.status, errorText);
+      throw new Error(`Failed to upload profile picture: ${response.status}`);
     }
 
     return response.json();

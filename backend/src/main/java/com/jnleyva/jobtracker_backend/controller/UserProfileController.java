@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -99,6 +102,46 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/picture")
+    public ResponseEntity<UserProfileResponse> uploadProfilePicture(@RequestParam("file") MultipartFile file) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User currentUser = userService.getUserByUsername(username);
+        
+        try {
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || (!contentType.startsWith("image/"))) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Convert to Base64
+            byte[] fileBytes = file.getBytes();
+            String base64Image = "data:" + contentType + ";base64," + Base64.getEncoder().encodeToString(fileBytes);
+            
+            // Update profile
+            UserProfile profile;
+            try {
+                profile = userProfileService.getProfileByUserId(currentUser.getId());
+                profile.setProfilePicture(base64Image);
+                profile = userProfileService.updateProfile(profile.getId(), profile);
+            } catch (Exception e) {
+                // If profile doesn't exist, create one with the picture
+                profile = new UserProfile();
+                profile.setProfilePicture(base64Image);
+                profile = userProfileService.createProfile(profile, currentUser.getId());
+            }
+            
+            // Hide sensitive data
+            currentUser.setPassword(null);
+            
+            UserProfileResponse response = new UserProfileResponse(currentUser, profile);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     // Request/Response DTOs
     public static class UserProfileUpdateRequest {
         private String username;
@@ -116,6 +159,7 @@ public class UserProfileController {
         private String githubUrl;
         private String portfolioUrl;
         private String phoneNumber;
+        private String profilePicture;
 
         // Getters and setters
         public String getUsername() { return username; }
@@ -163,6 +207,9 @@ public class UserProfileController {
         public String getPhoneNumber() { return phoneNumber; }
         public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
+        public String getProfilePicture() { return profilePicture; }
+        public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
+
         public UserProfile toUserProfile() {
             UserProfile profile = new UserProfile();
             profile.setFirstName(this.firstName);
@@ -178,6 +225,7 @@ public class UserProfileController {
             profile.setGithubUrl(this.githubUrl);
             profile.setPortfolioUrl(this.portfolioUrl);
             profile.setPhoneNumber(this.phoneNumber);
+            profile.setProfilePicture(this.profilePicture);
             return profile;
         }
     }
