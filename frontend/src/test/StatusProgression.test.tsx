@@ -19,6 +19,9 @@ vi.mock('../components/charts', () => ({
   ),
   DonutChart: () => (
     <div data-testid="donut-chart">Donut Chart</div>
+  ),
+  ApplicationFlowChart: () => (
+    <div data-testid="application-flow-chart">Application Flow Chart</div>
   )
 }));
 

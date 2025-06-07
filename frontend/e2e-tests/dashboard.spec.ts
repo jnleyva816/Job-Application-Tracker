@@ -84,7 +84,7 @@ test.describe('Dashboard Functionality', () => {
         const navLink = page.locator(`nav a:has-text("${link.text}")`).first();
         if (await navLink.count() > 0) {
           await navLink.click();
-          await expect(page).toHaveURL(new RegExp(`.*${link.url}`));
+          await expect(page).toHaveURL(new RegExp(link.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
           
           // Navigate back to dashboard for next test
           if (link.url !== '/dashboard') {
@@ -207,7 +207,7 @@ test.describe('Dashboard Functionality', () => {
       for (const stat of clickableStats) {
         if (await page.locator(stat.selector).count() > 0) {
           await page.locator(stat.selector).click();
-          await expect(page).toHaveURL(new RegExp(`.*${stat.expectedUrl}`));
+          await expect(page).toHaveURL(new RegExp(stat.expectedUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
           
           // Navigate back to dashboard
           await page.goto('/dashboard');

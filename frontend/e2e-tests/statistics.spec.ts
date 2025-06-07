@@ -62,7 +62,7 @@ test.describe('Statistics and Analytics', () => {
       ];
 
       for (const metric of keyMetrics) {
-        const metricElement = page.locator(`text=${metric}`, { hasText: new RegExp(metric, 'i') });
+        const metricElement = page.locator(`text=${metric}`, { hasText: new RegExp(metric.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') });
         if (await metricElement.count() > 0) {
           await expect(metricElement.first()).toBeVisible();
         }
@@ -251,7 +251,7 @@ test.describe('Statistics and Analytics', () => {
       ];
 
       for (const status of statusCategories) {
-        const statusElement = page.locator(`text=${status}`, { hasText: new RegExp(status, 'i') });
+        const statusElement = page.locator(`text=${status}`, { hasText: new RegExp(status.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') });
         if (await statusElement.count() > 0) {
           // Should have associated number or percentage
           const parentElement = statusElement.locator('..').first();

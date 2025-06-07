@@ -129,6 +129,22 @@ public class StatisticsServiceImpl implements StatisticsService {
         logger.debug("Status progression distribution: {}", byStatus);
         logger.debug("Current status distribution: {}", currentStatusDistribution);
         
+        // Offer status distribution
+        Map<String, Integer> offerStatusDistribution = new HashMap<>();
+        offerStatusDistribution.put("ACCEPTED", 0);
+        offerStatusDistribution.put("DECLINED", 0);
+        offerStatusDistribution.put("PENDING", 0);
+        
+        for (Application app : applications) {
+            String offerStatus = app.getOfferStatus();
+            if (offerStatus != null && !offerStatus.isEmpty()) {
+                offerStatusDistribution.put(offerStatus, offerStatusDistribution.getOrDefault(offerStatus, 0) + 1);
+                logger.trace("Application {} has offer status: {}", app.getId(), offerStatus);
+            }
+        }
+        stats.put("offerStatusDistribution", offerStatusDistribution);
+        logger.debug("Offer status distribution: {}", offerStatusDistribution);
+        
         // Applications by month
         Map<String, Integer> byMonth = new HashMap<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yyyy");
@@ -152,10 +168,11 @@ public class StatisticsServiceImpl implements StatisticsService {
         stats.put("averageResponseTime", avgResponseTime);
         logger.debug("Average response time: {} days", avgResponseTime);
         
-        // Add interview statistics
+        // Add interview statistics - ALWAYS include this, even if no interviews
         Map<String, Object> interviewStats = calculateInterviewStatistics(interviews, applications);
         stats.put("interviewStats", interviewStats);
-        logger.debug("Interview statistics: {}", interviewStats);
+        logger.info("=== Interview statistics added to response ===");
+        logger.info("Interview stats: {}", interviewStats);
         
         return stats;
     }
@@ -180,6 +197,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         int pastInterviews = 0;
         int todayInterviews = 0;
         
+        logger.debug("Current date/time for interview comparison: {}", now);
+        
         // Interview months distribution
         Map<String, Integer> interviewsByMonth = new HashMap<>();
         DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM yyyy");
@@ -196,14 +215,23 @@ public class StatisticsServiceImpl implements StatisticsService {
             String status = interview.getStatus() != null ? interview.getStatus() : "SCHEDULED";
             byInterviewStatus.put(status, byInterviewStatus.getOrDefault(status, 0) + 1);
             
-            // Count by timing (upcoming vs past)
+            // Count by timing (upcoming vs past) - improved logic
             LocalDateTime interviewDate = interview.getInterviewDate();
-            if (interviewDate.toLocalDate().isEqual(now.toLocalDate())) {
+            LocalDate interviewLocalDate = interviewDate.toLocalDate();
+            LocalDate nowLocalDate = now.toLocalDate();
+            
+            logger.trace("Interview {} date comparison: interview={}, now={}, interviewDate.isAfter(now)={}", 
+                interview.getId(), interviewDate, now, interviewDate.isAfter(now));
+            
+            if (interviewLocalDate.isEqual(nowLocalDate)) {
                 todayInterviews++;
+                logger.trace("Interview {} classified as TODAY", interview.getId());
             } else if (interviewDate.isAfter(now)) {
                 upcomingInterviews++;
+                logger.trace("Interview {} classified as UPCOMING", interview.getId());
             } else {
                 pastInterviews++;
+                logger.trace("Interview {} classified as PAST", interview.getId());
             }
             
             // Count by month
@@ -218,10 +246,32 @@ public class StatisticsServiceImpl implements StatisticsService {
         interviewStats.put("today", todayInterviews);
         interviewStats.put("byMonth", interviewsByMonth);
         
-        logger.debug("Interview types distribution: {}", byType);
-        logger.debug("Interview status distribution: {}", byInterviewStatus);
-        logger.debug("Interview timing - Upcoming: {}, Past: {}, Today: {}", upcomingInterviews, pastInterviews, todayInterviews);
-        logger.debug("Interviews by month: {}", interviewsByMonth);
+        logger.info("=== INTERVIEW TIMING SUMMARY ===");
+        logger.info("Current time: {}", now);
+        logger.info("Total interviews processed: {}", interviews.size());
+        logger.info("Upcoming interviews: {}", upcomingInterviews);
+        logger.info("Past interviews: {}", pastInterviews);
+        logger.info("Today's interviews: {}", todayInterviews);
+        logger.info("Interview types distribution: {}", byType);
+        logger.info("Interview status distribution: {}", byInterviewStatus);
+        logger.info("Interviews by month: {}", interviewsByMonth);
+        
+        // Detailed breakdown for debugging
+        if (interviews.isEmpty()) {
+            logger.warn("⚠ NO INTERVIEWS FOUND - This is why upcoming interviews is 0");
+        } else {
+            logger.info("✓ Found {} interviews, calculating timing relative to current time", interviews.size());
+            if (upcomingInterviews == 0) {
+                logger.warn("⚠ No upcoming interviews found - all interviews are in the past or today");
+                for (Interview interview : interviews) {
+                    logger.info("Interview {}: {} at {} ({})", 
+                        interview.getId(), 
+                        interview.getType(), 
+                        interview.getInterviewDate(),
+                        interview.getInterviewDate().isAfter(now) ? "FUTURE" : "PAST/TODAY");
+                }
+            }
+        }
         
         // Calculate interview conversion rate (applications with interviews / total applications)
         long applicationsWithInterviews = applications.stream()
