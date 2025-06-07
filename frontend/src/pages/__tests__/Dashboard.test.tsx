@@ -66,8 +66,37 @@ vi.mock('../../components/DashboardApplicationsView', () => ({
   )
 }));
 
+vi.mock('../../components/DashboardCards', () => ({
+  default: () => (
+    <div data-testid="dashboard-cards">
+      <div>Total Applications</div>
+      <div>4</div>
+      <div>Applied</div>
+      <div>1</div>
+      <div>Interviewing</div>
+      <div>1</div>
+      <div>Offered</div>
+      <div>1</div>
+      <div>Rejected</div>
+      <div>1</div>
+    </div>
+  )
+}));
+
 vi.mock('../../services/authService');
 vi.mock('../../services/interviewService');
+vi.mock('../../services/profileService', () => ({
+  profileService: {
+    getProfile: vi.fn().mockResolvedValue({
+      username: 'testuser',
+      profile: {
+        firstName: 'Test',
+        lastName: 'User',
+        profilePicture: null
+      }
+    })
+  }
+}));
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
