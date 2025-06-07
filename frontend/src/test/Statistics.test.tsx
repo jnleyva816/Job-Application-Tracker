@@ -24,6 +24,11 @@ vi.mock('../components/charts', () => ({
     <div data-testid="donut-chart" data-chart-items={data.length}>
       Donut Chart with {data.length} items
     </div>
+  ),
+  ApplicationFlowChart: ({ stats }: { stats: { total: number } }) => (
+    <div data-testid="application-flow-chart">
+      Application Flow Chart for {stats.total} applications
+    </div>
   )
 }));
 
@@ -44,9 +49,9 @@ const mockStatisticsData = {
     Rejected: 2,
   },
   byMonth: {
-    'Jan 2024': 5,
-    'Feb 2024': 8,
-    'Mar 2024': 12,
+    'Jan 2025': 5,
+    'Dec 2024': 8,
+    'Nov 2024': 12,
   },
   averageResponseTime: 7,
   successRate: 20,
@@ -59,17 +64,17 @@ const mockStatisticsData = {
       'Behavioral': 2,
     },
     byStatus: {
-      'SCHEDULED': 3,
-      'COMPLETED': 10,
+      'SCHEDULED': 5,
+      'COMPLETED': 8,
       'CANCELLED': 2,
     },
-    upcoming: 3,
-    past: 10,
+    upcoming: 5,
+    past: 8,
     today: 2,
     byMonth: {
-      'Jan 2024': 3,
-      'Feb 2024': 6,
-      'Mar 2024': 6,
+      'Jan 2025': 3,
+      'Dec 2024': 6,
+      'Nov 2024': 6,
     },
     conversionRate: 60.0,
     averagePerApplication: 1.5,
@@ -116,7 +121,7 @@ describe('Statistics Component', () => {
     // Check interview overview cards
     expect(screen.getByText('Total Interviews').closest('div')).toContainHTML('15');
     expect(screen.getByText('Interview Rate').closest('div')).toContainHTML('60%');
-    expect(screen.getByText('Upcoming Interviews').closest('div')).toContainHTML('3');
+    expect(screen.getByText('Upcoming Interviews').closest('div')).toContainHTML('5');
     expect(screen.getByText('Avg per Application').closest('div')).toContainHTML('1.5');
 
     // Check that charts are rendered

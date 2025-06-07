@@ -32,6 +32,11 @@ export interface ApplicationStats {
     Offered: number;
     Rejected: number;
   };
+  offerStatusDistribution?: {
+    ACCEPTED: number;
+    DECLINED: number;
+    PENDING: number;
+  };
   byMonth: {
     [key: string]: number;
   };

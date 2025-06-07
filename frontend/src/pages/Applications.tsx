@@ -25,6 +25,10 @@ function Applications() {
     fetchApplications();
   }, []);
 
+  const handleApplicationsChange = (updatedApplications: JobApplication[]) => {
+    setApplications(updatedApplications);
+  };
+
   return (
     <div className="min-h-screen bg-light-background dark:bg-dark-background">
       <MenuBar />
@@ -43,6 +47,7 @@ function Applications() {
 
           <ApplicationsView 
             applications={applications}
+            onApplicationsChange={handleApplicationsChange}
             isLoading={isLoading}
             error={error}
           />

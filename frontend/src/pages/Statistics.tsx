@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import MenuBar from '../components/MenuBar';
 import { statisticsService, ApplicationStats } from '../services/statisticsService';
 import { BarChart, DonutChart } from '../components/charts';
+import ApplicationFlowCards from '../components/ApplicationFlowCards';
 
 function Statistics() {
   const [stats, setStats] = useState<ApplicationStats | null>(null);
@@ -27,16 +28,10 @@ function Statistics() {
   }, []);
 
   const getStatusColors = () => ({
-    Applied: '#667eea',
-    Interviewing: '#764ba2', 
+    Applied: '#fcd34d',
+    Interviewing: '#fb923c',
     Offered: '#43e97b',
-    Rejected: '#f093fb'
-  });
-
-  const getInterviewStatusColors = () => ({
-    SCHEDULED: '#4facfe',
-    COMPLETED: '#43e97b',
-    CANCELLED: '#f093fb'
+    Rejected: '#ef4444'
   });
 
   if (loading) {
@@ -113,22 +108,8 @@ function Statistics() {
 
   const monthlyData = Object.entries(stats.byMonth).map(([month, count]) => ({
     label: month.substring(0, 7), // Show YYYY-MM format
-    value: count,
-    color: '#667eea'
+    value: count
   }));
-
-  const interviewTypeData = stats.interviewStats ? Object.entries(stats.interviewStats.byType).map(([type, count]) => ({
-    label: type,
-    value: count,
-    color: '#4facfe'
-  })) : [];
-
-  const interviewStatusColors = getInterviewStatusColors();
-  const interviewStatusData = stats.interviewStats ? Object.entries(stats.interviewStats.byStatus).map(([status, count]) => ({
-    label: status,
-    value: count,
-    color: interviewStatusColors[status as keyof typeof interviewStatusColors] || '#4facfe'
-  })) : [];
 
   return (
     <div className="min-h-screen bg-light-background dark:bg-dark-background">
@@ -139,11 +120,16 @@ function Statistics() {
           <h1 className="text-3xl font-bold text-light-text dark:text-dark-text mb-8">Application Analytics</h1>
 
           {/* Overview Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 p-6 rounded-xl shadow-lg border border-blue-200 dark:border-blue-700">
               <h3 className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">Total Applications</h3>
               <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">{stats.total}</p>
               <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">All time submissions</div>
+            </div>
+            <div className="bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900 dark:to-amber-900 p-6 rounded-xl shadow-lg border border-orange-200 dark:border-orange-700">
+              <h3 className="text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">Currently Interviewing</h3>
+              <p className="text-3xl font-bold text-orange-900 dark:text-orange-100">{currentStatusDistribution.Interviewing || 0}</p>
+              <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">Active interview process</div>
             </div>
             <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900 dark:to-emerald-900 p-6 rounded-xl shadow-lg border border-green-200 dark:border-green-700">
               <h3 className="text-sm font-medium text-green-700 dark:text-green-300 mb-2">Success Rate</h3>
@@ -155,12 +141,12 @@ function Statistics() {
               <p className="text-3xl font-bold text-purple-900 dark:text-purple-100">{stats.averageResponseTime} days</p>
               <div className="mt-2 text-xs text-purple-600 dark:text-purple-400">Days to hear back</div>
             </div>
-            <div className="bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-900 dark:to-orange-900 p-6 rounded-xl shadow-lg border border-amber-200 dark:border-amber-700">
-              <h3 className="text-sm font-medium text-amber-700 dark:text-amber-300 mb-2">Active Applications</h3>
-              <p className="text-3xl font-bold text-amber-900 dark:text-amber-100">
+            <div className="bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900 dark:to-cyan-900 p-6 rounded-xl shadow-lg border border-teal-200 dark:border-teal-700">
+              <h3 className="text-sm font-medium text-teal-700 dark:text-teal-300 mb-2">Active Applications</h3>
+              <p className="text-3xl font-bold text-teal-900 dark:text-teal-100">
                 {(currentStatusDistribution.Applied || 0) + (currentStatusDistribution.Interviewing || 0)}
               </p>
-              <div className="mt-2 text-xs text-amber-600 dark:text-amber-400">In progress</div>
+              <div className="mt-2 text-xs text-teal-600 dark:text-teal-400">In progress</div>
             </div>
           </div>
 
@@ -189,6 +175,11 @@ function Statistics() {
               </div>
             </div>
           )}
+
+          {/* Application Flow Cards - Visible on all screen sizes */}
+          <div className="mb-12">
+            <ApplicationFlowCards stats={stats} />
+          </div>
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -229,47 +220,6 @@ function Statistics() {
             </div>
           </div>
 
-          {/* Interview Charts */}
-          {stats.interviewStats && stats.interviewStats.totalInterviews > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-              {/* Interview Types */}
-              <div className="bg-light-surface dark:bg-dark-surface p-8 rounded-2xl shadow-lg">
-                <h2 className="text-xl font-semibold text-light-text dark:text-dark-text mb-2">Interview Types</h2>
-                <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mb-6">
-                  Breakdown by interview format
-                </p>
-                <BarChart 
-                  data={interviewTypeData}
-                  width={350}
-                  height={280}
-                  colorScheme={['#4facfe', '#43e97b', '#667eea', '#f093fb']}
-                  showValues={true}
-                />
-              </div>
-
-              {/* Interview Status */}
-              <div className="bg-light-surface dark:bg-dark-surface p-8 rounded-2xl shadow-lg">
-                <h2 className="text-xl font-semibold text-light-text dark:text-dark-text mb-2">Interview Status</h2>
-                <p className="text-sm text-light-text-secondary dark:text-dark-text-secondary mb-6">
-                  Current state of your interviews
-                </p>
-                <div className="flex justify-center">
-                  <DonutChart 
-                    data={interviewStatusData}
-                    width={320}
-                    height={320}
-                    colorScheme={Object.values(interviewStatusColors)}
-                    showLabels={interviewStatusData.length <= 3}
-                    showPercentages={true}
-                    useLegend={interviewStatusData.length > 3}
-                    legendPosition="right"
-                    minSliceAngle={0.1}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Monthly Applications Trend */}
           <div className="bg-light-surface dark:bg-dark-surface p-8 rounded-2xl shadow-lg">
             <h2 className="text-xl font-semibold text-light-text dark:text-dark-text mb-2">Monthly Application Trend</h2>
@@ -281,7 +231,7 @@ function Statistics() {
                 data={monthlyData}
                 width={Math.max(600, monthlyData.length * 80)}
                 height={350}
-                colorScheme={['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b']}
+                colorScheme={['#10b981', '#059669', '#047857', '#065f46', '#064e3b']}
                 showValues={true}
               />
             </div>

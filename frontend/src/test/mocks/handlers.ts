@@ -486,7 +486,7 @@ export const handlers = [
       )
     }
     
-    // Return mock statistics
+    // Return mock statistics with upcoming interviews
     return HttpResponse.json({
       total: 10,
       byStatus: {
@@ -496,30 +496,32 @@ export const handlers = [
         Rejected: 1
       },
       byMonth: {
-        'Jan 2024': 3,
-        'Feb 2024': 4,
-        'Mar 2024': 3
+        'Jan 2025': 3,
+        'Dec 2024': 4,
+        'Nov 2024': 3
       },
       successRate: 20.0,
       averageResponseTime: 14,
       interviewStats: {
         totalInterviews: 8,
-        upcoming: 2,
-        past: 6,
-        today: 0,
+        upcoming: 3,
+        past: 4,
+        today: 1,
         byType: {
           Technical: 3,
           HR: 2,
-          Final: 3
+          Final: 2,
+          Behavioral: 1
         },
         byStatus: {
-          SCHEDULED: 2,
-          COMPLETED: 6
+          SCHEDULED: 4,
+          COMPLETED: 3,
+          CANCELLED: 1
         },
         byMonth: {
-          'Jan 2024': 2,
-          'Feb 2024': 3,
-          'Mar 2024': 3
+          'Jan 2025': 2,
+          'Dec 2024': 3,
+          'Nov 2024': 3
         },
         conversionRate: 40.0,
         averagePerApplication: 0.8
@@ -554,13 +556,18 @@ export const handlers = [
       )
     }
     
+    // Create dates relative to current time
+    const today = new Date();
+    const futureDate1 = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+    const pastDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+    
     // Return mock interviews
     return HttpResponse.json([
       {
         id: 1,
         type: 'TECHNICAL_INTERVIEW',
-        interviewDate: '2024-01-15T10:00:00Z',
-        notes: 'Technical round',
+        interviewDate: futureDate1.toISOString(),
+        notes: 'Technical round - upcoming',
         status: 'SCHEDULED',
         interviewerName: 'John Doe',
         interviewerEmail: 'john@company.com',
@@ -572,8 +579,8 @@ export const handlers = [
       {
         id: 2,
         type: 'HR_INTERVIEW',
-        interviewDate: '2024-01-20T14:00:00Z',
-        notes: 'Culture fit discussion',
+        interviewDate: pastDate.toISOString(),
+        notes: 'Culture fit discussion - completed',
         status: 'COMPLETED',
         interviewerName: 'Jane Smith',
         interviewerEmail: 'jane@company.com',
@@ -949,13 +956,19 @@ export const handlers = [
     
     const applicationId = parseInt(params.applicationId as string)
     
-    // Return mock interviews for the application
+    // Create future dates for upcoming interviews
+    const today = new Date();
+    const futureDate1 = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+    const futureDate2 = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000); // 14 days from now
+    const pastDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+    
+    // Return mock interviews for the application with mix of past and future dates
     return HttpResponse.json([
       {
         id: 1,
         type: 'TECHNICAL_INTERVIEW',
-        interviewDate: '2024-01-15T10:00:00Z',
-        notes: 'Technical round',
+        interviewDate: futureDate1.toISOString(),
+        notes: 'Technical round - upcoming',
         status: 'SCHEDULED',
         interviewerName: 'John Doe',
         interviewerEmail: 'john@company.com',
@@ -967,14 +980,27 @@ export const handlers = [
       {
         id: 2,
         type: 'HR_INTERVIEW',
-        interviewDate: '2024-01-20T14:00:00Z',
-        notes: 'Culture fit discussion',
+        interviewDate: pastDate.toISOString(),
+        notes: 'Culture fit discussion - completed',
         status: 'COMPLETED',
         interviewerName: 'Jane Smith',
         interviewerEmail: 'jane@company.com',
         location: 'Remote',
         durationMinutes: 30,
         meetingLink: 'https://zoom.us/meeting2',
+        applicationId: applicationId
+      },
+      {
+        id: 3,
+        type: 'FINAL_INTERVIEW',
+        interviewDate: futureDate2.toISOString(),
+        notes: 'Final round - upcoming',
+        status: 'SCHEDULED',
+        interviewerName: 'Bob Johnson',
+        interviewerEmail: 'bob@company.com',
+        location: 'Office',
+        durationMinutes: 90,
+        meetingLink: 'https://zoom.us/meeting3',
         applicationId: applicationId
       }
     ])

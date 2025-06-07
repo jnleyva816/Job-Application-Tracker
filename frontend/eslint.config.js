@@ -28,4 +28,12 @@ export default tseslint.config(
       ],
     },
   },
+  // Override for test files
+  {
+    files: ['**/*.{test,spec}.{ts,tsx}', 'e2e-tests/**/*.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
+    rules: {
+      'security/detect-object-injection': 'off',
+      'security/detect-non-literal-regexp': 'off',
+    },
+  },
 )

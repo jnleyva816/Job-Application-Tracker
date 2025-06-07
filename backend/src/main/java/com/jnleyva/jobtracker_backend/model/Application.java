@@ -46,6 +46,9 @@ public class Application {
     @Column(name = "status", nullable = false, length = 100)
     private String status;
 
+    @Column(name = "offer_status", length = 50)
+    private String offerStatus; // "ACCEPTED", "DECLINED", "PENDING", null for no offer
+
     @Column(name = "application_date", nullable = false)
     private LocalDate applicationDate;
 
@@ -162,6 +165,14 @@ public class Application {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOfferStatus() {
+        return offerStatus;
+    }
+
+    public void setOfferStatus(String offerStatus) {
+        this.offerStatus = offerStatus;
     }
 
     public LocalDate getApplicationDate() {

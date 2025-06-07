@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import MenuBar from '../components/MenuBar';
 import Calendar from '../components/Calendar';
 import DashboardApplicationsView from '../components/DashboardApplicationsView';
+import DashboardCards from '../components/DashboardCards';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { interviewService } from '../services/interviewService';
@@ -159,31 +160,8 @@ function Dashboard() {
 
         {/* Main Content */}
         <main className="w-full px-4 py-8 sm:px-6 lg:px-8">
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Total Applications</h3>
-              <p className="text-2xl font-semibold text-light-text dark:text-dark-text">{applications.length}</p>
-            </div>
-            <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Applied</h3>
-              <p className="text-2xl font-semibold text-light-text dark:text-dark-text">
-                {applications.filter(app => app.status === 'Applied').length}
-              </p>
-            </div>
-            <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Interviewing</h3>
-              <p className="text-2xl font-semibold text-light-text dark:text-dark-text">
-                {applications.filter(app => app.status === 'Interviewing').length}
-              </p>
-            </div>
-            <div className="bg-light-surface dark:bg-dark-surface p-6 rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary">Offered</h3>
-              <p className="text-2xl font-semibold text-light-text dark:text-dark-text">
-                {applications.filter(app => app.status === 'Offered').length}
-              </p>
-            </div>
-          </div>
+          {/* Interactive Dashboard Cards */}
+          <DashboardCards applications={applications} interviews={interviews} />
 
           {/* Main Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
