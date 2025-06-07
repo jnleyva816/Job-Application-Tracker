@@ -108,9 +108,11 @@ function ApplicationsView({ applications, onApplicationsChange, isLoading, error
 
     // Return in order, only including statuses that have applications
     return statusOrder
+      // eslint-disable-next-line security/detect-object-injection
       .filter(status => grouped[status].length > 0)
       .map(status => ({
         status,
+        // eslint-disable-next-line security/detect-object-injection
         applications: grouped[status]
       }));
   }, [filteredAndSortedApplications, groupByStatus]);

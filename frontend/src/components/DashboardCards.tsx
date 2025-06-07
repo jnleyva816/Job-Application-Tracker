@@ -86,7 +86,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ applications, interview
     },
     {
       id: 'pending',
-      title: 'Pending Review',
+      title: 'Applied',
       value: appliedCount,
       percentage: Math.round((appliedCount / total) * 100),
       color: '#fcd34d',
@@ -96,7 +96,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ applications, interview
       details: [
         { label: 'Applications', value: appliedCount },
         { label: 'Percentage', value: `${Math.round((appliedCount / total) * 100)}%` },
-        { label: 'Status', value: 'Under Review' }
+        { label: 'Status', value: 'Applied' }
       ]
     },
     {
@@ -116,7 +116,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ applications, interview
     },
     {
       id: 'offers',
-      title: 'Offers Received',
+      title: 'Offered',
       value: offeredCount,
       percentage: Math.round((offeredCount / total) * 100),
       color: '#43e97b',

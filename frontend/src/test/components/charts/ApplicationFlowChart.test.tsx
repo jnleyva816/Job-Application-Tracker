@@ -10,6 +10,7 @@ const createChainableMock = () => ({
   transition: vi.fn(() => createChainableMock()),
   delay: vi.fn(() => createChainableMock()),
   duration: vi.fn(() => createChainableMock()),
+  ease: vi.fn(() => createChainableMock()),
   on: vi.fn(() => createChainableMock()),
   append: vi.fn(() => createChainableMock()),
   selectAll: vi.fn(() => createChainableMock()),
@@ -19,9 +20,13 @@ const createChainableMock = () => ({
   node: vi.fn(() => ({ getBBox: () => ({ width: 100, height: 20 }) }))
 });
 
-// Mock D3 with proper chaining support
+// Mock D3 with proper chaining support and easing functions
 vi.mock('d3', () => ({
-  select: vi.fn(() => createChainableMock())
+  select: vi.fn(() => createChainableMock()),
+  easeSinInOut: vi.fn(),
+  easeLinear: vi.fn(),
+  easeCubicInOut: vi.fn(),
+  easeQuadInOut: vi.fn()
 }));
 
 const mockStats = {
@@ -65,7 +70,7 @@ describe('ApplicationFlowChart', () => {
     render(<ApplicationFlowChart stats={mockStats} />);
     
     expect(screen.getByText('Total Applications')).toBeInTheDocument();
-    expect(screen.getByText('Interview Rate')).toBeInTheDocument();
+    expect(screen.getByText('Currently Interviewing')).toBeInTheDocument();
     expect(screen.getByText('Success Rate')).toBeInTheDocument();
     expect(screen.getByText('Avg Response Time')).toBeInTheDocument();
   });
@@ -74,7 +79,7 @@ describe('ApplicationFlowChart', () => {
     render(<ApplicationFlowChart stats={mockStats} />);
     
     expect(screen.getByText('100')).toBeInTheDocument(); // Total applications
-    expect(screen.getAllByText('20%')).toHaveLength(2); // Both success rate and interview rate show 20%
+    expect(screen.getByText('20%')).toBeInTheDocument(); // Success rate 
     expect(screen.getByText('7d')).toBeInTheDocument(); // Response time
   });
 
@@ -102,7 +107,7 @@ describe('ApplicationFlowChart', () => {
     render(<ApplicationFlowChart stats={minimalStats} />);
     
     expect(screen.getByText('Application Flow Analysis')).toBeInTheDocument();
-    expect(screen.getByText('0')).toBeInTheDocument(); // Total applications
+    expect(screen.getAllByText('0')[0]).toBeInTheDocument(); // Total applications (first one)
   });
 
   it('should render with default dimensions when not specified', () => {

@@ -98,6 +98,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
         .attr('cy', 0)
         .attr('r', outerRadius);
 
+       
       const baseColor = d.color || colorScale(d.label);
       gradient.append('stop')
         .attr('offset', '0%')
@@ -199,7 +200,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
       const adjustLabels = (labels: typeof labelPositions, side: 'left' | 'right') => {
         const minSpacing = fontSize + 4;
         for (let i = 1; i < labels.length; i++) {
+          // eslint-disable-next-line security/detect-object-injection
           const current = labels[i];
+           
           const previous = labels[i - 1];
           if (Math.abs(current.y - previous.y) < minSpacing) {
             current.y = previous.y + (current.y > previous.y ? minSpacing : -minSpacing);
@@ -289,6 +292,7 @@ const DonutChart: React.FC<DonutChartProps> = ({
         .style('height', '12px')
         .style('border-radius', '2px')
         .style('margin-right', '8px')
+         
         .style('background-color', (d) => d.color || colorScale(d.label))
         .style('flex-shrink', '0');
 

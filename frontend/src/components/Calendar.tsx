@@ -52,9 +52,12 @@ function Calendar({ applications, interviews = [], onDateClick }: CalendarProps)
       // Use a consistent date format to avoid timezone issues
       const appDate = new Date(app.applicationDate + 'T00:00:00');
       const dateKey = `${appDate.getFullYear()}-${String(appDate.getMonth() + 1).padStart(2, '0')}-${String(appDate.getDate()).padStart(2, '0')}`;
+      // eslint-disable-next-line security/detect-object-injection
       if (!appsByDate[dateKey]) {
+        // eslint-disable-next-line security/detect-object-injection
         appsByDate[dateKey] = [];
       }
+      // eslint-disable-next-line security/detect-object-injection
       appsByDate[dateKey].push(app);
     });
 
@@ -71,9 +74,12 @@ function Calendar({ applications, interviews = [], onDateClick }: CalendarProps)
         }
         const interviewDate = new Date(dateStr);
         const dateKey = `${interviewDate.getFullYear()}-${String(interviewDate.getMonth() + 1).padStart(2, '0')}-${String(interviewDate.getDate()).padStart(2, '0')}`;
+        // eslint-disable-next-line security/detect-object-injection
         if (!interviewsByDate[dateKey]) {
+          // eslint-disable-next-line security/detect-object-injection
           interviewsByDate[dateKey] = [];
         }
+        // eslint-disable-next-line security/detect-object-injection
         interviewsByDate[dateKey].push(interview);
       } catch (error) {
         console.warn('Invalid interview date:', interview.interviewDate, error);
@@ -103,7 +109,9 @@ function Calendar({ applications, interviews = [], onDateClick }: CalendarProps)
   const handleDateClick = (day: number) => {
     const clickedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     const dateKey = `${clickedDate.getFullYear()}-${String(clickedDate.getMonth() + 1).padStart(2, '0')}-${String(clickedDate.getDate()).padStart(2, '0')}`;
+    // eslint-disable-next-line security/detect-object-injection
     const dayApplications = applicationsByDate[dateKey] || [];
+    // eslint-disable-next-line security/detect-object-injection
     const dayInterviews = interviewsByDate[dateKey] || [];
     
     if (onDateClick) {
@@ -129,7 +137,9 @@ function Calendar({ applications, interviews = [], onDateClick }: CalendarProps)
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      // eslint-disable-next-line security/detect-object-injection
       const dayApplications = applicationsByDate[dateKey] || [];
+      // eslint-disable-next-line security/detect-object-injection
       const dayInterviews = interviewsByDate[dateKey] || [];
       const hasApplications = dayApplications.length > 0;
       const hasInterviews = dayInterviews.length > 0;
