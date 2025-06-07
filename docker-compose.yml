@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: jobtracker
       POSTGRES_PASSWORD: jobtracker
     ports:
-      - "5432:5432"
+      - "0.0.0.0:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backend/src/main/resources/db/migration:/docker-entrypoint-initdb.d
@@ -36,12 +36,14 @@ services:
       SPRING_DATASOURCE_PASSWORD: jobtracker
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     ports:
-      - "8080:8080"
+      - "0.0.0.0:8080:8080"
     networks:
       - job-tracker-network
     volumes:
       - ./backend/logs:/app/logs
+    restart: unless-stopped
 
   # Frontend Service
   frontend:
@@ -52,14 +54,10 @@ services:
     depends_on:
       - backend
     ports:
-      - "3000:80"
+      - "0.0.0.0:3000:80"
     networks:
       - job-tracker-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    restart: unless-stopped
 
 volumes:
   postgres_data:
