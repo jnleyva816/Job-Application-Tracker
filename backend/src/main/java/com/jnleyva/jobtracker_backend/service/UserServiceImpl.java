@@ -33,9 +33,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserProfileService userProfileService;
 
-    @Autowired
-    private ApplicationService applicationService;
-
     @Override
     public User createUser(User user) {
         logger.debug("Creating new user with username: {}", user.getUsername());

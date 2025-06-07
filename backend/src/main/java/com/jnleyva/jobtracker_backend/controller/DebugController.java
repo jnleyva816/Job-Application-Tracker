@@ -42,7 +42,7 @@ public class DebugController {
     @Autowired
     private WebScrapingUtils webScrapingUtils;
 
-    @Autowired
+    @Autowired(required = false)
     private JavaScriptWebScrapingService jsWebScrapingService;
 
     @Autowired
@@ -318,8 +318,8 @@ public class DebugController {
         
         Map<String, Object> result = new HashMap<>();
         result.put("url", url);
-        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
-        result.put("likelyRequiresJs", jsWebScrapingService.likelyRequiresJavaScript(url));
+        result.put("jsRenderingAvailable", jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable());
+        result.put("likelyRequiresJs", jsWebScrapingService != null && jsWebScrapingService.likelyRequiresJavaScript(url));
         
         try {
             // Test static HTML first
@@ -330,7 +330,7 @@ public class DebugController {
             result.put("staticTextLength", staticDoc.text().length());
             
             // Test JavaScript rendering if available
-            if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+            if (jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
                 try {
                     Document jsDoc = jsWebScrapingService.fetchDocumentWithJavaScript(url, 5);
                     result.put("jsFetchSuccess", true);
@@ -374,13 +374,13 @@ public class DebugController {
             return ResponseEntity.badRequest().body(Map.of("error", "URL is required"));
         }
         
-        boolean useJavaScript = "true".equals(forceJavaScript) || jsWebScrapingService.likelyRequiresJavaScript(url);
+        boolean useJavaScript = "true".equals(forceJavaScript) || (jsWebScrapingService != null && jsWebScrapingService.likelyRequiresJavaScript(url));
         
         try {
             Document doc;
             String method;
             
-            if (useJavaScript && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+            if (useJavaScript && jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
                 doc = jsWebScrapingService.fetchDocumentWithJavaScript(url);
                 method = "JavaScript";
             } else {
@@ -438,7 +438,7 @@ public class DebugController {
         // Check if this is a Microsoft URL
         boolean isMicrosoftUrl = url.toLowerCase().contains("microsoft.com") || url.toLowerCase().contains("careers.microsoft.com");
         result.put("isMicrosoftUrl", isMicrosoftUrl);
-        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
+        result.put("jsRenderingAvailable", jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable());
         
         try {
             // Parse using the Microsoft parser
@@ -835,10 +835,10 @@ public class DebugController {
         }
         
         // Test 2: JavaScript rendering availability
-        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
+        result.put("jsRenderingAvailable", jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable());
         
         // Test 3: JavaScript rendering if available
-        if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+        if (jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
             try {
                 long startTime = System.currentTimeMillis();
                 Document jsDoc = jsWebScrapingService.fetchDocumentWithJavaScript(url, 5);
@@ -1034,7 +1034,7 @@ public class DebugController {
         try {
             Map<String, Object> response = new HashMap<>();
             
-            if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+            if (jsWebScrapingService != null && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
                 var queueStatus = jsWebScrapingService.getQueueStatus();
                 response.put("available", true);
                 response.put("queueStatus", Map.of(
@@ -1046,7 +1046,7 @@ public class DebugController {
                 response.put("engines", jsWebScrapingService.getAvailableJavaScriptEngines());
             } else {
                 response.put("available", false);
-                response.put("reason", "Playwright not available");
+                response.put("reason", jsWebScrapingService == null ? "JavaScript web scraping service not available" : "Playwright not available");
             }
             
             return ResponseEntity.ok(response);

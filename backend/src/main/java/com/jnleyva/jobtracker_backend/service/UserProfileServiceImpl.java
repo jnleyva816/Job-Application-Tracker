@@ -100,6 +100,9 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (profileDetails.getPhoneNumber() != null) {
             profile.setPhoneNumber(profileDetails.getPhoneNumber());
         }
+        if (profileDetails.getProfilePicture() != null) {
+            profile.setProfilePicture(profileDetails.getProfilePicture());
+        }
 
         profile.setUpdatedAt(LocalDateTime.now());
 

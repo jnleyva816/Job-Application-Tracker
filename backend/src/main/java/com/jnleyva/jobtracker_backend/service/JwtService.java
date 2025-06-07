@@ -1,19 +1,15 @@
 package com.jnleyva.jobtracker_backend.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,18 +89,18 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         try {
             logger.debug("Extracting all claims from token");
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
             logger.debug("Claims extracted successfully");
             return claims;
         } catch (ExpiredJwtException e) {
             logger.warn("Token has expired");
             throw e;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature");
+        } catch (JwtException e) {
+            logger.error("Invalid JWT signature or malformed token: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             logger.error("Error parsing JWT token: {}", e.getMessage());
@@ -184,11 +180,11 @@ public class JwtService {
             Date expiryDate = new Date(now.getTime() + expiration);
             
             String token = Jwts.builder()
-                    .setClaims(extraClaims)
-                    .setSubject(userDetails.getUsername())
-                    .setIssuedAt(now)
-                    .setExpiration(expiryDate)
-                    .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                    .claims(extraClaims)
+                    .subject(userDetails.getUsername())
+                    .issuedAt(now)
+                    .expiration(expiryDate)
+                    .signWith(getSigningKey())
                     .compact();
             
             logger.info("Token generated successfully. Expires at: {}", expiryDate);
@@ -203,7 +199,7 @@ public class JwtService {
      * Gets the signing key from the secret.
      * @return The signing key.
      */
-    private Key getSigningKey() {
+    private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }

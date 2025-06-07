@@ -157,10 +157,12 @@ describe('DashboardApplicationsView Component', () => {
     it('should display all application statuses with correct styling', () => {
       renderDashboardApplicationsView();
 
-      expect(screen.getByText('Applied')).toBeInTheDocument();
+      // Use getAllByText since there are multiple "Applied" statuses
+      const appliedStatuses = screen.getAllByText('Applied');
+      expect(appliedStatuses.length).toBeGreaterThan(0);
+      
       expect(screen.getByText('Interviewing')).toBeInTheDocument();
       expect(screen.getByText('Offered')).toBeInTheDocument();
-      // Note: 'Rejected' won't appear because it's the oldest and filtered out
     });
 
     it('should navigate to application detail when application is clicked', () => {

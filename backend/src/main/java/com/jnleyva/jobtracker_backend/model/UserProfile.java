@@ -59,6 +59,9 @@ public class UserProfile {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "profile_picture", columnDefinition = "TEXT")
+    private String profilePicture; // Base64 encoded image
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -190,6 +193,14 @@ public class UserProfile {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public LocalDateTime getCreatedAt() {

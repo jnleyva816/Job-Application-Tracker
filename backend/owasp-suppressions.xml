@@ -1,32 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <!-- Sample suppression entries - customize based on your needs -->
-    
-    <!-- Suppress false positives for Spring Boot dependencies -->
+    <!-- Suppress H2 database vulnerability as it's only used for testing/development -->
     <suppress>
         <notes><![CDATA[
-        Spring Boot starter modules are commonly flagged but are maintained by the Spring team
+            H2 database is only used for testing and development purposes.
+            CVE-2018-14335 affects only the web console which should not be enabled in production.
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/.*$</packageUrl>
-        <cve>CVE-2016-1000027</cve>
+        <packageUrl regex="true">^pkg:maven/com\.h2database/h2@.*</packageUrl>
+        <cve>CVE-2018-14335</cve>
     </suppress>
-    
-    <!-- Suppress test dependencies from production scanning -->
-    <suppress>
-        <notes><![CDATA[
-        Test dependencies are not part of production deployment
-        ]]></notes>
-        <gav regex="true">.*:.*:.*:test</gav>
-    </suppress>
-    
-    <!-- Example: Suppress specific CVE for a specific dependency version -->
-    <!--
-    <suppress>
-        <notes><![CDATA[
-        This CVE does not apply to our usage pattern
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.example/example\-lib@.*$</packageUrl>
-        <cve>CVE-YYYY-XXXX</cve>
-    </suppress>
-    -->
 </suppressions> 

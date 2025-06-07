@@ -106,6 +106,19 @@ let applicationIdCounter = 1
 // Mock tokens
 const validTokens = new Set<string>()
 
+// Add common test tokens used in tests
+validTokens.add('mock-auth-token')
+validTokens.add('mock-token')
+validTokens.add('test-token')
+validTokens.add('mock-jwt-token')
+
+// Map test tokens to usernames for getUserFromToken
+const tokenToUsername = new Map<string, string>()
+tokenToUsername.set('mock-auth-token', 'testuser')
+tokenToUsername.set('mock-token', 'testuser')
+tokenToUsername.set('test-token', 'testuser')
+tokenToUsername.set('mock-jwt-token', 'testuser')
+
 // Helper function to generate mock user
 const createMockUser = (userData: UserRegistrationData): MockUser => ({
   id: userIdCounter++,
@@ -161,6 +174,34 @@ const validateToken = (authorization: string | null) => {
 
 // Helper function to get user from token
 const getUserFromToken = (token: string): MockUser | undefined => {
+  // Check if it's a test token first
+  const testUsername = tokenToUsername.get(token)
+  if (testUsername) {
+    // Return a hardcoded test user for test tokens
+    return {
+      id: 999,
+      username: 'testuser',
+      email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User',
+      role: 'ROLE_USER',
+      accountLocked: false,
+      failedLoginAttempts: 0,
+      lastLogin: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      password: null,
+      profile: {
+        id: 999,
+        firstName: 'Test',
+        lastName: 'User',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+    }
+  }
+  
+  // For generated tokens, extract username from token format
   const username = token.split('-')[3] // Extract username from mock token
   return Array.from(mockUsers.values()).find((user: MockUser) => user.username === username)
 }
@@ -517,29 +558,29 @@ export const handlers = [
     return HttpResponse.json([
       {
         id: 1,
-        applicationId: 1,
-        type: 'Technical',
-        scheduledTime: '2024-01-15T10:00:00Z',
-        duration: 60,
-        location: 'Video Call',
-        interviewer: 'John Smith',
+        type: 'TECHNICAL_INTERVIEW',
+        interviewDate: '2024-01-15T10:00:00Z',
+        notes: 'Technical round',
         status: 'SCHEDULED',
-        notes: 'Technical interview with senior engineer',
-        createdAt: '2024-01-10T09:00:00Z',
-        updatedAt: '2024-01-10T09:00:00Z'
+        interviewerName: 'John Doe',
+        interviewerEmail: 'john@company.com',
+        location: 'Office',
+        durationMinutes: 60,
+        meetingLink: 'https://zoom.us/meeting1',
+        applicationId: 1
       },
       {
         id: 2,
-        applicationId: 2,
-        type: 'HR',
-        scheduledTime: '2024-01-20T14:00:00Z',
-        duration: 30,
-        location: 'Office',
-        interviewer: 'Jane Doe',
+        type: 'HR_INTERVIEW',
+        interviewDate: '2024-01-20T14:00:00Z',
+        notes: 'Culture fit discussion',
         status: 'COMPLETED',
-        notes: 'Initial screening went well',
-        createdAt: '2024-01-15T10:00:00Z',
-        updatedAt: '2024-01-20T15:00:00Z'
+        interviewerName: 'Jane Smith',
+        interviewerEmail: 'jane@company.com',
+        location: 'Remote',
+        durationMinutes: 30,
+        meetingLink: 'https://zoom.us/meeting2',
+        applicationId: 2
       }
     ])
   }),
@@ -849,6 +890,272 @@ export const handlers = [
     
     mockUsers.delete(userId)
     return HttpResponse.json({ message: 'User deleted successfully' })
+  }),
+
+  // Get interview types
+  http.get(`${API_URL}/interview-options/types`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    return HttpResponse.json([
+      { value: 'TECHNICAL_INTERVIEW', label: 'Technical Interview' },
+      { value: 'HR_INTERVIEW', label: 'HR Interview' },
+      { value: 'BEHAVIORAL_INTERVIEW', label: 'Behavioral Interview' }
+    ])
+  }),
+
+  // Get interview statuses
+  http.get(`${API_URL}/interview-options/statuses`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    return HttpResponse.json([
+      { value: 'SCHEDULED', label: 'Scheduled' },
+      { value: 'COMPLETED', label: 'Completed' },
+      { value: 'CANCELLED', label: 'Cancelled' }
+    ])
+  }),
+
+  // Get interviews by application ID
+  http.get(`${API_URL}/applications/:applicationId/interviews`, ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationId = parseInt(params.applicationId as string)
+    
+    // Return mock interviews for the application
+    return HttpResponse.json([
+      {
+        id: 1,
+        type: 'TECHNICAL_INTERVIEW',
+        interviewDate: '2024-01-15T10:00:00Z',
+        notes: 'Technical round',
+        status: 'SCHEDULED',
+        interviewerName: 'John Doe',
+        interviewerEmail: 'john@company.com',
+        location: 'Office',
+        durationMinutes: 60,
+        meetingLink: 'https://zoom.us/meeting1',
+        applicationId: applicationId
+      },
+      {
+        id: 2,
+        type: 'HR_INTERVIEW',
+        interviewDate: '2024-01-20T14:00:00Z',
+        notes: 'Culture fit discussion',
+        status: 'COMPLETED',
+        interviewerName: 'Jane Smith',
+        interviewerEmail: 'jane@company.com',
+        location: 'Remote',
+        durationMinutes: 30,
+        meetingLink: 'https://zoom.us/meeting2',
+        applicationId: applicationId
+      }
+    ])
+  }),
+
+  // Create interview for application
+  http.post(`${API_URL}/applications/:applicationId/interviews`, async ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const applicationId = parseInt(params.applicationId as string)
+    const interviewData = await request.json() as Record<string, unknown>
+    
+    const newInterview = {
+      id: Date.now(),
+      ...interviewData,
+      applicationId
+    }
+    
+    return HttpResponse.json(newInterview, { status: 201 })
+  }),
+
+  // Update interview for application
+  http.put(`${API_URL}/applications/:applicationId/interviews/:interviewId`, async ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const interviewId = parseInt(params.interviewId as string)
+    const updateData = await request.json() as Record<string, unknown>
+    
+    const updatedInterview = {
+      id: interviewId,
+      ...updateData
+    }
+    
+    return HttpResponse.json(updatedInterview)
+  }),
+
+  // Delete interview for application
+  http.delete(`${API_URL}/applications/:applicationId/interviews/:interviewId`, ({ request }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    return HttpResponse.json({ message: 'Interview deleted successfully' })
+  }),
+
+  // Reschedule interview
+  http.put(`${API_URL}/applications/:applicationId/interviews/:interviewId/reschedule`, async ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const interviewId = parseInt(params.interviewId as string)
+    const rescheduleData = await request.json() as { newDate: string; reason: string }
+    
+    const updatedInterview = {
+      id: interviewId,
+      status: 'RESCHEDULED',
+      interviewDate: rescheduleData.newDate,
+      originalDate: '2024-01-15T10:00:00',
+      notes: `Rescheduled: ${rescheduleData.reason}`
+    }
+    
+    return HttpResponse.json(updatedInterview)
+  }),
+
+  // Cancel interview
+  http.put(`${API_URL}/applications/:applicationId/interviews/:interviewId/cancel`, async ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const interviewId = parseInt(params.interviewId as string)
+    const cancelReason = await request.text() // The service sends just a string, not JSON
+    
+    const updatedInterview = {
+      id: interviewId,
+      status: 'CANCELLED',
+      cancellationReason: cancelReason
+    }
+    
+    return HttpResponse.json(updatedInterview)
+  }),
+
+  // Complete interview
+  http.put(`${API_URL}/applications/:applicationId/interviews/:interviewId/complete`, async ({ request, params }) => {
+    const token = validateToken(request.headers.get('Authorization'))
+    
+    if (!token) {
+      return HttpResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
+    const user = getUserFromToken(token)
+    if (!user) {
+      return HttpResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+    
+    const interviewId = parseInt(params.interviewId as string)
+    const completeData = await request.json() as { feedback?: string }
+    
+    const updatedInterview = {
+      id: interviewId,
+      status: 'COMPLETED',
+      interviewFeedback: completeData.feedback
+    }
+    
+    return HttpResponse.json(updatedInterview)
   }),
 ]
 

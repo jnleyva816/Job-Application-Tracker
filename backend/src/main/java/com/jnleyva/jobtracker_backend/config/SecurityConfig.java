@@ -7,13 +7,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -97,20 +102,41 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        // Don't hide user not found exception
-        authProvider.setHideUserNotFoundExceptions(false);
-        // Log every authentication attempt
-        authProvider.setPreAuthenticationChecks(userDetails -> {
-            logger.debug("Pre-authentication check for user: {}", userDetails.getUsername());
-        });
-        authProvider.setPostAuthenticationChecks(userDetails -> {
-            logger.debug("Post-authentication check for user: {}", userDetails.getUsername());
-        });
-        logger.info("Authentication provider configured with BCrypt strength: {}", BCRYPT_STRENGTH);
-        return authProvider;
+        // Using the new approach recommended for Spring Boot 3.5+
+        // Create a ProviderManager with custom authentication logic
+        return new AuthenticationProvider() {
+            @Override
+            public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+                
+                String username = authentication.getName();
+                String password = authentication.getCredentials().toString();
+                
+                logger.debug("Authentication attempt for user: {}", username);
+                
+                try {
+                    // Load user details
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    
+                    // Check password
+                    if (passwordEncoder().matches(password, userDetails.getPassword())) {
+                        logger.debug("Authentication successful for user: {}", username);
+                        return new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    } else {
+                        logger.debug("Authentication failed for user: {} - invalid password", username);
+                        throw new BadCredentialsException("Invalid credentials");
+                    }
+                } catch (UsernameNotFoundException e) {
+                    logger.debug("Authentication failed for user: {} - user not found", username);
+                    throw new BadCredentialsException("Invalid credentials");
+                }
+            }
+
+            @Override
+            public boolean supports(Class<?> authentication) {
+                return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+            }
+        };
     }
 
     @Bean

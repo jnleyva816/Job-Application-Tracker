@@ -181,7 +181,7 @@ function Calendar({ applications, interviews = [], onDateClick }: CalendarProps)
   };
 
   return (
-    <div className="bg-light-surface dark:bg-dark-surface rounded-lg shadow-sm p-4">
+    <div className="bg-light-surface dark:bg-dark-surface rounded-lg shadow-sm p-4" data-testid="calendar">
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-4">
         <button

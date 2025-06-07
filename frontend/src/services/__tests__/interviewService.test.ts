@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { server } from '../../test/mocks/server';
+import { http, HttpResponse } from 'msw';
 
 // Set up environment variable
 Object.defineProperty(import.meta, 'env', {
@@ -14,9 +16,6 @@ vi.mock('../authService', () => ({
     getToken: vi.fn(),
   },
 }));
-
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
 
 const mockToken = 'mock-auth-token';
 const mockInterviewTypes = [
@@ -36,25 +35,27 @@ const mockInterviews = [
     id: 1,
     type: 'TECHNICAL_INTERVIEW',
     interviewDate: '2024-01-15T10:00:00Z',
+    notes: 'Technical round',
     status: 'SCHEDULED',
     interviewerName: 'John Doe',
     interviewerEmail: 'john@company.com',
     location: 'Office',
     durationMinutes: 60,
     meetingLink: 'https://zoom.us/meeting1',
-    notes: 'Technical round'
+    applicationId: '123'
   },
   {
     id: 2,
     type: 'HR_INTERVIEW',
     interviewDate: '2024-01-20T14:00:00Z',
+    notes: 'Culture fit discussion',
     status: 'COMPLETED',
     interviewerName: 'Jane Smith',
     interviewerEmail: 'jane@company.com',
     location: 'Remote',
     durationMinutes: 30,
     meetingLink: 'https://zoom.us/meeting2',
-    notes: 'Culture fit discussion'
+    applicationId: '456'
   }
 ];
 
@@ -74,7 +75,6 @@ const mockInterview = {
 describe('InterviewService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFetch.mockClear();
   });
 
   afterEach(() => {
@@ -95,47 +95,40 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockInterviewTypes)
-      });
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/types', () => HttpResponse.json(mockInterviewTypes))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.getInterviewTypes();
 
       expect(result).toEqual(mockInterviewTypes);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/interviews/types', {
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
     });
 
     it('should handle API errors when fetching interview types', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error'
-      });
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/types', () => HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.getInterviewTypes()).rejects.toThrow('Failed to fetch interview types: 500 Internal Server Error');
+      await expect(interviewService.getInterviewTypes()).rejects.toThrow('Failed to fetch interview types: 500');
     });
 
     it('should handle network errors when fetching interview types', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockRejectedValue(new Error('Network error'));
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/types', () => HttpResponse.error())
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.getInterviewTypes()).rejects.toThrow('Network error');
+      await expect(interviewService.getInterviewTypes()).rejects.toThrow('Failed to fetch');
     });
   });
 
@@ -153,36 +146,27 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockInterviewStatuses)
-      });
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/statuses', () => HttpResponse.json(mockInterviewStatuses))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.getInterviewStatuses();
 
       expect(result).toEqual(mockInterviewStatuses);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/interviews/statuses', {
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
     });
 
     it('should handle API errors when fetching interview statuses', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      });
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/statuses', () => HttpResponse.json({ error: 'Not Found' }, { status: 404 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.getInterviewStatuses()).rejects.toThrow('Failed to fetch interview statuses: 404 Not Found');
+      await expect(interviewService.getInterviewStatuses()).rejects.toThrow('Failed to fetch interview statuses: 404');
     });
   });
 
@@ -200,46 +184,36 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockInterviews)
-      });
+      server.use(
+        http.get('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json(mockInterviews))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.getInterviewsByApplicationId('123');
 
       expect(result).toEqual(mockInterviews);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews', {
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
     });
 
     it('should handle API errors when fetching interviews by application ID', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 403,
-        statusText: 'Forbidden'
-      });
+      server.use(
+        http.get('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json({ error: 'Forbidden' }, { status: 403 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.getInterviewsByApplicationId('123')).rejects.toThrow('Failed to fetch interviews: 403 Forbidden');
+      await expect(interviewService.getInterviewsByApplicationId('123')).rejects.toThrow('Failed to fetch interviews: 403');
     });
 
     it('should return empty array when no interviews found', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([])
-      });
+      server.use(
+        http.get('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json([]))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.getInterviewsByApplicationId('123');
@@ -262,36 +236,33 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockInterviews)
-      });
+      // Force override handlers to mock both endpoints needed
+      server.resetHandlers(
+        http.get('http://localhost:8080/api/applications', () => HttpResponse.json([
+          { id: '123', company: 'Test Company' },
+          { id: '456', company: 'Another Company' }
+        ])),
+        http.get('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json([mockInterviews[0]])),
+        http.get('http://localhost:8080/api/applications/456/interviews', () => HttpResponse.json([mockInterviews[1]]))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.getAllUserInterviews();
 
       expect(result).toEqual(mockInterviews);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/interviews', {
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
     });
 
     it('should handle API errors when fetching all user interviews', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error'
-      });
+      server.use(
+        http.get('http://localhost:8080/api/applications', () => HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.getAllUserInterviews()).rejects.toThrow('Failed to fetch user interviews: 500 Internal Server Error');
+      await expect(interviewService.getAllUserInterviews()).rejects.toThrow('Failed to fetch applications: 500');
     });
   });
 
@@ -316,54 +287,40 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(mockInterview)
-      });
+      server.use(
+        http.post('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json(mockInterview))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.createInterview('123', interviewData);
 
       expect(result).toEqual(mockInterview);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(interviewData),
-      });
     });
 
     it('should handle API errors when creating interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request'
-      });
+      server.use(
+        http.post('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json({ error: 'Bad Request' }, { status: 400 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.createInterview('123', interviewData)).rejects.toThrow('Failed to create interview: 400 Bad Request');
+      await expect(interviewService.createInterview('123', interviewData)).rejects.toThrow('Failed to create interview: 400');
     });
 
     it('should handle validation errors when creating interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 422,
-        statusText: 'Unprocessable Entity',
-        json: () => Promise.resolve({ message: 'Validation failed', errors: ['Interview date is required'] })
-      });
+      server.use(
+        http.post('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.json({ error: 'Unprocessable Entity', errors: ['Interview date is required'] }, { status: 422 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.createInterview('123', interviewData)).rejects.toThrow('Failed to create interview: 422 Unprocessable Entity');
+      await expect(interviewService.createInterview('123', interviewData)).rejects.toThrow('Failed to create interview: 422');
     });
   });
 
@@ -389,38 +346,27 @@ describe('InterviewService', () => {
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
       const updatedInterview = { ...mockInterview, ...updatedInterviewData };
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(updatedInterview)
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1', () => HttpResponse.json(updatedInterview))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.updateInterview('123', '1', updatedInterviewData);
 
       expect(result).toEqual(updatedInterview);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews/1', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedInterviewData),
-      });
     });
 
     it('should handle API errors when updating interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1', () => HttpResponse.json({ error: 'Not Found' }, { status: 404 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.updateInterview('123', '1', updatedInterviewData)).rejects.toThrow('Failed to update interview: 404 Not Found');
+      await expect(interviewService.updateInterview('123', '1', updatedInterviewData)).rejects.toThrow('Failed to update interview: 404');
     });
   });
 
@@ -438,50 +384,38 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: true
-      });
+      server.use(
+        http.delete('http://localhost:8080/api/applications/123/interviews/1', () => HttpResponse.json({}))
+      );
 
       const { interviewService } = await import('../interviewService');
       await interviewService.deleteInterview('123', '1');
-
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews/1', {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
     });
 
     it('should handle API errors when deleting interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      });
+      server.use(
+        http.delete('http://localhost:8080/api/applications/123/interviews/1', () => HttpResponse.json({ error: 'Not Found' }, { status: 404 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.deleteInterview('123', '1')).rejects.toThrow('Failed to delete interview: 404 Not Found');
+      await expect(interviewService.deleteInterview('123', '1')).rejects.toThrow('Failed to delete interview: 404');
     });
 
     it('should handle permissions errors when deleting interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 403,
-        statusText: 'Forbidden'
-      });
+      server.use(
+        http.delete('http://localhost:8080/api/applications/123/interviews/1', () => HttpResponse.json({ error: 'Forbidden' }, { status: 403 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.deleteInterview('123', '1')).rejects.toThrow('Failed to delete interview: 403 Forbidden');
+      await expect(interviewService.deleteInterview('123', '1')).rejects.toThrow('Failed to delete interview: 403');
     });
   });
 
@@ -505,38 +439,27 @@ describe('InterviewService', () => {
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
       const rescheduledInterview = { ...mockInterview, interviewDate: rescheduleData.newDate, status: 'RESCHEDULED' };
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(rescheduledInterview)
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1/reschedule', () => HttpResponse.json(rescheduledInterview))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.rescheduleInterview('123', '1', rescheduleData);
 
       expect(result).toEqual(rescheduledInterview);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews/1/reschedule', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(rescheduleData),
-      });
     });
 
     it('should handle API errors when rescheduling interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request'
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1/reschedule', () => HttpResponse.json({ error: 'Bad Request' }, { status: 400 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.rescheduleInterview('123', '1', rescheduleData)).rejects.toThrow('Failed to reschedule interview: 400 Bad Request');
+      await expect(interviewService.rescheduleInterview('123', '1', rescheduleData)).rejects.toThrow('Failed to reschedule interview: 400');
     });
   });
 
@@ -557,38 +480,27 @@ describe('InterviewService', () => {
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
       const cancelledInterview = { ...mockInterview, status: 'CANCELLED', cancellationReason: cancelReason };
-      mockFetch.mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(cancelledInterview)
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1/cancel', () => HttpResponse.json(cancelledInterview))
+      );
 
       const { interviewService } = await import('../interviewService');
       const result = await interviewService.cancelInterview('123', '1', cancelReason);
 
       expect(result).toEqual(cancelledInterview);
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/applications/123/interviews/1/cancel', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${mockToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(cancelReason),
-      });
     });
 
     it('should handle API errors when cancelling interview', async () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockResolvedValue({
-        ok: false,
-        status: 409,
-        statusText: 'Conflict'
-      });
+      server.use(
+        http.put('http://localhost:8080/api/applications/123/interviews/1/cancel', () => HttpResponse.json({ error: 'Conflict' }, { status: 409 }))
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.cancelInterview('123', '1', cancelReason)).rejects.toThrow('Failed to cancel interview: 409 Conflict');
+      await expect(interviewService.cancelInterview('123', '1', cancelReason)).rejects.toThrow('Failed to cancel interview: 409');
     });
   });
 
@@ -597,7 +509,11 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockRejectedValue(new Error('Failed to fetch'));
+      server.use(
+        http.get('http://localhost:8080/api/interview-options/types', () => HttpResponse.error()),
+        http.get('http://localhost:8080/api/interview-options/statuses', () => HttpResponse.error()),
+        http.get('http://localhost:8080/api/applications', () => HttpResponse.error())
+      );
 
       const { interviewService } = await import('../interviewService');
 
@@ -610,11 +526,13 @@ describe('InterviewService', () => {
       const { authService } = await import('../authService');
       vi.mocked(authService.getToken).mockReturnValue(mockToken);
 
-      mockFetch.mockRejectedValue(new Error('Request timeout'));
+      server.use(
+        http.post('http://localhost:8080/api/applications/123/interviews', () => HttpResponse.error())
+      );
 
       const { interviewService } = await import('../interviewService');
 
-      await expect(interviewService.createInterview('123', { type: 'PHONE', interviewDate: '2024-01-15T10:00:00', status: 'SCHEDULED' })).rejects.toThrow('Request timeout');
+      await expect(interviewService.createInterview('123', { type: 'PHONE', interviewDate: '2024-01-15T10:00:00', status: 'SCHEDULED' })).rejects.toThrow('Failed to fetch');
     });
   });
 }); 

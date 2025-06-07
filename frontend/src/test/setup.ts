@@ -2,6 +2,22 @@ import '@testing-library/jest-dom'
 import { beforeAll, afterEach, afterAll } from 'vitest'
 import { server } from './mocks/server'
 
+// Polyfill for Response.clone if not available (fixes MSW issues)
+if (typeof global.Response !== 'undefined' && !global.Response.prototype.clone) {
+  global.Response.prototype.clone = function() {
+    return new Response(this.body, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: this.headers
+    })
+  }
+}
+
+// Ensure fetch is available globally for MSW
+if (typeof global.fetch === 'undefined') {
+  global.fetch = fetch
+}
+
 // Ensure environment variables are properly set for tests
 Object.defineProperty(import.meta, 'env', {
   value: {
