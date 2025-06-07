@@ -36,7 +36,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jobtracker
       SPRING_DATASOURCE_USERNAME: jobtracker
       SPRING_DATASOURCE_PASSWORD: jobtracker
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
     ports:
       - "8080:8080"
