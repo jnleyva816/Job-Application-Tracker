@@ -28,8 +28,11 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Change ownership of nginx directories to the existing nginx user
-RUN chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html
+# Create directories with proper permissions for nginx user
+RUN mkdir -p /tmp/nginx /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp /var/cache/nginx/scgi_temp \
+    && chown -R nginx:nginx /tmp/nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html \
+    && chmod -R 755 /tmp/nginx /var/cache/nginx
 
 # Switch to non-root user
 USER nginx
