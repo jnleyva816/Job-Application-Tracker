@@ -125,6 +125,14 @@
 			<version>0.1.2</version>
 		</dependency>
 
+		<!-- Optional Playwright dependencies (for JavaScript-rendered pages) -->
+		<dependency>
+			<groupId>com.microsoft.playwright</groupId>
+			<artifactId>playwright</artifactId>
+			<version>1.40.0</version>
+			<optional>true</optional>
+		</dependency>
+
 	</dependencies>
 
 	<build>

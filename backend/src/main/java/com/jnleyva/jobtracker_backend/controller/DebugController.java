@@ -22,6 +22,8 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.*;
 
+import com.jnleyva.jobtracker_backend.service.JavaScriptWebScrapingService;
+
 /**
  * Debug controller for testing URL structure and job parsers
  */
@@ -39,6 +41,9 @@ public class DebugController {
 
     @Autowired
     private WebScrapingUtils webScrapingUtils;
+
+    @Autowired
+    private JavaScriptWebScrapingService jsWebScrapingService;
 
     @Autowired
     private com.jnleyva.jobtracker_backend.service.JobParsingService jobParsingService;
@@ -298,6 +303,168 @@ public class DebugController {
             errorResult.put("errorMessage", "Unexpected error: " + e.getMessage());
             return ResponseEntity.internalServerError().body(errorResult);
         }
+    }
+    
+    /**
+     * Test JavaScript rendering capabilities
+     */
+    @PostMapping("/test-javascript-rendering")
+    public ResponseEntity<Map<String, Object>> testJavaScriptRendering(@RequestBody Map<String, String> request) {
+        String url = request.get("url");
+        
+        if (url == null || url.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "URL is required"));
+        }
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
+        result.put("likelyRequiresJs", jsWebScrapingService.likelyRequiresJavaScript(url));
+        
+        try {
+            // Test static HTML first
+            Document staticDoc = webScrapingUtils.fetchDocument(url);
+            result.put("staticFetchSuccess", true);
+            result.put("staticElementCount", staticDoc.getAllElements().size());
+            result.put("staticTitle", staticDoc.title());
+            result.put("staticTextLength", staticDoc.text().length());
+            
+            // Test JavaScript rendering if available
+            if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+                try {
+                    Document jsDoc = jsWebScrapingService.fetchDocumentWithJavaScript(url, 5);
+                    result.put("jsFetchSuccess", true);
+                    result.put("jsElementCount", jsDoc.getAllElements().size());
+                    result.put("jsTitle", jsDoc.title());
+                    result.put("jsTextLength", jsDoc.text().length());
+                    
+                    // Compare quality
+                    boolean jsIsBetter = jsDoc.getAllElements().size() > staticDoc.getAllElements().size() * 1.5;
+                    result.put("javascriptProducedBetterResults", jsIsBetter);
+                    
+                } catch (Exception e) {
+                    result.put("jsFetchSuccess", false);
+                    result.put("jsErrorMessage", "JavaScript fetch failed: " + e.getMessage());
+                }
+            } else {
+                result.put("jsFetchSuccess", false);
+                result.put("jsErrorMessage", "JavaScript rendering not available (Selenium not configured)");
+            }
+            
+        } catch (IOException e) {
+            result.put("staticFetchSuccess", false);
+            result.put("staticErrorMessage", "Static fetch failed: " + e.getMessage());
+        } catch (Exception e) {
+            result.put("staticFetchSuccess", false);
+            result.put("staticErrorMessage", "Unexpected error: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Enhanced raw HTML endpoint that can use JavaScript rendering
+     */
+    @PostMapping("/enhanced-raw-html")
+    public ResponseEntity<Map<String, Object>> getEnhancedRawHtml(@RequestBody Map<String, String> request) {
+        String url = request.get("url");
+        String forceJavaScript = request.get("forceJavaScript"); // "true" to force JS rendering
+        
+        if (url == null || url.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "URL is required"));
+        }
+        
+        boolean useJavaScript = "true".equals(forceJavaScript) || jsWebScrapingService.likelyRequiresJavaScript(url);
+        
+        try {
+            Document doc;
+            String method;
+            
+            if (useJavaScript && jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+                doc = jsWebScrapingService.fetchDocumentWithJavaScript(url);
+                method = "JavaScript";
+            } else {
+                doc = webScrapingUtils.fetchDocument(url);
+                method = "Static HTML";
+            }
+            
+            String rawHtml = doc.html();
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("successful", true);
+            result.put("url", url);
+            result.put("rawHtml", rawHtml);
+            result.put("method", method);
+            result.put("elementCount", doc.getAllElements().size());
+            result.put("title", doc.title());
+            result.put("textLength", doc.text().length());
+            result.put("errorMessage", null);
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (IOException e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("successful", false);
+            errorResult.put("url", url);
+            errorResult.put("rawHtml", null);
+            errorResult.put("method", useJavaScript ? "JavaScript (failed)" : "Static HTML (failed)");
+            errorResult.put("errorMessage", "Failed to fetch HTML: " + e.getMessage());
+            return ResponseEntity.unprocessableEntity().body(errorResult);
+        } catch (Exception e) {
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("successful", false);
+            errorResult.put("url", url);
+            errorResult.put("rawHtml", null);
+            errorResult.put("method", "Unknown");
+            errorResult.put("errorMessage", "Unexpected error: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResult);
+        }
+    }
+
+    /**
+     * Microsoft-specific debugging endpoint
+     */
+    @PostMapping("/test-microsoft-parser")
+    public ResponseEntity<Map<String, Object>> testMicrosoftParser(@RequestBody Map<String, String> request) {
+        String url = request.get("url");
+        
+        if (url == null || url.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "URL is required"));
+        }
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        
+        // Check if this is a Microsoft URL
+        boolean isMicrosoftUrl = url.toLowerCase().contains("microsoft.com") || url.toLowerCase().contains("careers.microsoft.com");
+        result.put("isMicrosoftUrl", isMicrosoftUrl);
+        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
+        
+        try {
+            // Parse using the Microsoft parser
+            com.jnleyva.jobtracker_backend.model.JobParseResult parseResult = jobParsingService.parseJobUrl(url);
+            
+            result.put("parseSuccessful", parseResult.isSuccessful());
+            result.put("jobTitle", parseResult.getJobTitle());
+            result.put("company", parseResult.getCompany());
+            result.put("location", parseResult.getLocation());
+            result.put("compensation", parseResult.getCompensation());
+            result.put("source", parseResult.getSource());
+            result.put("errorMessage", parseResult.getErrorMessage());
+            
+            if (parseResult.getDescription() != null) {
+                String description = parseResult.getDescription();
+                result.put("descriptionLength", description.length());
+                result.put("descriptionPreview", description.length() > 200 ? 
+                    description.substring(0, 200) + "..." : description);
+            }
+            
+        } catch (Exception e) {
+            result.put("parseSuccessful", false);
+            result.put("errorMessage", "Parser test failed: " + e.getMessage());
+        }
+        
+        return ResponseEntity.ok(result);
     }
     
     private boolean canParseGreenhouse(String url) {
@@ -633,5 +800,261 @@ public class DebugController {
         result.put("type", compensation.getType());
         
         return result;
+    }
+
+    /**
+     * Test basic connectivity to a URL
+     */
+    @GetMapping("/test-connectivity")
+    public ResponseEntity<Map<String, Object>> testConnectivity(@RequestParam String url) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        result.put("timestamp", System.currentTimeMillis());
+        
+        try {
+            // Test 1: Basic HTTP connectivity
+            long startTime = System.currentTimeMillis();
+            Document doc = webScrapingUtils.fetchDocument(url);
+            long fetchTime = System.currentTimeMillis() - startTime;
+            
+            result.put("basicFetch", Map.of(
+                "success", true,
+                "fetchTimeMs", fetchTime,
+                "elementCount", doc.getAllElements().size(),
+                "textLength", doc.text().length(),
+                "title", doc.title(),
+                "hasJobContent", hasJobContent(doc),
+                "hasJavaScriptIndicators", hasJavaScriptIndicators(doc)
+            ));
+            
+        } catch (Exception e) {
+            result.put("basicFetch", Map.of(
+                "success", false,
+                "error", e.getMessage()
+            ));
+        }
+        
+        // Test 2: JavaScript rendering availability
+        result.put("jsRenderingAvailable", jsWebScrapingService.isJavaScriptRenderingAvailable());
+        
+        // Test 3: JavaScript rendering if available
+        if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+            try {
+                long startTime = System.currentTimeMillis();
+                Document jsDoc = jsWebScrapingService.fetchDocumentWithJavaScript(url, 5);
+                long jsFetchTime = System.currentTimeMillis() - startTime;
+                
+                result.put("jsFetch", Map.of(
+                    "success", true,
+                    "fetchTimeMs", jsFetchTime,
+                    "elementCount", jsDoc.getAllElements().size(),
+                    "textLength", jsDoc.text().length(),
+                    "title", jsDoc.title(),
+                    "hasJobContent", hasJobContent(jsDoc),
+                    "hasJavaScriptIndicators", hasJavaScriptIndicators(jsDoc)
+                ));
+                
+            } catch (Exception e) {
+                result.put("jsFetch", Map.of(
+                    "success", false,
+                    "error", e.getMessage()
+                ));
+            }
+        }
+        
+        return ResponseEntity.ok(result);
+    }
+    
+    /**
+     * Get raw HTML content from a URL
+     */
+    @GetMapping("/raw-html")
+    public ResponseEntity<Map<String, Object>> getRawHtml(@RequestParam String url) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        
+        try {
+            Document doc = webScrapingUtils.fetchDocument(url);
+            String html = doc.html();
+            
+            result.put("success", true);
+            result.put("htmlLength", html.length());
+            result.put("title", doc.title());
+            result.put("elementCount", doc.getAllElements().size());
+            result.put("textLength", doc.text().length());
+            
+            // Show first 2000 characters of HTML for inspection
+            result.put("htmlPreview", html.length() > 2000 ? html.substring(0, 2000) + "..." : html);
+            
+            // Show first 1000 characters of text content
+            String text = doc.text();
+            result.put("textPreview", text.length() > 1000 ? text.substring(0, 1000) + "..." : text);
+            
+            // Check for common error indicators
+            result.put("containsAccessDenied", html.toLowerCase().contains("access denied") || 
+                                               html.toLowerCase().contains("forbidden") ||
+                                               html.toLowerCase().contains("blocked"));
+            result.put("containsBotDetection", html.toLowerCase().contains("bot") ||
+                                               html.toLowerCase().contains("captcha") ||
+                                               html.toLowerCase().contains("cloudflare"));
+            result.put("isRedirectPage", html.toLowerCase().contains("redirecting") ||
+                                         html.toLowerCase().contains("please wait"));
+            
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("error", e.getMessage());
+            result.put("errorType", e.getClass().getSimpleName());
+        }
+        
+        return ResponseEntity.ok(result);
+    }
+    
+    /**
+     * Test different user agents
+     */
+    @GetMapping("/test-user-agents")
+    public ResponseEntity<Map<String, Object>> testUserAgents(@RequestParam String url) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        
+        String[] userAgents = {
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
+        };
+        
+        Map<String, Object> userAgentResults = new HashMap<>();
+        
+        for (int i = 0; i < userAgents.length; i++) {
+            try {
+                Document doc = org.jsoup.Jsoup.connect(url)
+                        .userAgent(userAgents[i])
+                        .timeout(15000)
+                        .get();
+                
+                userAgentResults.put("userAgent" + (i + 1), Map.of(
+                    "userAgent", userAgents[i],
+                    "success", true,
+                    "elementCount", doc.getAllElements().size(),
+                    "textLength", doc.text().length(),
+                    "title", doc.title()
+                ));
+                
+            } catch (Exception e) {
+                userAgentResults.put("userAgent" + (i + 1), Map.of(
+                    "userAgent", userAgents[i],
+                    "success", false,
+                    "error", e.getMessage()
+                ));
+            }
+        }
+        
+        result.put("results", userAgentResults);
+        return ResponseEntity.ok(result);
+    }
+    
+    private boolean hasJobContent(Document doc) {
+        String text = doc.text().toLowerCase();
+        return text.contains("qualifications") || 
+               text.contains("responsibilities") || 
+               text.contains("requirements") ||
+               text.contains("salary") ||
+               text.contains("experience") ||
+               (text.contains("job") && text.contains("description"));
+    }
+    
+    private boolean hasJavaScriptIndicators(Document doc) {
+        String html = doc.html().toLowerCase();
+        return html.contains("noscript") ||
+               html.contains("javascript") ||
+               html.contains("window.onload") ||
+               html.contains("document.ready") ||
+               doc.select("script").size() > 5;
+    }
+
+    /**
+     * Get manual entry template for Microsoft jobs when parsing fails
+     */
+    @GetMapping("/microsoft-template")
+    public ResponseEntity<Map<String, Object>> getMicrosoftJobTemplate(@RequestParam String url) {
+        Map<String, Object> template = new HashMap<>();
+        template.put("originalUrl", url);
+        template.put("company", "Microsoft");
+        
+        // Extract job ID if possible
+        String jobId = extractJobIdFromUrl(url);
+        if (jobId != null) {
+            template.put("jobId", jobId);
+            template.put("searchInstructions", "Search for job ID '" + jobId + "' on Microsoft careers page");
+        }
+        
+        // Provide helpful suggestions
+        template.put("suggestions", Map.of(
+            "title", "Copy the job title from the Microsoft careers page",
+            "location", "Look for location information (Remote, Redmond, etc.)",
+            "description", "Copy key qualifications and responsibilities",
+            "experienceLevel", "Determine from title (Senior, Principal, etc.) or requirements",
+            "alternativeSearch", "Try searching LinkedIn or Indeed for the same position"
+        ));
+        
+        template.put("instructions", List.of(
+            "1. Open the Microsoft URL in your browser",
+            "2. Copy the job details manually",
+            "3. Use the extracted information to create a job entry",
+            "4. Consider searching other job boards for the same position"
+        ));
+        
+        return ResponseEntity.ok(template);
+    }
+    
+    /**
+     * Extract job ID from Microsoft URL for helper purposes
+     */
+    private String extractJobIdFromUrl(String url) {
+        if (url == null) return null;
+        
+        String[] parts = url.split("/");
+        for (int i = 0; i < parts.length - 1; i++) {
+            if ("job".equals(parts[i]) && i + 1 < parts.length) {
+                String jobId = parts[i + 1];
+                if (jobId.matches("\\d+")) {
+                    return jobId;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get Playwright queue status
+     */
+    @GetMapping("/playwright-queue-status")
+    public ResponseEntity<Map<String, Object>> getPlaywrightQueueStatus() {
+        try {
+            Map<String, Object> response = new HashMap<>();
+            
+            if (jsWebScrapingService.isJavaScriptRenderingAvailable()) {
+                var queueStatus = jsWebScrapingService.getQueueStatus();
+                response.put("available", true);
+                response.put("queueStatus", Map.of(
+                    "activeInstances", queueStatus.getActiveInstances(),
+                    "queuedRequests", queueStatus.getQueuedRequests(),
+                    "maxConcurrentInstances", queueStatus.getMaxConcurrentInstances(),
+                    "availableSlots", queueStatus.getAvailableSlots()
+                ));
+                response.put("engines", jsWebScrapingService.getAvailableJavaScriptEngines());
+            } else {
+                response.put("available", false);
+                response.put("reason", "Playwright not available");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to get queue status: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(errorResponse);
+        }
     }
 } 

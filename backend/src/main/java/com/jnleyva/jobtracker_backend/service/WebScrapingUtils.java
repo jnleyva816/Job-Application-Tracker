@@ -135,43 +135,104 @@ public class WebScrapingUtils {
         logger.debug("Content-Encoding header: {}", contentEncoding);
         
         InputStream inputStream = body.byteStream();
+        byte[] bytes;
         
         // Handle different compression types
         if ("gzip".equalsIgnoreCase(contentEncoding)) {
             logger.debug("Decompressing gzip content");
-            inputStream = new GZIPInputStream(inputStream);
+            try (GZIPInputStream gzipStream = new GZIPInputStream(inputStream)) {
+                bytes = gzipStream.readAllBytes();
+            }
         } else if ("deflate".equalsIgnoreCase(contentEncoding)) {
             logger.debug("Decompressing deflate content");
-            inputStream = new InflaterInputStream(inputStream);
+            try (InflaterInputStream deflateStream = new InflaterInputStream(inputStream)) {
+                bytes = deflateStream.readAllBytes();
+            }
         } else if ("br".equalsIgnoreCase(contentEncoding)) {
             logger.debug("Decompressing Brotli content");
-            inputStream = new BrotliInputStream(inputStream);
+            try (BrotliInputStream brotliStream = new BrotliInputStream(inputStream)) {
+                bytes = brotliStream.readAllBytes();
+            } catch (Exception e) {
+                logger.warn("Brotli decompression failed, trying raw content: {}", e.getMessage());
+                // Fallback to raw content if Brotli fails
+                bytes = body.bytes();
+            }
+        } else {
+            logger.debug("No compression or unknown compression type, reading raw content");
+            bytes = body.bytes();
         }
         
-        // Read content with UTF-8 encoding
-        byte[] bytes = inputStream.readAllBytes();
-        String content = new String(bytes, StandardCharsets.UTF_8);
+        // Try to detect and use the correct charset
+        String content = decodeWithBestCharset(bytes, response);
         
-        // If content still looks garbled, try other encodings
+        // Final verification
         if (containsGarbledCharacters(content)) {
-            logger.debug("UTF-8 content appears garbled, trying other encodings");
-            
-            // Try ISO-8859-1
-            String iso88591Content = new String(bytes, "ISO-8859-1");
-            if (!containsGarbledCharacters(iso88591Content)) {
-                logger.debug("Successfully decoded with ISO-8859-1");
-                return iso88591Content;
-            }
-            
-            // Try Windows-1252
-            String windows1252Content = new String(bytes, "Windows-1252");
-            if (!containsGarbledCharacters(windows1252Content)) {
-                logger.debug("Successfully decoded with Windows-1252");
-                return windows1252Content;
-            }
+            logger.warn("Content still appears garbled after charset detection");
         }
         
         return content;
+    }
+    
+    /**
+     * Decode bytes with the best available charset
+     */
+    private String decodeWithBestCharset(byte[] bytes, Response response) {
+        // First, try to get charset from Content-Type header
+        String contentType = response.header("Content-Type");
+        if (contentType != null) {
+            String charset = extractCharsetFromContentType(contentType);
+            if (charset != null) {
+                try {
+                    String content = new String(bytes, charset);
+                    if (!containsGarbledCharacters(content)) {
+                        logger.debug("Successfully decoded with charset from Content-Type: {}", charset);
+                        return content;
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to decode with charset {}: {}", charset, e.getMessage());
+                }
+            }
+        }
+        
+        // Try common charsets in order of likelihood
+        String[] charsets = {"UTF-8", "ISO-8859-1", "Windows-1252", "US-ASCII"};
+        
+        for (String charset : charsets) {
+            try {
+                String content = new String(bytes, charset);
+                if (!containsGarbledCharacters(content)) {
+                    logger.debug("Successfully decoded with charset: {}", charset);
+                    return content;
+                }
+            } catch (Exception e) {
+                logger.debug("Failed to decode with charset {}: {}", charset, e.getMessage());
+            }
+        }
+        
+        // Fallback to UTF-8 even if it produces garbled content
+        logger.warn("No charset produced clean content, falling back to UTF-8");
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+    
+    /**
+     * Extract charset from Content-Type header
+     */
+    private String extractCharsetFromContentType(String contentType) {
+        if (contentType == null) return null;
+        
+        String[] parts = contentType.split(";");
+        for (String part : parts) {
+            String trimmed = part.trim();
+            if (trimmed.toLowerCase().startsWith("charset=")) {
+                String charset = trimmed.substring(8).trim();
+                // Remove quotes if present
+                if (charset.startsWith("\"") && charset.endsWith("\"")) {
+                    charset = charset.substring(1, charset.length() - 1);
+                }
+                return charset;
+            }
+        }
+        return null;
     }
     
     /**
@@ -187,13 +248,33 @@ public class WebScrapingUtils {
             return true;
         }
         
-        // Check for excessive control characters
+        // Check for excessive control characters (but allow common ones)
         long controlCharCount = content.chars()
-                .filter(ch -> ch < 32 && ch != '\n' && ch != '\r' && ch != '\t')
+                .filter(ch -> ch < 32 && ch != '\n' && ch != '\r' && ch != '\t' && ch != '\f')
                 .count();
         
-        // If more than 1% of characters are control characters, it's likely garbled
-        return controlCharCount > (content.length() * 0.01);
+        // If more than 0.5% of characters are unusual control characters, it's likely garbled
+        double controlCharRatio = (double) controlCharCount / content.length();
+        if (controlCharRatio > 0.005) {
+            return true;
+        }
+        
+        // Check for suspicious byte sequences that often indicate encoding issues
+        // These patterns are common in incorrectly decoded text
+        String[] suspiciousPatterns = {
+            "Ã", "â€", "Â", "Ãƒ", "â€™", "â€œ", "â€", 
+            "Ã¡", "Ã©", "Ã­", "Ã³", "Ãº", "Ã±"
+        };
+        
+        int suspiciousCount = 0;
+        for (String pattern : suspiciousPatterns) {
+            if (content.contains(pattern)) {
+                suspiciousCount++;
+            }
+        }
+        
+        // If we find multiple suspicious patterns, it's likely garbled
+        return suspiciousCount >= 3;
     }
     
     /**

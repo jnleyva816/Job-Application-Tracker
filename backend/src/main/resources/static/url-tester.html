@@ -305,6 +305,26 @@
             font-style: italic;
         }
         
+        .field-value.compensation {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .field-value.success {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .field-value.warning {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .field-value.error {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
         .description-section {
             grid-column: 1 / -1;
         }
@@ -494,14 +514,23 @@
             <div class="sample-urls">
                 <h3>Sample URLs to Test</h3>
                 <div class="sample-url-grid">
-                    <div class="sample-url" onclick="setUrl('https://boards.greenhouse.io/netflix')">
-                        🎬 Netflix Careers (Greenhouse)
+                    <div class="sample-url" onclick="setUrl('https://jobs.lever.co/example')">
+                        💼 Lever Example
+                    </div>
+                    <div class="sample-url" onclick="setUrl('https://apply.workable.com/example/')">
+                        🔧 Workable Example
+                    </div>
+                    <div class="sample-url" onclick="setUrl('https://boards.greenhouse.io/example')">
+                        🌱 Greenhouse Example
+                    </div>
+                    <div class="sample-url" onclick="setUrl('https://careers.microsoft.com/global/en/job/1818936')">
+                        💻 Microsoft Job (JS Required)
                     </div>
                     <div class="sample-url" onclick="setUrl('https://careers.microsoft.com/us/en')">
-                        💻 Microsoft Careers
+                        💻 Microsoft Careers (JS Required)
                     </div>
                     <div class="sample-url" onclick="setUrl('https://jobs.apple.com/us/search')">
-                        🍎 Apple Jobs
+                        🍎 Apple Jobs (JS Required)
                     </div>
                     <div class="sample-url" onclick="setUrl('https://httpbin.org/html')">
                         🧪 Test HTML Page
@@ -536,6 +565,12 @@
                 </button>
                 <button class="tab" onclick="switchTab('analysis')" id="analysis-tab">
                     🔍 URL Analysis
+                </button>
+                <button class="tab" onclick="switchTab('javascript')" id="javascript-tab">
+                    ⚡ JavaScript Test
+                </button>
+                <button class="tab" onclick="switchTab('microsoft')" id="microsoft-tab">
+                    💻 Microsoft Test
                 </button>
             </div>
             
@@ -576,6 +611,24 @@
                     
                     <div id="analysis-content" class="analysis-data"></div>
                 </div>
+                
+                <div id="javascript-panel" class="tab-panel">
+                    <div id="javascript-status" class="result-status">
+                        <div class="status-icon"></div>
+                        <span id="javascript-message"></span>
+                    </div>
+                    
+                    <div id="javascript-content" class="analysis-data"></div>
+                </div>
+                
+                <div id="microsoft-panel" class="tab-panel">
+                    <div id="microsoft-status" class="result-status">
+                        <div class="status-icon"></div>
+                        <span id="microsoft-message"></span>
+                    </div>
+                    
+                    <div id="microsoft-content" class="analysis-data"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -613,7 +666,7 @@
             
             try {
                 // Use the proper job parsing endpoint that includes all parsers (Meta, Greenhouse, Generic)
-                const [parseResponse, plainTextResponse, analysisResponse] = await Promise.all([
+                const [parseResponse, plainTextResponse, analysisResponse, javascriptResponse, microsoftResponse] = await Promise.all([
                     fetch('/api/debug/parse-job', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -628,19 +681,33 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ url: url })
+                    }),
+                    fetch('/api/debug/test-javascript-rendering', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: url })
+                    }),
+                    fetch('/api/debug/test-microsoft-parser', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: url })
                     })
                 ]);
 
                 const parseData = await parseResponse.json();
                 const plainTextData = await plainTextResponse.json();
                 const analysisData = await analysisResponse.json();
+                const javascriptData = await javascriptResponse.json();
+                const microsoftData = await microsoftResponse.json();
 
                 // Use the actual parse result from the job parsing service
                 currentData = {
                     parsed: parseData,
                     raw: plainTextData,
                     url: url,
-                    analysis: analysisData
+                    analysis: analysisData,
+                    javascript: javascriptData,
+                    microsoft: microsoftData
                 };
 
                 displayResults();
@@ -666,6 +733,8 @@
             displayParsedData(currentData.parsed);
             displayRawHtml(currentData.raw);
             displayAnalysisData(currentData.analysis);
+            displayJavaScriptData(currentData.javascript);
+            displayMicrosoftData(currentData.microsoft);
         }
 
         function displayParsedData(data) {
@@ -901,6 +970,189 @@
             hideLoading();
             document.getElementById('error').style.display = 'none';
             document.getElementById('results').style.display = 'block';
+        }
+
+        function displayJavaScriptData(data) {
+            const statusEl = document.getElementById('javascript-status');
+            const messageEl = document.getElementById('javascript-message');
+            const contentEl = document.getElementById('javascript-content');
+
+            // Update status
+            if (data && data.url) {
+                statusEl.className = 'result-status success';
+                statusEl.querySelector('.status-icon').className = 'status-icon success';
+                messageEl.textContent = 'JavaScript rendering capabilities tested';
+            } else {
+                statusEl.className = 'result-status error';
+                statusEl.querySelector('.status-icon').className = 'status-icon error';
+                messageEl.textContent = 'Failed to test JavaScript rendering';
+                return;
+            }
+
+            // Build content
+            let html = '<div class="analysis-data">';
+            
+            // JavaScript Availability
+            html += '<div class="analysis-section">';
+            html += '<h3>JavaScript Rendering Status</h3>';
+            html += `<div class="field-group">`;
+            html += `<div class="field-label">JavaScript Rendering Available</div>`;
+            html += `<div class="field-value ${data.jsRenderingAvailable ? 'success' : 'warning'}">${data.jsRenderingAvailable ? '✅ Available' : '❌ Not Available'}</div>`;
+            html += `</div>`;
+            html += `<div class="field-group">`;
+            html += `<div class="field-label">URL Likely Requires JavaScript</div>`;
+            html += `<div class="field-value ${data.likelyRequiresJs ? 'warning' : 'success'}">${data.likelyRequiresJs ? '⚠️ Yes' : '✅ No'}</div>`;
+            html += `</div>`;
+            html += '</div>';
+
+            // Static HTML Results
+            if (data.staticFetchSuccess !== undefined) {
+                html += '<div class="analysis-section">';
+                html += '<h3>Static HTML Results</h3>';
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Fetch Success</div>`;
+                html += `<div class="field-value ${data.staticFetchSuccess ? 'success' : 'error'}">${data.staticFetchSuccess ? '✅ Success' : '❌ Failed'}</div>`;
+                html += `</div>`;
+                if (data.staticFetchSuccess) {
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Element Count</div>`;
+                    html += `<div class="field-value">${data.staticElementCount || 'N/A'}</div>`;
+                    html += `</div>`;
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Text Length</div>`;
+                    html += `<div class="field-value">${data.staticTextLength || 'N/A'} characters</div>`;
+                    html += `</div>`;
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Title</div>`;
+                    html += `<div class="field-value">${escapeHtml(data.staticTitle || 'N/A')}</div>`;
+                    html += `</div>`;
+                } else if (data.staticErrorMessage) {
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Error</div>`;
+                    html += `<div class="field-value error">${escapeHtml(data.staticErrorMessage)}</div>`;
+                    html += `</div>`;
+                }
+                html += '</div>';
+            }
+
+            // JavaScript Results
+            if (data.jsRenderingAvailable) {
+                html += '<div class="analysis-section">';
+                html += '<h3>JavaScript Rendering Results</h3>';
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Fetch Success</div>`;
+                html += `<div class="field-value ${data.jsFetchSuccess ? 'success' : 'error'}">${data.jsFetchSuccess ? '✅ Success' : '❌ Failed'}</div>`;
+                html += `</div>`;
+                if (data.jsFetchSuccess) {
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Element Count</div>`;
+                    html += `<div class="field-value">${data.jsElementCount || 'N/A'}</div>`;
+                    html += `</div>`;
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Text Length</div>`;
+                    html += `<div class="field-value">${data.jsTextLength || 'N/A'} characters</div>`;
+                    html += `</div>`;
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">JavaScript Produced Better Results</div>`;
+                    html += `<div class="field-value ${data.javascriptProducedBetterResults ? 'success' : 'warning'}">${data.javascriptProducedBetterResults ? '✅ Yes' : '⚠️ No'}</div>`;
+                    html += `</div>`;
+                } else if (data.jsErrorMessage) {
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Error</div>`;
+                    html += `<div class="field-value error">${escapeHtml(data.jsErrorMessage)}</div>`;
+                    html += `</div>`;
+                }
+                html += '</div>';
+            }
+
+            html += '</div>';
+            contentEl.innerHTML = html;
+        }
+
+        function displayMicrosoftData(data) {
+            const statusEl = document.getElementById('microsoft-status');
+            const messageEl = document.getElementById('microsoft-message');
+            const contentEl = document.getElementById('microsoft-content');
+
+            // Update status
+            if (data && data.url) {
+                statusEl.className = 'result-status success';
+                statusEl.querySelector('.status-icon').className = 'status-icon success';
+                messageEl.textContent = 'Microsoft parser tested';
+            } else {
+                statusEl.className = 'result-status error';
+                statusEl.querySelector('.status-icon').className = 'status-icon error';
+                messageEl.textContent = 'Failed to test Microsoft parser';
+                return;
+            }
+
+            // Build content
+            let html = '<div class="analysis-data">';
+            
+            // URL Check
+            html += '<div class="analysis-section">';
+            html += '<h3>URL Analysis</h3>';
+            html += `<div class="field-group">`;
+            html += `<div class="field-label">Is Microsoft URL</div>`;
+            html += `<div class="field-value ${data.isMicrosoftUrl ? 'success' : 'warning'}">${data.isMicrosoftUrl ? '✅ Yes' : '⚠️ No'}</div>`;
+            html += `</div>`;
+            html += `<div class="field-group">`;
+            html += `<div class="field-label">JavaScript Rendering Available</div>`;
+            html += `<div class="field-value ${data.jsRenderingAvailable ? 'success' : 'warning'}">${data.jsRenderingAvailable ? '✅ Available' : '❌ Not Available'}</div>`;
+            html += `</div>`;
+            html += '</div>';
+
+            // Parse Results
+            html += '<div class="analysis-section">';
+            html += '<h3>Parse Results</h3>';
+            html += `<div class="field-group">`;
+            html += `<div class="field-label">Parse Success</div>`;
+            html += `<div class="field-value ${data.parseSuccessful ? 'success' : 'error'}">${data.parseSuccessful ? '✅ Success' : '❌ Failed'}</div>`;
+            html += `</div>`;
+            
+            if (data.parseSuccessful) {
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Job Title</div>`;
+                html += `<div class="field-value ${data.jobTitle ? '' : 'empty'}">${escapeHtml(data.jobTitle || 'Not found')}</div>`;
+                html += `</div>`;
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Company</div>`;
+                html += `<div class="field-value ${data.company ? '' : 'empty'}">${escapeHtml(data.company || 'Not found')}</div>`;
+                html += `</div>`;
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Location</div>`;
+                html += `<div class="field-value ${data.location ? '' : 'empty'}">${escapeHtml(data.location || 'Not found')}</div>`;
+                html += `</div>`;
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Compensation</div>`;
+                html += `<div class="field-value ${data.compensation ? 'compensation' : 'empty'}">${data.compensation ? '$' + data.compensation.toLocaleString() : 'Not found'}</div>`;
+                html += `</div>`;
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Source Parser</div>`;
+                html += `<div class="field-value">${escapeHtml(data.source || 'Unknown')}</div>`;
+                html += `</div>`;
+                if (data.descriptionLength) {
+                    html += `<div class="field-group">`;
+                    html += `<div class="field-label">Description Length</div>`;
+                    html += `<div class="field-value">${data.descriptionLength} characters</div>`;
+                    html += `</div>`;
+                }
+                if (data.descriptionPreview) {
+                    html += `<div class="field-group description-section">`;
+                    html += `<div class="field-label">Description Preview</div>`;
+                    html += `<div class="description-content">${escapeHtml(data.descriptionPreview)}</div>`;
+                    html += `</div>`;
+                }
+            } else if (data.errorMessage) {
+                html += `<div class="field-group">`;
+                html += `<div class="field-label">Error Message</div>`;
+                html += `<div class="field-value error">${escapeHtml(data.errorMessage)}</div>`;
+                html += `</div>`;
+            }
+            
+            html += '</div>';
+            html += '</div>';
+            contentEl.innerHTML = html;
         }
 
         // Add enter key support

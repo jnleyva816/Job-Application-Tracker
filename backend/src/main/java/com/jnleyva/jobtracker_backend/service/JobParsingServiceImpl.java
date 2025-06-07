@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of JobParsingService that orchestrates different job parsers
- * Currently supports Meta and Greenhouse job parsers only
+ * Currently supports Meta, Greenhouse, and Microsoft job parsers
  */
 @Service
 public class JobParsingServiceImpl implements JobParsingService {
@@ -69,6 +69,6 @@ public class JobParsingServiceImpl implements JobParsingService {
         
         logger.warn("No suitable parser found for URL: {}. Available parsers: {}", url,
                 jobParsers.stream().map(JobParser::getParserName).collect(Collectors.joining(", ")));
-        return JobParseResult.failure("UNKNOWN", url, "No suitable parser found for this URL. Only Meta and Greenhouse URLs are supported.");
+        return JobParseResult.failure("UNKNOWN", url, "No suitable parser found for this URL. Only Meta, Greenhouse, and Microsoft URLs are supported.");
     }
 } 
