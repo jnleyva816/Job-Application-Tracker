@@ -22,14 +22,30 @@ public class JwtService {
     private final long expiration = 86400000; // 1 day (in milliseconds)
 
     public JwtService() {
-        Dotenv dotenv = Dotenv.load();
-        String envSecret = dotenv.get("JWT_SECRET");
+        // First try to get JWT_SECRET from system environment variables (Docker)
+        String envSecret = System.getenv("JWT_SECRET");
+        
+        // If not found in system env, try to load from .env file (local development)
+        if (envSecret == null || envSecret.isEmpty()) {
+            try {
+                Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+                envSecret = dotenv.get("JWT_SECRET");
+                logger.info("Loaded JWT secret from .env file");
+            } catch (Exception e) {
+                logger.info("No .env file found, using system environment or default");
+                envSecret = null;
+            }
+        } else {
+            logger.info("Loaded JWT secret from system environment variables");
+        }
+        
         if (envSecret == null || envSecret.isEmpty()) {
             // Fallback for development only - remove in production
             this.secret = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
-            logger.warn("WARNING: Using default JWT secret. Set JWT_SECRET in .env file");
+            logger.warn("WARNING: Using default JWT secret. Set JWT_SECRET in environment variables or .env file");
         } else {
             this.secret = envSecret;
+            logger.info("JWT secret loaded successfully");
         }
     }
 
