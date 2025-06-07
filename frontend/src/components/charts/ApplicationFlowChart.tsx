@@ -146,7 +146,7 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
     // Calculate flow data - including pending applications
     const pendingApplications = currentStatus.Applied; // Currently applied, waiting for response
     const interviewingApplications = currentStatus.Interviewing; // Currently in interview process
-    const toInterviews = currentStatus.Interviewing + currentStatus.Offered;
+    // const toInterviews = currentStatus.Interviewing + currentStatus.Offered;
     const toOffers = currentStatus.Offered;
     
     // All rejections flow directly from applications (simplified view)
@@ -154,13 +154,13 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
     
     // Interview records data from stats
     const totalInterviewRecords = stats.interviewStats?.totalInterviews || 0;
-    const upcomingInterviews = stats.interviewStats?.upcoming || 0;
-    const pastInterviews = stats.interviewStats?.past || 0;
+    // const upcomingInterviews = stats.interviewStats?.upcoming || 0;
+    // const pastInterviews = stats.interviewStats?.past || 0;
     
     // Use real offer status data instead of estimates
     const acceptedOffers = stats.offerStatusDistribution?.ACCEPTED || 0;
     const declinedOffers = stats.offerStatusDistribution?.DECLINED || 0;
-    const pendingOffers = stats.offerStatusDistribution?.PENDING || 0;
+    // const pendingOffers = stats.offerStatusDistribution?.PENDING || 0;
 
     // Define colors matching your existing theme
     const colors = {
@@ -661,14 +661,14 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
       }
 
       // Create invisible wider path for better hover detection
-      const hoverPath = chart
+      chart
         .append('path')
         .attr('d', pathData.path)
         .attr('fill', 'transparent')
         .attr('stroke', 'transparent')
         .attr('stroke-width', Math.max(20, pathData.strokeWidth + 10)) // Minimum 20px hover area
         .style('cursor', 'pointer')
-        .on('mouseover', function(event) {
+        .on('mouseover', function() {
           console.log('Hover detected on path:', link.source, '->', link.target); // Debug log
           
           // Show tooltip
@@ -697,7 +697,7 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
               .style('left', (event.clientX - rect.left + window.scrollX) + 'px');
           }
         })
-        .on('mouseout', function(event) {
+        .on('mouseout', function() {
           console.log('Mouse out from path:', link.source, '->', link.target); // Debug log
           
           // Hide tooltip
@@ -739,7 +739,7 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
       .attr('stroke-width', 2)
       .style('filter', 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))')
       .style('cursor', 'pointer')
-      .on('mouseover', function(event, d) {
+      .on('mouseover', function() {
         d3.select(this)
           .transition()
           .duration(150)
@@ -747,7 +747,7 @@ const ApplicationFlowChart: React.FC<ApplicationFlowChartProps> = ({
           .attr('stroke-width', 3)
           .style('filter', 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4))');
       })
-      .on('mouseout', function(event, d) {
+      .on('mouseout', function() {
         d3.select(this)
           .transition()
           .duration(150)

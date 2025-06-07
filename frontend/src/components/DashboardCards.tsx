@@ -175,7 +175,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ applications, interview
 
       {/* Interactive Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-        {visibleCards.map((card, index) => (
+        {visibleCards.map((card) => (
           <div
             key={card.id}
             className="relative group"

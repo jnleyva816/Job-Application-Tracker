@@ -1,15 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   DndContext,
   DragEndEvent,
-  DragOverEvent,
-  DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
   closestCorners,
+  DragOverlay,
   useDroppable
 } from '@dnd-kit/core';
 import {
@@ -56,7 +55,7 @@ function ApplicationCard({ application, onClick, onJobLinkClick }: ApplicationCa
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = () => {
     // Only trigger click if not dragging
     if (!isDragging) {
       onClick(application.id);
@@ -223,10 +222,6 @@ function KanbanView({ applications, onApplicationsChange, isLoading, error }: Ka
     }
   };
 
-  const handleDragOver = (event: DragOverEvent) => {
-    // This could be used for visual feedback during drag
-  };
-
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveApplication(null);
@@ -312,7 +307,6 @@ function KanbanView({ applications, onApplicationsChange, isLoading, error }: Ka
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-6 overflow-x-auto pb-4 min-h-[500px]">
