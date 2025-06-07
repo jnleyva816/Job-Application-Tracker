@@ -84,3 +84,7 @@ frontend.pid
 
 # Keep example files in repo
 !*.env.example
+
+# Wiki setup temporary directories
+wiki-content/
+*.wiki/
