@@ -10,13 +10,13 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
 export default defineConfig({
   testDir: './e2e-tests',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: !isCI, // Disable parallel execution on CI to prevent resource issues
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: isCI,
   /* Retry on CI only */
-  retries: isCI ? 2 : 0,
+  retries: isCI ? 1 : 0, // Reduce retries to prevent hanging
   /* Opt out of parallel tests on CI. */
-  workers: isCI ? 2 : undefined,
+  workers: isCI ? 1 : undefined, // Use single worker on CI to prevent resource exhaustion
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html'],
@@ -30,23 +30,42 @@ export default defineConfig({
     baseURL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'off',
+    trace: isCI ? 'retain-on-failure' : 'off',
     
     /* Take screenshot when test fails */
-    screenshot: 'off',
+    screenshot: isCI ? 'only-on-failure' : 'off',
     
     /* Record video on failure */
-    video: 'off',
+    video: isCI ? 'retain-on-failure' : 'off',
     
     /* Timeout for each action */
-    actionTimeout: 10000,
+    actionTimeout: isCI ? 5000 : 10000, // Reduce timeout on CI
     
     /* Timeout for navigation */
-    navigationTimeout: 30000,
+    navigationTimeout: isCI ? 15000 : 30000, // Reduce navigation timeout on CI
   },
 
-  /* Configure projects for major browsers */
-  projects: [
+  /* Configure projects for major browsers - reduced for CI */
+  projects: isCI ? [
+    // Only run Chromium on CI to prevent resource issues
+    {
+      name: 'chromium',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Add CI-specific settings
+        launchOptions: {
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-web-security',
+            '--disable-features=VizDisplayCompositor'
+          ]
+        }
+      },
+    },
+  ] : [
+    // Full browser suite for local development
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -86,12 +105,12 @@ export default defineConfig({
   ],
 
   /* Test configuration for different test types */
-  timeout: 60000, // Overall test timeout
+  timeout: isCI ? 30000 : 60000, // Reduce overall test timeout on CI
 
   /* Expect configuration */
   expect: {
     /* Timeout for expect() assertions */
-    timeout: 10000,
+    timeout: isCI ? 5000 : 10000, // Reduce expect timeout on CI
   },
 
   /* Global test setup */
@@ -107,4 +126,12 @@ export default defineConfig({
     stdout: 'ignore',
     stderr: 'pipe',
   },
+
+  /* CI-specific configuration */
+  ...(isCI && {
+    maxFailures: 5, // Stop after 5 failures to prevent hanging
+    forbidOnly: true,
+    // Add global timeout for the entire test run
+    globalTimeout: 15 * 60 * 1000, // 15 minutes max for entire test run
+  }),
 }); 

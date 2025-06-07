@@ -1,64 +1,19 @@
 # Job Application Tracker
 
-A full-stack application for tracking job applications, built with Spring Boot (backend) and React (frontend). Features a comprehensive CI/CD pipeline with automated testing, security scanning, and deployment.
+A comprehensive full-stack application for managing job applications, built with modern technologies and production-ready CI/CD practices. Features Spring Boot backend, React frontend, and a complete DevOps pipeline with automated testing, security scanning, and multi-stage deployments.
 
-## 🚀 CI/CD Pipeline
+![Build Status](https://github.com/jnleyva816/Job-Application-Tracker/workflows/CI-CD/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Docker](https://img.shields.io/badge/docker-supported-blue.svg)
 
-This project includes a production-ready CI/CD pipeline with:
-
-- **Automated Testing**: Unit, integration, and E2E tests
-- **Code Quality**: SonarQube, ESLint, and static analysis
-- **Security Scanning**: OWASP dependency check and Trivy vulnerability scanning
-- **Containerization**: Multi-stage Docker builds with security hardening
-- **Multi-environment Deployment**: Staging and production environments
-- **Monitoring**: Health checks and performance monitoring
-
-📖 **[Complete CI/CD Setup Guide](CI-CD-SETUP.md)**
-
-## Project Structure
-
-```
-Job_Application_Tracker/
-├── .github/workflows/     # CI/CD pipeline configuration
-├── backend/              # Spring Boot backend service
-├── frontend/             # React frontend application
-├── docker-compose.yml    # Local development setup
-└── CI-CD-SETUP.md       # Comprehensive CI/CD documentation
-```
-
-## Backend
-
-The backend is a Spring Boot application that provides a RESTful API for managing job applications and user accounts. Features include:
-
-- **Spring Security**: JWT-based authentication
-- **Spring Data JPA**: Database operations with PostgreSQL
-- **Spring Boot Actuator**: Health checks and monitoring
-- **Comprehensive Testing**: Unit and integration tests
-- **Code Quality Tools**: JaCoCo, SpotBugs, PMD, Checkstyle
-
-See [backend/README.md](backend/README.md) for detailed information.
-
-## Frontend
-
-The frontend is built using React with TypeScript and Vite, providing a modern, responsive user interface. Features include:
-
-- **React 19**: Latest React with TypeScript
-- **Vite**: Fast build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework
-- **Vitest**: Unit testing framework
-- **Playwright**: End-to-end testing
-- **ESLint**: Code quality and consistency
-
-See [frontend/README.md](frontend/README.md) for detailed setup and development instructions.
-
-## Quick Start
+## 🚀 Quick Start
 
 ### With Docker Compose (Recommended)
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/Job_Application_Tracker.git
-cd Job_Application_Tracker
+git clone https://github.com/jnleyva816/Job-Application-Tracker.git
+cd Job-Application-Tracker
 
 # Start all services
 docker-compose up -d
@@ -66,132 +21,250 @@ docker-compose up -d
 # Access the application
 # Frontend: http://localhost:3000
 # Backend API: http://localhost:8080
-# Database: localhost:5432
+# Database: localhost:5432 (user: postgres, password: password)
 ```
 
 ### Manual Setup
 
-1. **Prerequisites**
-   - Java 17+
-   - Node.js 20+
-   - PostgreSQL 15+
-   - Docker (optional)
+**Prerequisites:**
+- Java 17+
+- Node.js 20+
+- PostgreSQL 15+
+- Docker (optional)
 
-2. **Backend Setup**
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-   ```
+**Backend Setup:**
+```bash
+cd backend
+cp .env.example .env  # Configure your environment variables
+./mvnw spring-boot:run
+```
 
-3. **Frontend Setup**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+**Frontend Setup:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Development Features
+## 📊 Project Structure
 
-### Code Quality & Testing
+```
+Job-Application-Tracker/
+├── .github/workflows/     # CI/CD pipeline configuration
+├── backend/              # Spring Boot backend service
+│   ├── src/main/java/    # Java source code
+│   ├── src/test/java/    # Test code
+│   ├── Dockerfile        # Backend container configuration
+│   └── pom.xml           # Maven dependencies
+├── frontend/             # React frontend application
+│   ├── src/              # TypeScript/React source code
+│   ├── tests/            # Unit tests
+│   ├── e2e-tests/        # End-to-end tests
+│   ├── Dockerfile        # Frontend container configuration
+│   └── package.json      # Node.js dependencies
+├── deployment/           # Deployment configurations
+├── ci-cd/               # CI/CD scripts and configurations
+├── WIKI/                # Project documentation
+├── CONTRIBUTING/        # Contribution guidelines
+└── docker-compose.yml   # Local development setup
+```
 
-- **Backend**: 70%+ test coverage requirement
-- **Frontend**: Unit tests with Vitest, E2E tests with Playwright
-- **Static Analysis**: Multiple tools for code quality assurance
-- **Security**: Dependency scanning and vulnerability checks
+## 🏗️ Architecture
 
-### Development Tools
+### Backend Architecture
+- **Spring Boot 3.5.0** with Java 17
+- **PostgreSQL** database with JPA/Hibernate
+- **JWT Authentication** with Spring Security
+- **RESTful API** design with OpenAPI documentation
+- **Comprehensive Testing** (Unit, Integration, Security)
+- **Code Quality Tools** (JaCoCo, SpotBugs, PMD, Checkstyle)
 
-- **Hot Reload**: Both frontend and backend support hot reloading
-- **Database Migrations**: Flyway for database version control
-- **API Documentation**: OpenAPI/Swagger integration
-- **Development Profiles**: Separate configurations for dev/test/prod
+### Frontend Architecture
+- **React 19** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for responsive design
+- **React Router** for navigation
+- **Vitest** for unit testing
+- **Playwright** for E2E testing
 
-### Monitoring & Observability
+### DevOps & Infrastructure
+- **Docker Containers** with multi-stage builds
+- **GitHub Actions** CI/CD pipeline
+- **Security Scanning** (OWASP, Trivy, SonarQube)
+- **Automated Testing** across all layers
+- **Blue-Green Deployments** with rollback capability
 
-- **Health Checks**: Comprehensive health monitoring
-- **Metrics**: Application and business metrics collection
-- **Logging**: Structured logging with different levels
-- **Performance**: Response time and throughput monitoring
+## 🔧 Features
 
-## CI/CD Features
+### Application Features
+- ✅ User authentication and authorization
+- ✅ Job application tracking and management
+- ✅ Company and contact management
+- ✅ Interview scheduling and tracking
+- ✅ Application status workflow
+- ✅ Data visualization and analytics
+- ✅ Responsive web interface
 
-### Automated Pipeline
+### Development Features
+- ✅ Hot reload for development
+- ✅ Comprehensive test coverage (70%+ requirement)
+- ✅ Static code analysis and security scanning
+- ✅ Database migrations with version control
+- ✅ API documentation with Swagger/OpenAPI
+- ✅ Development/staging/production environments
 
-- **Multi-stage builds**: Optimized Docker containers
-- **Parallel execution**: Frontend and backend builds run concurrently
-- **Quality gates**: Automated quality and security checks
-- **Environment promotion**: Staging → Production workflow
+### CI/CD Features
+- ✅ Automated builds and deployments
+- ✅ Parallel execution of frontend/backend pipelines
+- ✅ Quality gates and security checks
+- ✅ Container security scanning
+- ✅ Performance monitoring
+- ✅ Slack notifications for build status
 
-### Security-First Approach
+## 🛠️ Technology Stack
 
-- **Vulnerability Scanning**: Container and dependency scanning
-- **Security Headers**: Properly configured security headers
-- **Non-root Containers**: All containers run as non-privileged users
-- **Secrets Management**: Secure handling of sensitive data
+| Component | Technology | Version |
+|-----------|------------|---------|
+| **Backend** | Spring Boot | 3.5.0 |
+| **Frontend** | React | 19.0.0 |
+| **Database** | PostgreSQL | 15+ |
+| **Authentication** | JWT | - |
+| **Containerization** | Docker | - |
+| **CI/CD** | GitHub Actions | - |
+| **Testing** | JUnit 5, Vitest, Playwright | - |
+| **Code Quality** | SonarQube, ESLint | - |
+| **Security** | OWASP, Trivy | - |
+
+## 📖 Documentation
+
+- **[WIKI](WIKI/)** - Comprehensive project documentation
+- **[Contributing Guide](CONTRIBUTING/)** - How to contribute to the project
+- **[Backend README](backend/README.md)** - Backend-specific documentation
+- **[Frontend README](frontend/README.md)** - Frontend-specific documentation
+- **[Quick Setup Guide](QUICK-SETUP.md)** - Rapid development setup
+
+## 🔐 Security
+
+This project implements security best practices:
+
+- **Authentication**: JWT-based with secure token handling
+- **Authorization**: Role-based access control (RBAC)
+- **Input Validation**: Comprehensive request validation
+- **Security Headers**: Proper HTTP security headers
+- **Dependency Scanning**: Automated vulnerability detection
+- **Container Security**: Non-root containers and security scanning
+- **Data Protection**: Encrypted sensitive data storage
+
+## 🧪 Testing Strategy
+
+### Test Coverage Requirements
+- **Backend**: Minimum 70% code coverage
+- **Frontend**: Comprehensive unit and E2E testing
+- **Integration**: End-to-end workflow testing
+- **Security**: Automated security testing
+
+### Test Types
+- **Unit Tests**: Individual component testing
+- **Integration Tests**: Service integration testing
+- **E2E Tests**: Complete user workflow testing
+- **Security Tests**: Authentication and authorization testing
+- **Performance Tests**: Load and stress testing
+
+## 🚀 Deployment
+
+### Environments
+- **Development**: Local development with hot reload
+- **Staging**: Pre-production testing environment
+- **Production**: Live application deployment
 
 ### Deployment Strategy
-
 - **Blue-Green Deployments**: Zero-downtime deployments
-- **Rollback Capability**: Automated rollback on failure
-- **Environment Parity**: Consistent environments across stages
-- **Infrastructure as Code**: Declarative infrastructure management
+- **Automated Rollbacks**: Failure detection and rollback
+- **Health Checks**: Comprehensive monitoring
+- **Scaling**: Horizontal scaling capabilities
 
-## Development Status
+## 📊 Monitoring & Observability
+
+- **Application Metrics**: Performance and usage metrics
+- **Health Endpoints**: Service health monitoring
+- **Logging**: Structured logging with different levels
+- **Error Tracking**: Comprehensive error monitoring
+- **Performance Monitoring**: Response time and throughput tracking
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING/) for:
+
+- Code of conduct
+- Development setup
+- Pull request process
+- Code quality standards
+- Testing requirements
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and quality checks
+5. Submit a pull request
+
+## 📋 Development Status
 
 - [x] Backend API implementation
 - [x] Database schema and migrations
-- [x] Authentication system with JWT
+- [x] JWT authentication system
 - [x] Frontend project setup with React 19
 - [x] Comprehensive CI/CD pipeline
 - [x] Docker containerization
 - [x] Security scanning and quality gates
 - [x] Multi-environment deployment setup
-- [ ] Frontend feature implementation
+- [x] E2E testing framework
+- [ ] Frontend feature implementation (in progress)
 - [ ] Production monitoring and alerting
 - [ ] Performance optimization
+- [ ] Mobile responsive enhancements
 
-## Contributing
+## 🐳 Docker Images
 
-We welcome contributions! Please see our [CI/CD Setup Guide](CI-CD-SETUP.md) for detailed information about:
+### Available Images
+- **Backend**: `jleyva816/jobtracker-backend:latest`
+- **Frontend**: `jleyva816/jobtracker-frontend:latest`
 
-- Code quality standards
-- Testing requirements
-- Security guidelines
-- Deployment process
+### Building Images
+```bash
+# Build backend image
+docker build -t jleyva816/jobtracker-backend:latest ./backend
 
-### Pull Request Process
+# Build frontend image
+docker build -t jleyva816/jobtracker-frontend:latest ./frontend
+```
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Ensure all tests pass and quality gates are met
-4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-5. Push to the branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request
+## 📞 Support & Contact
 
-## License
+- **Issues**: [GitHub Issues](https://github.com/jnleyva816/Job-Application-Tracker/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jnleyva816/Job-Application-Tracker/discussions)
+- **Documentation**: [Project WIKI](WIKI/)
+- **Contributing**: [Contributing Guide](CONTRIBUTING/)
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📄 License
 
-## Acknowledgments
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Special thanks to the open-source community and the following projects:
+## 🙏 Acknowledgments
 
-- **Spring Boot**: Excellent framework for Java applications
-- **React**: Outstanding frontend library
-- **GitHub Actions**: Powerful CI/CD platform
-- **Docker**: Containerization platform
-- **Playwright**: Reliable E2E testing
-- **SonarQube**: Code quality platform
-- **OWASP**: Security tools and best practices
+Special thanks to the open-source community and these amazing projects:
+
+- **Spring Boot** - Excellent Java framework
+- **React** - Outstanding frontend library
+- **GitHub Actions** - Powerful CI/CD platform
+- **Docker** - Containerization platform
+- **Playwright** - Reliable E2E testing
+- **SonarQube** - Code quality platform
+- **OWASP** - Security tools and best practices
+- **Tailwind CSS** - Utility-first CSS framework
 
 ---
 
-## 📞 Support
+**Built with ❤️ for modern software development practices**
 
-For questions, issues, or contributions:
-
-- 📖 Check the [CI/CD Setup Guide](CI-CD-SETUP.md)
-- 🐛 Create an [Issue](https://github.com/yourusername/Job_Application_Tracker/issues)
-- 💬 Start a [Discussion](https://github.com/yourusername/Job_Application_Tracker/discussions)
-
-**Built with ❤️ for modern software development practices** # Testing updated Slack notifications Fri Jun  6 09:42:01 AM EDT 2025
+*Last updated: January 2025*

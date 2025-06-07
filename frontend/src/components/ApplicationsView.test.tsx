@@ -23,7 +23,7 @@ const mockApplications: JobApplication[] = [
     applicationDate: '2024-01-15',
     location: 'San Francisco, CA',
     url: 'https://example.com/job1',
-    description: 'Exciting frontend role',
+    description: 'Exciting frontend role working with React and TypeScript',
     compensation: 120000,
   },
   {
@@ -34,7 +34,7 @@ const mockApplications: JobApplication[] = [
     applicationDate: '2024-01-10',
     location: 'Remote',
     url: 'https://example.com/job2',
-    description: 'Remote React position',
+    description: 'Remote React position with flexible hours',
     compensation: 95000,
   },
   {
@@ -45,7 +45,7 @@ const mockApplications: JobApplication[] = [
     applicationDate: '2024-01-05',
     location: 'New York, NY',
     url: 'https://example.com/job3',
-    description: 'Senior level position',
+    description: 'Senior level position with leadership opportunities',
     compensation: 150000,
   },
   {
@@ -56,7 +56,7 @@ const mockApplications: JobApplication[] = [
     applicationDate: '2023-12-20',
     location: 'Chicago, IL',
     url: 'https://example.com/job4',
-    description: 'Entry level position',
+    description: 'Entry level position for beginners',
     compensation: 80000,
   },
 ]
@@ -79,6 +79,160 @@ const renderApplicationsView = (props = {}) => {
 describe('ApplicationsView Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear()
+  })
+
+  describe('Search Functionality', () => {
+    it('should render search input', () => {
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      expect(searchInput).toBeInTheDocument()
+      expect(searchInput).toHaveAttribute('placeholder', 'Search by company, job title, location, or description...')
+    })
+
+    it('should filter applications by company name', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'Tech Corp')
+      
+      expect(screen.getByText('Tech Corp')).toBeInTheDocument()
+      expect(screen.queryByText('StartupXYZ')).not.toBeInTheDocument()
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument()
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument()
+    })
+
+    it('should filter applications by job title', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'React Developer')
+      
+      expect(screen.getByText('StartupXYZ')).toBeInTheDocument()
+      expect(screen.queryByText('Tech Corp')).not.toBeInTheDocument()
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument()
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument()
+    })
+
+    it('should filter applications by location', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'Remote')
+      
+      expect(screen.getByText('StartupXYZ')).toBeInTheDocument()
+      expect(screen.queryByText('Tech Corp')).not.toBeInTheDocument()
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument()
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument()
+    })
+
+    it('should filter applications by description', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'TypeScript')
+      
+      expect(screen.getByText('Tech Corp')).toBeInTheDocument()
+      expect(screen.queryByText('StartupXYZ')).not.toBeInTheDocument()
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument()
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument()
+    })
+
+    it('should show clear button when search has text', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'search text')
+      
+      const clearButton = searchInput.parentElement?.querySelector('button')
+      expect(clearButton).toBeInTheDocument()
+    })
+
+    it('should clear search when clear button is clicked', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'search text')
+      
+      const clearButton = searchInput.parentElement?.querySelector('button')
+      await user.click(clearButton!)
+      
+      expect(searchInput).toHaveValue('')
+    })
+
+    it('should be case insensitive', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'tech corp')
+      
+      expect(screen.getByText('Tech Corp')).toBeInTheDocument()
+    })
+  })
+
+  describe('Collapsible Filters', () => {
+    it('should have filters toggle button', () => {
+      renderApplicationsView()
+      
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      expect(toggleButton).toBeInTheDocument()
+      expect(toggleButton).toHaveTextContent('Filters')
+    })
+
+    it('should hide filters by default', () => {
+      renderApplicationsView()
+      
+      expect(screen.queryByTestId('status-filter')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('date-sort-filter')).not.toBeInTheDocument()
+    })
+
+    it('should show filters when toggle button is clicked', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      await user.click(toggleButton)
+      
+      expect(screen.getByTestId('status-filter')).toBeInTheDocument()
+      expect(screen.getByTestId('date-sort-filter')).toBeInTheDocument()
+    })
+
+    it('should hide filters when toggle button is clicked again', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      
+      // Show filters
+      await user.click(toggleButton)
+      expect(screen.getByTestId('status-filter')).toBeInTheDocument()
+      
+      // Hide filters
+      await user.click(toggleButton)
+      expect(screen.queryByTestId('status-filter')).not.toBeInTheDocument()
+    })
+
+    it('should show clear filters button only when filters are active', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      // No filters active initially
+      expect(screen.queryByTestId('clear-filters-button')).not.toBeInTheDocument()
+      
+      // Add a search query
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'test')
+      
+      // Clear filters button should appear
+      expect(screen.getByTestId('clear-filters-button')).toBeInTheDocument()
+    })
   })
 
   describe('View Toggle', () => {
@@ -133,9 +287,15 @@ describe('ApplicationsView Component', () => {
   })
 
   describe('Status Filter', () => {
-    it('should show all status filter options', () => {
+    beforeEach(async () => {
+      const user = userEvent.setup()
       renderApplicationsView()
       
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      await user.click(toggleButton)
+    })
+
+    it('should show all status filter options', () => {
       const statusFilter = screen.getByTestId('status-filter')
       expect(statusFilter).toBeInTheDocument()
       
@@ -148,7 +308,6 @@ describe('ApplicationsView Component', () => {
 
     it('should filter applications by status when status filter is changed', async () => {
       const user = userEvent.setup()
-      renderApplicationsView()
       
       const statusFilter = screen.getByTestId('status-filter')
       await user.selectOptions(statusFilter, 'Applied')
@@ -162,7 +321,6 @@ describe('ApplicationsView Component', () => {
 
     it('should show all applications when "All Status" is selected', async () => {
       const user = userEvent.setup()
-      renderApplicationsView()
       
       const statusFilter = screen.getByTestId('status-filter')
       
@@ -182,75 +340,120 @@ describe('ApplicationsView Component', () => {
     })
   })
 
-  describe('Date Filter', () => {
-    it('should show date filter inputs', () => {
-      renderApplicationsView()
-      
-      expect(screen.getByTestId('date-from-filter')).toBeInTheDocument()
-      expect(screen.getByTestId('date-to-filter')).toBeInTheDocument()
-    })
-
-    it('should filter applications by date range', async () => {
+  describe('Date Sort Filter', () => {
+    beforeEach(async () => {
       const user = userEvent.setup()
       renderApplicationsView()
       
-      const dateFromFilter = screen.getByTestId('date-from-filter')
-      const dateToFilter = screen.getByTestId('date-to-filter')
-      
-      await user.clear(dateFromFilter)
-      await user.type(dateFromFilter, '2024-01-06')
-      await user.clear(dateToFilter)
-      await user.type(dateToFilter, '2024-01-12')
-      
-      // Wait a moment for the filter to be applied
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
-      // Should only show applications within date range (StartupXYZ - 2024-01-10)
-      expect(screen.getByText('StartupXYZ')).toBeInTheDocument()
-      expect(screen.queryByText('Tech Corp')).not.toBeInTheDocument() // 2024-01-15
-      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument() // 2024-01-05
-      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument() // 2023-12-20
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      await user.click(toggleButton)
     })
 
-    it('should clear date filters when clear button is clicked', async () => {
+    it('should show date sort filter options', () => {
+      const dateSortFilter = screen.getByTestId('date-sort-filter')
+      expect(dateSortFilter).toBeInTheDocument()
+      
+      expect(screen.getByRole('option', { name: 'No Sorting' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Newest First' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Oldest First' })).toBeInTheDocument()
+    })
+
+    it('should sort applications by newest first', async () => {
       const user = userEvent.setup()
-      renderApplicationsView()
       
-      const dateFromFilter = screen.getByTestId('date-from-filter')
-      const dateToFilter = screen.getByTestId('date-to-filter')
-      const clearFiltersButton = screen.getByTestId('clear-filters-button')
+      const dateSortFilter = screen.getByTestId('date-sort-filter')
+      await user.selectOptions(dateSortFilter, 'newest')
       
-      await user.type(dateFromFilter, '2024-01-01')
-      await user.type(dateToFilter, '2024-01-12')
+      // Get all application elements in order
+      const applications = screen.getAllByTestId(/^application-/)
       
-      expect(dateFromFilter).toHaveValue('2024-01-01')
-      expect(dateToFilter).toHaveValue('2024-01-12')
+      // Tech Corp (2024-01-15) should be first, Old Corp (2023-12-20) should be last
+      expect(applications[0]).toHaveTextContent('Tech Corp')
+      expect(applications[applications.length - 1]).toHaveTextContent('Old Corp')
+    })
+
+    it('should sort applications by oldest first', async () => {
+      const user = userEvent.setup()
       
-      await user.click(clearFiltersButton)
+      const dateSortFilter = screen.getByTestId('date-sort-filter')
+      await user.selectOptions(dateSortFilter, 'oldest')
       
-      expect(dateFromFilter).toHaveValue('')
-      expect(dateToFilter).toHaveValue('')
+      // Get all application elements in order
+      const applications = screen.getAllByTestId(/^application-/)
+      
+      // Old Corp (2023-12-20) should be first, Tech Corp (2024-01-15) should be last
+      expect(applications[0]).toHaveTextContent('Old Corp')
+      expect(applications[applications.length - 1]).toHaveTextContent('Tech Corp')
     })
   })
 
   describe('Combined Filters', () => {
-    it('should apply both status and date filters simultaneously', async () => {
+    beforeEach(async () => {
       const user = userEvent.setup()
       renderApplicationsView()
       
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      await user.click(toggleButton)
+    })
+
+    it('should apply search and status filters simultaneously', async () => {
+      const user = userEvent.setup()
+      
+      const searchInput = screen.getByTestId('search-input')
       const statusFilter = screen.getByTestId('status-filter')
-      const dateFromFilter = screen.getByTestId('date-from-filter')
-      const dateToFilter = screen.getByTestId('date-to-filter')
+      
+      await user.type(searchInput, 'Developer')
+      await user.selectOptions(statusFilter, 'Applied')
+      
+      // Should only show Applied applications that contain "Developer"
+      expect(screen.getByText('Tech Corp')).toBeInTheDocument() // Frontend Developer, Applied
+      expect(screen.queryByText('StartupXYZ')).not.toBeInTheDocument() // React Developer, but Interviewing
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument() // Senior Frontend Engineer, but Offered
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument() // Web Developer, but Rejected
+    })
+
+    it('should apply all filters together', async () => {
+      const user = userEvent.setup()
+      
+      const searchInput = screen.getByTestId('search-input')
+      const statusFilter = screen.getByTestId('status-filter')
+      const dateSortFilter = screen.getByTestId('date-sort-filter')
+      
+      await user.type(searchInput, 'Developer')
+      await user.selectOptions(statusFilter, 'Interviewing')
+      await user.selectOptions(dateSortFilter, 'newest')
+      
+      // Should show only Interviewing applications containing "Developer", sorted by date
+      expect(screen.getByText('StartupXYZ')).toBeInTheDocument()
+      expect(screen.queryByText('Tech Corp')).not.toBeInTheDocument()
+      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument()
+      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Clear Filters', () => {
+    it('should clear all filters when clear button is clicked', async () => {
+      const user = userEvent.setup()
+      renderApplicationsView()
+      
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'test search')
+      
+      const toggleButton = screen.getByTestId('toggle-filters-button')
+      await user.click(toggleButton)
+      
+      const statusFilter = screen.getByTestId('status-filter')
+      const dateSortFilter = screen.getByTestId('date-sort-filter')
       
       await user.selectOptions(statusFilter, 'Applied')
-      await user.type(dateFromFilter, '2024-01-01')
-      await user.type(dateToFilter, '2024-01-20')
+      await user.selectOptions(dateSortFilter, 'newest')
       
-      // Should only show Applied applications within date range (Tech Corp)
-      expect(screen.getByText('Tech Corp')).toBeInTheDocument()
-      expect(screen.queryByText('StartupXYZ')).not.toBeInTheDocument() // Interviewing status
-      expect(screen.queryByText('BigTech Inc')).not.toBeInTheDocument() // Offered status
-      expect(screen.queryByText('Old Corp')).not.toBeInTheDocument() // Rejected status
+      const clearFiltersButton = screen.getByTestId('clear-filters-button')
+      await user.click(clearFiltersButton)
+      
+      expect(searchInput).toHaveValue('')
+      expect(statusFilter).toHaveValue('')
+      expect(dateSortFilter).toHaveValue('')
     })
   })
 
@@ -304,17 +507,11 @@ describe('ApplicationsView Component', () => {
       const user = userEvent.setup()
       renderApplicationsView()
       
-      const statusFilter = screen.getByTestId('status-filter')
-      await user.selectOptions(statusFilter, 'Applied')
+      const searchInput = screen.getByTestId('search-input')
+      await user.type(searchInput, 'nonexistent search term')
       
-      const dateFromFilter = screen.getByTestId('date-from-filter')
-      const dateToFilter = screen.getByTestId('date-to-filter')
-      
-      // Set date range that excludes all Applied applications
-      await user.type(dateFromFilter, '2024-02-01')
-      await user.type(dateToFilter, '2024-02-28')
-      
-      expect(screen.getByText('No applications found matching your filters')).toBeInTheDocument()
+      expect(screen.getByText('No applications found matching your search and filters')).toBeInTheDocument()
+      expect(screen.getByText('Clear Search and Filters')).toBeInTheDocument()
     })
   })
 

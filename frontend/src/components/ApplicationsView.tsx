@@ -9,46 +9,57 @@ interface ApplicationsViewProps {
 }
 
 type ViewMode = 'list' | 'grid';
+type DateSortOrder = 'newest' | 'oldest' | '';
 
 function ApplicationsView({ applications, isLoading, error }: ApplicationsViewProps) {
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [dateFromFilter, setDateFromFilter] = useState<string>('');
-  const [dateToFilter, setDateToFilter] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [dateSortOrder, setDateSortOrder] = useState<DateSortOrder>('');
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
+  const filteredAndSortedApplications = useMemo(() => {
+    let filtered = applications.filter((app) => {
+      // Search filter - search across company, job title, location, and description
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const searchableText = [
+          app.company,
+          app.jobTitle,
+          app.location,
+          app.description
+        ].join(' ').toLowerCase();
+        
+        if (!searchableText.includes(query)) {
+          return false;
+        }
+      }
+
       // Status filter
       if (statusFilter && app.status !== statusFilter) {
         return false;
       }
 
-      // Date filter
-      if (dateFromFilter || dateToFilter) {
-        const appDate = new Date(app.applicationDate + 'T00:00:00');
-        appDate.setHours(0, 0, 0, 0); // Normalize to start of day
-        
-        if (dateFromFilter) {
-          const fromDate = new Date(dateFromFilter + 'T00:00:00');
-          fromDate.setHours(0, 0, 0, 0);
-          if (appDate < fromDate) {
-            return false;
-          }
-        }
-        
-        if (dateToFilter) {
-          const toDate = new Date(dateToFilter + 'T00:00:00');
-          toDate.setHours(23, 59, 59, 999); // End of day
-          if (appDate > toDate) {
-            return false;
-          }
-        }
-      }
-
       return true;
     });
-  }, [applications, statusFilter, dateFromFilter, dateToFilter]);
+
+    // Date sorting
+    if (dateSortOrder) {
+      filtered = [...filtered].sort((a, b) => {
+        const dateA = new Date(a.applicationDate + 'T00:00:00').getTime();
+        const dateB = new Date(b.applicationDate + 'T00:00:00').getTime();
+        
+        if (dateSortOrder === 'newest') {
+          return dateB - dateA; // Newest first
+        } else {
+          return dateA - dateB; // Oldest first
+        }
+      });
+    }
+
+    return filtered;
+  }, [applications, statusFilter, searchQuery, dateSortOrder]);
 
   const getStatusColor = (status: JobApplication['status']) => {
     switch (status) {
@@ -74,9 +85,11 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
 
   const clearFilters = () => {
     setStatusFilter('');
-    setDateFromFilter('');
-    setDateToFilter('');
+    setSearchQuery('');
+    setDateSortOrder('');
   };
+
+  const hasActiveFilters = statusFilter || searchQuery || dateSortOrder;
 
   if (isLoading) {
     return (
@@ -110,8 +123,37 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
 
   return (
     <div className="w-full">
-      {/* Controls */}
+      {/* Search and Controls */}
       <div className="bg-light-surface dark:bg-dark-surface shadow-sm rounded-lg p-4 mb-6">
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-light-text-secondary dark:text-dark-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              data-testid="search-input"
+              type="text"
+              placeholder="Search by company, job title, location, or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-background dark:bg-dark-background text-light-text dark:text-dark-text placeholder-light-text-secondary dark:placeholder-dark-text-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <svg className="h-5 w-5 text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
           {/* View Toggle */}
           <div className="flex items-center space-x-2">
@@ -142,64 +184,79 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            {/* Status Filter */}
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-light-text dark:text-dark-text">
-                Status:
-              </label>
-              <select
-                data-testid="status-filter"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text"
+          {/* Filters Toggle and Clear */}
+          <div className="flex items-center gap-2">
+            {hasActiveFilters && (
+              <button
+                data-testid="clear-filters-button"
+                onClick={clearFilters}
+                className="px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 border border-primary rounded-lg hover:bg-primary/10 transition-colors"
               >
-                <option value="">All Status</option>
-                <option value="Applied">Applied</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Offered">Offered</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </div>
-
-            {/* Date Filters */}
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-light-text dark:text-dark-text">
-                From:
-              </label>
-              <input
-                data-testid="date-from-filter"
-                type="date"
-                value={dateFromFilter}
-                onChange={(e) => setDateFromFilter(e.target.value)}
-                className="px-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text"
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-light-text dark:text-dark-text">
-                To:
-              </label>
-              <input
-                data-testid="date-to-filter"
-                type="date"
-                value={dateToFilter}
-                onChange={(e) => setDateToFilter(e.target.value)}
-                className="px-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text"
-              />
-            </div>
-
-            {/* Clear Filters */}
+                Clear Filters
+              </button>
+            )}
             <button
-              data-testid="clear-filters-button"
-              onClick={clearFilters}
-              className="px-3 py-2 text-sm font-medium text-primary hover:text-primary/80 border border-primary rounded-lg hover:bg-primary/10 transition-colors"
+              data-testid="toggle-filters-button"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border rounded-lg transition-colors ${
+                showFilters || hasActiveFilters
+                  ? 'bg-primary/10 text-primary border-primary'
+                  : 'text-light-text dark:text-dark-text border-light-border dark:border-dark-border hover:bg-light-background dark:hover:bg-dark-background'
+              }`}
             >
-              Clear Filters
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.121A1 1 0 013 6.414V4z" />
+              </svg>
+              Filters
+              <svg className={`h-4 w-4 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
           </div>
         </div>
+
+        {/* Collapsible Filters */}
+        {showFilters && (
+          <div className="mt-4 pt-4 border-t border-light-border dark:border-dark-border">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              {/* Status Filter */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-light-text dark:text-dark-text">
+                  Status:
+                </label>
+                <select
+                  data-testid="status-filter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text"
+                >
+                  <option value="">All Status</option>
+                  <option value="Applied">Applied</option>
+                  <option value="Interviewing">Interviewing</option>
+                  <option value="Offered">Offered</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+
+              {/* Date Sort Filter */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-light-text dark:text-dark-text">
+                  Sort by Date:
+                </label>
+                <select
+                  data-testid="date-sort-filter"
+                  value={dateSortOrder}
+                  onChange={(e) => setDateSortOrder(e.target.value as DateSortOrder)}
+                  className="px-3 py-2 border border-light-border dark:border-dark-border rounded-lg bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text"
+                >
+                  <option value="">No Sorting</option>
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Applications Display */}
@@ -215,16 +272,16 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
             Add Your First Application
           </button>
         </div>
-      ) : filteredApplications.length === 0 ? (
+      ) : filteredAndSortedApplications.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-light-text-secondary dark:text-dark-text-secondary mb-4">
-            No applications found matching your filters
+            No applications found matching your search and filters
           </p>
           <button
             onClick={clearFilters}
             className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors"
           >
-            Clear Filters
+            Clear Search and Filters
           </button>
         </div>
       ) : (
@@ -235,7 +292,7 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
               className="bg-light-surface dark:bg-dark-surface shadow overflow-hidden sm:rounded-md"
             >
               <ul className="divide-y divide-light-border dark:divide-dark-border">
-                {filteredApplications.map((application) => (
+                {filteredAndSortedApplications.map((application) => (
                   <li 
                     key={application.id}
                     data-testid={`application-${application.id}`}
@@ -283,7 +340,7 @@ function ApplicationsView({ applications, isLoading, error }: ApplicationsViewPr
               data-testid="grid-view"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {filteredApplications.map((application) => (
+              {filteredAndSortedApplications.map((application) => (
                 <div
                   key={application.id}
                   data-testid={`application-${application.id}`}

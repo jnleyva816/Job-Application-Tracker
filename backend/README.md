@@ -1,194 +1,497 @@
-# Job Application Tracker Backend
+# Job Application Tracker - Backend
 
-This is the backend service for the Job Application Tracker application, built with Spring Boot 3.4.4. It provides a RESTful API for managing job applications and user accounts.
+A robust Spring Boot 3.5.0 backend service providing a RESTful API for managing job applications, user accounts, and related data. Built with modern Java practices, comprehensive security, and production-ready features.
 
-## Prerequisites
+![Java](https://img.shields.io/badge/Java-17+-orange.svg)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-green.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)
+![Docker](https://img.shields.io/badge/Docker-supported-blue.svg)
 
-- Java 17 or higher
-- Maven
-- PostgreSQL database
-- Environment variables (see Configuration section)
+## 🏗️ Architecture
 
-## Getting Started
+The backend follows a layered architecture pattern with clear separation of concerns:
 
-1. Clone the repository
-2. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-3. Create a `.env` file in the backend directory with the following variables:
-   ```
-   JWT_SECRET=your_jwt_secret_here
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=jobtracker
-   DB_USER=your_db_user
-   DB_PASSWORD=your_db_password
-   ```
-4. Build the project:
-   ```bash
-   mvn clean install
-   ```
-5. Run the application:
-   ```bash
-   mvn spring-boot:run
-   ```
+```
+src/main/java/com/jnleyva/jobtracker_backend/
+├── config/         # Configuration classes (Security, JPA, etc.)
+├── controller/     # REST endpoints and request handling
+├── model/          # JPA entities and data models
+├── repository/     # Data access layer (Spring Data JPA)
+├── service/        # Business logic and service layer
+├── security/       # JWT and authentication components
+├── exception/      # Custom exceptions and global error handling
+├── filter/         # Request/response filters (JWT)
+└── dto/           # Data Transfer Objects
+```
 
-The application will start on `http://localhost:8080` by default.
+## 🚀 Quick Start
 
-## Database Setup
+### Using Docker (Recommended)
 
-1. Create a PostgreSQL database named `jobtracker`
-2. The application will automatically create the necessary tables on startup
-3. Make sure your database credentials match those in your `.env` file
+```bash
+# Build and run with Docker
+docker build -t jleyva816/jobtracker-backend:latest .
+docker run -p 8080:8080 \
+  -e DB_HOST=your-db-host \
+  -e DB_USER=your-db-user \
+  -e DB_PASSWORD=your-db-password \
+  jleyva816/jobtracker-backend:latest
+```
 
-## Authentication
+### Local Development
 
-The application uses JWT (JSON Web Token) for authentication. Here's how it works:
+**Prerequisites:**
+- Java 17+
+- Maven 3.6+
+- PostgreSQL 15+
 
-1. Users register with username, password, and email
-2. Users login with username and password to receive a JWT token
-3. The token must be included in subsequent requests in the Authorization header:
-   ```
-   Authorization: Bearer <your_jwt_token>
-   ```
+**Setup:**
+```bash
+# Clone and navigate to backend
+git clone https://github.com/jnleyva816/Job-Application-Tracker.git
+cd Job-Application-Tracker/backend
 
-## API Endpoints
+# Create environment file
+cp .env.example .env
+# Edit .env with your configuration
+
+# Build and run
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file in the backend directory:
+
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=jobtracker
+DB_USER=postgres
+DB_PASSWORD=password
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-here-minimum-256-bits
+JWT_EXPIRATION=86400000
+
+# Application Configuration
+SPRING_PROFILES_ACTIVE=dev
+SERVER_PORT=8080
+
+# Logging
+LOGGING_LEVEL_ROOT=INFO
+LOGGING_LEVEL_COM_JNLEYVA_JOBTRACKER=DEBUG
+```
+
+### Database Setup
+
+**Option 1: Docker PostgreSQL**
+```bash
+docker run --name jobtracker-postgres \
+  -e POSTGRES_DB=jobtracker \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=password \
+  -p 5432:5432 \
+  -d postgres:15
+```
+
+**Option 2: Local PostgreSQL**
+```sql
+CREATE DATABASE jobtracker;
+CREATE USER jobtracker_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE jobtracker TO jobtracker_user;
+```
+
+## 🔐 Authentication & Security
+
+### JWT Authentication Flow
+
+1. **User Registration/Login** → Receives JWT token
+2. **Token Validation** → Each request validates JWT
+3. **Role-Based Access** → RBAC with USER/ADMIN roles
+4. **Secure Endpoints** → Protected API endpoints
+
+### Security Features
+
+- **Password Encryption**: BCrypt hashing
+- **JWT Token Security**: HS512 algorithm with configurable expiration
+- **CORS Configuration**: Configurable cross-origin requests
+- **Input Validation**: Comprehensive request validation
+- **SQL Injection Protection**: Parameterized queries via JPA
+- **XSS Protection**: Input sanitization and output encoding
+
+### Authentication Endpoints
+
+```bash
+# User Registration
+POST /api/users/register
+Content-Type: application/json
+{
+  "username": "john_doe",
+  "email": "john@example.com", 
+  "password": "SecurePassword123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+# User Login
+POST /api/users/login
+Content-Type: application/json
+{
+  "username": "john_doe",
+  "password": "SecurePassword123!"
+}
+
+# Response
+{
+  "token": "eyJhbGciOiJIUzUxMiJ9...",
+  "type": "Bearer",
+  "username": "john_doe",
+  "email": "john@example.com",
+  "roles": ["ROLE_USER"]
+}
+```
+
+## 📋 API Endpoints
 
 ### User Management
 
-#### Authentication
-- `POST /api/users/login` - Login user and get JWT token
-- `POST /api/users/register` - Register new user
-
-#### User Operations
-- `GET /api/users` - Get all users (Admin only)
-- `GET /api/users/{id}` - Get user by ID
-- `GET /api/users/username/{username}` - Get user by username
-- `GET /api/users/email/{email}` - Get user by email
-- `PUT /api/users/{id}` - Update user
-- `DELETE /api/users/{id}` - Delete user
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/users/register` | Register new user | No |
+| POST | `/api/users/login` | User login | No |
+| GET | `/api/users` | Get all users | Admin |
+| GET | `/api/users/{id}` | Get user by ID | User/Admin |
+| GET | `/api/users/username/{username}` | Get user by username | User/Admin |
+| PUT | `/api/users/{id}` | Update user | User/Admin |
+| DELETE | `/api/users/{id}` | Delete user | Admin |
 
 ### User Profile
-- `GET /api/profile` - Get current user's profile
-- `PUT /api/profile` - Update current user's profile
-- `PUT /api/profile/change-password` - Change current user's password
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/profile` | Get current user profile | User |
+| PUT | `/api/profile` | Update current user profile | User |
+| PUT | `/api/profile/change-password` | Change password | User |
 
 ### Job Applications
-- `GET /api/applications` - Get all applications (filtered by user)
-- `GET /api/applications/{id}` - Get application by ID
-- `POST /api/applications` - Create new application
-- `PUT /api/applications/{id}` - Update application
-- `DELETE /api/applications/{id}` - Delete application
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/applications` | Get user's applications | User |
+| GET | `/api/applications/{id}` | Get application by ID | User |
+| POST | `/api/applications` | Create new application | User |
+| PUT | `/api/applications/{id}` | Update application | User |
+| DELETE | `/api/applications/{id}` | Delete application | User |
 
 ### Contacts (per Application)
-- `GET /api/applications/{applicationId}/contacts` - Get all contacts for an application
-- `GET /api/applications/{applicationId}/contacts/{contactId}` - Get specific contact
-- `POST /api/applications/{applicationId}/contacts` - Create new contact
-- `PUT /api/applications/{applicationId}/contacts/{contactId}` - Update contact
-- `DELETE /api/applications/{applicationId}/contacts/{contactId}` - Delete contact
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/applications/{appId}/contacts` | Get application contacts | User |
+| POST | `/api/applications/{appId}/contacts` | Add contact | User |
+| PUT | `/api/applications/{appId}/contacts/{contactId}` | Update contact | User |
+| DELETE | `/api/applications/{appId}/contacts/{contactId}` | Delete contact | User |
 
 ### Interviews (per Application)
-- `GET /api/applications/{applicationId}/interviews` - Get all interviews for an application
-- `GET /api/applications/{applicationId}/interviews/{interviewId}` - Get specific interview
-- `POST /api/applications/{applicationId}/interviews` - Create new interview
-- `PUT /api/applications/{applicationId}/interviews/{interviewId}` - Update interview
-- `DELETE /api/applications/{applicationId}/interviews/{interviewId}` - Delete interview
 
-## Security Features
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/applications/{appId}/interviews` | Get application interviews | User |
+| POST | `/api/applications/{appId}/interviews` | Schedule interview | User |
+| PUT | `/api/applications/{appId}/interviews/{interviewId}` | Update interview | User |
+| DELETE | `/api/applications/{appId}/interviews/{interviewId}` | Delete interview | User |
 
-- JWT-based authentication using JJWT 0.11.5
-- Password encryption using BCrypt
-- Role-based access control (ROLE_USER, ROLE_ADMIN)
-- Protected endpoints with proper authorization
-- Input validation and sanitization
-- Global exception handling
+### Health & Monitoring
 
-## Error Handling
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/actuator/health` | Application health check | No |
+| GET | `/actuator/info` | Application information | No |
+| GET | `/actuator/metrics` | Application metrics | Admin |
 
-The application includes comprehensive error handling in the `exception` package for:
-- Resource not found
-- Resource already exists
-- Bad requests
-- Authentication failures
-- Access denied
-- Database connection issues
-- Validation errors
+## 🗄️ Database Schema
 
-## Testing
+### Core Entities
 
-The application includes comprehensive test coverage across different layers:
+**Users Table:**
+```sql
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    role VARCHAR(20) DEFAULT 'ROLE_USER',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+**Job Applications Table:**
+```sql
+CREATE TABLE job_applications (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    company_name VARCHAR(100) NOT NULL,
+    position VARCHAR(100) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'APPLIED',
+    application_date DATE,
+    salary_range VARCHAR(50),
+    location VARCHAR(100),
+    job_url VARCHAR(500),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 🧪 Testing
 
 ### Test Structure
-```
-backend/src/test/java/com/jnleyva/jobtracker_backend/
-├── controller/     # Controller layer tests
-├── service/       # Service layer tests
-└── config/        # Configuration tests
-```
 
-### Test Features
-- Unit tests for all controllers, services, and configurations
-- Integration tests using H2 in-memory database
-- Security tests for authentication and authorization
-- Exception handling tests
-- Validation tests
+```
+src/test/java/com/jnleyva/jobtracker_backend/
+├── controller/     # REST endpoint tests
+├── service/        # Business logic tests  
+├── repository/     # Data access tests
+├── security/       # Authentication/authorization tests
+├── config/         # Configuration tests
+└── integration/    # Integration tests
+```
 
 ### Running Tests
+
 ```bash
 # Run all tests
-mvn test
+./mvnw test
 
 # Run specific test class
-mvn test -Dtest=UserControllerTest
+./mvnw test -Dtest=UserControllerTest
 
-# Run tests with coverage report
-mvn test jacoco:report
+# Run tests with coverage
+./mvnw test jacoco:report
+
+# View coverage report
+open target/site/jacoco/index.html
 ```
 
-The test suite uses H2 in-memory database for testing, ensuring tests are isolated and fast.
+### Test Configuration
 
-## Development
+Tests use **H2 in-memory database** for isolation and speed:
 
-### Project Structure
-```
-backend/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/jnleyva/jobtracker_backend/
-│   │   │       ├── config/         # Configuration classes
-│   │   │       ├── controller/     # REST controllers
-│   │   │       ├── model/          # Entity classes
-│   │   │       ├── repository/     # Data access layer
-│   │   │       ├── service/        # Business logic
-│   │   │       ├── security/       # Security related classes
-│   │   │       ├── exception/      # Custom exceptions and handlers
-│   │   │       └── filter/         # JWT filter
-│   │   └── resources/
-│   │       └── application.properties
-└── pom.xml
+```yaml
+# application-test.yml
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
 ```
 
-### Key Dependencies
+### Coverage Requirements
 
-- Spring Boot 3.4.4
-- Spring Security
-- Spring Data JPA
-- PostgreSQL
-- JJWT 0.11.5 for JWT handling
-- Lombok for reducing boilerplate code
-- H2 Database for testing
-- Java Dotenv for environment variable management
+- **Minimum Coverage**: 70%
+- **Controller Tests**: All endpoints
+- **Service Tests**: All business logic
+- **Integration Tests**: Complete workflows
+- **Security Tests**: Authentication scenarios
 
-## Contributing
+## 🔧 Development
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+### Code Quality Tools
 
-## License
+**Integrated Tools:**
+- **JaCoCo**: Code coverage analysis
+- **SpotBugs**: Static analysis for bugs
+- **PMD**: Code quality analysis  
+- **Checkstyle**: Code style enforcement
+- **OWASP Dependency Check**: Security vulnerability scanning
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+**Running Quality Checks:**
+```bash
+# Code coverage
+./mvnw jacoco:report
+
+# Static analysis
+./mvnw spotbugs:check
+./mvnw pmd:check
+
+# Code style
+./mvnw checkstyle:check
+
+# Security scan
+./mvnw org.owasp:dependency-check-maven:check
+```
+
+### Development Profiles
+
+**Available Profiles:**
+- `dev`: Development configuration
+- `test`: Testing configuration  
+- `prod`: Production configuration
+
+**Switching Profiles:**
+```bash
+# Development
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+
+# Production
+java -jar -Dspring.profiles.active=prod target/jobtracker-backend.jar
+```
+
+### Hot Reload
+
+Enable automatic restart during development:
+
+```bash
+# Add to application-dev.yml
+spring:
+  devtools:
+    restart:
+      enabled: true
+```
+
+## 🐳 Docker
+
+### Multi-Stage Build
+
+The Dockerfile uses multi-stage builds for optimization:
+
+```dockerfile
+# Build stage
+FROM openjdk:17-jdk-slim as build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN ./mvnw clean package -DskipTests
+
+# Runtime stage  
+FROM openjdk:17-jre-slim
+RUN addgroup --system spring && adduser --system spring --ingroup spring
+USER spring:spring
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app.jar"]
+```
+
+### Building & Running
+
+```bash
+# Build image
+docker build -t jleyva816/jobtracker-backend:latest .
+
+# Run container
+docker run -p 8080:8080 \
+  -e DB_HOST=host.docker.internal \
+  -e DB_USER=postgres \
+  -e DB_PASSWORD=password \
+  jleyva816/jobtracker-backend:latest
+
+# Run with compose
+docker-compose up -d
+```
+
+## 📊 Key Dependencies
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| **Spring Boot** | 3.5.0 | Application framework |
+| **Spring Security** | 6.x | Authentication & authorization |
+| **Spring Data JPA** | 3.x | Data persistence |
+| **PostgreSQL** | 42.x | Database driver |
+| **JJWT** | 0.12.6 | JWT token handling |
+| **Lombok** | 1.18.x | Boilerplate reduction |
+| **H2** | 2.x | Testing database |
+| **JUnit 5** | 5.x | Testing framework |
+
+## 🚀 Deployment
+
+### Production Deployment
+
+```bash
+# Build production image
+docker build -t jleyva816/jobtracker-backend:v1.0.0 .
+
+# Push to registry
+docker push jleyva816/jobtracker-backend:v1.0.0
+
+# Deploy with environment variables
+docker run -d \
+  --name jobtracker-backend \
+  -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DB_HOST=prod-db-host \
+  -e DB_USER=prod-user \
+  -e DB_PASSWORD=prod-password \
+  -e JWT_SECRET=prod-jwt-secret \
+  jleyva816/jobtracker-backend:v1.0.0
+```
+
+### Health Monitoring
+
+```bash
+# Check application health
+curl http://localhost:8080/actuator/health
+
+# Monitor application metrics
+curl http://localhost:8080/actuator/metrics
+
+# View application info
+curl http://localhost:8080/actuator/info
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Database Connection:**
+```bash
+# Check database connectivity
+docker exec -it jobtracker-backend ping postgres
+
+# View logs
+docker logs jobtracker-backend
+```
+
+**JWT Token Issues:**
+```bash
+# Verify JWT secret length (minimum 256 bits)
+echo "your-jwt-secret" | wc -c
+
+# Check token expiration
+# Default: 24 hours (86400000 ms)
+```
+
+**Memory Issues:**
+```bash
+# Increase JVM memory
+docker run -e JAVA_OPTS="-Xmx512m" jleyva816/jobtracker-backend:latest
+```
+
+## 📚 Additional Resources
+
+- [API Documentation](../WIKI/API-Documentation.md)
+- [Database Schema](../WIKI/Database-Schema.md)
+- [Security Guide](../WIKI/Security-Guide.md)
+- [Testing Guide](../WIKI/Testing-Guide.md)
+- [Docker Guide](../WIKI/Docker-Guide.md)
+- [Contributing Guidelines](../CONTRIBUTING/README.md)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
+
+---
+
+**Built with ❤️ using Spring Boot and modern Java practices**
+
+*For issues and feature requests, please visit our [GitHub Issues](https://github.com/jnleyva816/Job-Application-Tracker/issues)*
