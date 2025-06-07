@@ -1,6 +1,9 @@
 # Build stage
 FROM node:20-alpine AS build
 
+# Add build argument for API URL (no default - will use docker-compose value)
+ARG VITE_API_URL
+
 # Set working directory
 WORKDIR /app
 
@@ -12,6 +15,9 @@ RUN npm ci
 
 # Copy source code
 COPY . .
+
+# Set API URL environment variable from build arg
+ENV VITE_API_URL=${VITE_API_URL}
 
 # Build the application
 RUN npm run build
