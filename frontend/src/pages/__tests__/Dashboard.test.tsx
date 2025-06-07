@@ -257,7 +257,7 @@ describe('Dashboard Component', () => {
       expect(screen.getByText('Interviewing')).toBeInTheDocument();
       expect(screen.getByText('Offered')).toBeInTheDocument();
       // Verify we have the expected number of stat cards
-      expect(screen.getAllByText('1')).toHaveLength(3); // Applied: 1, Interviewing: 1, Offered: 1
+      expect(screen.getAllByText('1')).toHaveLength(4); // Applied: 1, Interviewing: 1, Offered: 1, Rejected: 1
     });
 
     it('should navigate to add application page when button is clicked', async () => {

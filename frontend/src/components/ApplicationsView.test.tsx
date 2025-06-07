@@ -524,7 +524,12 @@ describe('ApplicationsView Component', () => {
       await user.click(gridToggleButton)
       
       const gridContainer = screen.getByTestId('grid-view')
-      expect(gridContainer).toHaveClass('grid')
+      expect(gridContainer).toBeInTheDocument()
+      
+      // Check that the inner grid layout is present
+      const gridLayout = gridContainer.querySelector('.grid')
+      expect(gridLayout).toBeInTheDocument()
+      expect(gridLayout).toHaveClass('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3')
     })
 
     it('should show all application details in grid cards', async () => {

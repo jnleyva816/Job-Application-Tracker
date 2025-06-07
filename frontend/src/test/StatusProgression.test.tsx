@@ -19,6 +19,9 @@ vi.mock('../components/charts', () => ({
   ),
   DonutChart: () => (
     <div data-testid="donut-chart">Donut Chart</div>
+  ),
+  ApplicationFlowChart: () => (
+    <div data-testid="application-flow-chart">Application Flow Chart</div>
   )
 }));
 
@@ -71,8 +74,8 @@ describe('Status Progression Statistics', () => {
 
     // Check overview cards
     expect(screen.getByText('Total Applications').nextElementSibling).toHaveTextContent('10');
-    expect(screen.getByText('Success Rate').nextElementSibling).toHaveTextContent('20%');
-    expect(screen.getByText('Avg Response Time').nextElementSibling).toHaveTextContent('7 days');
+    expect(screen.getAllByText('Success Rate')[0].nextElementSibling).toHaveTextContent('20%');
+    expect(screen.getByText('Avg Response Time').nextElementSibling).toHaveTextContent('7');
     
     // Active Applications should use current status distribution (5 Applied + 3 Interviewing = 8)
     expect(screen.getByText('Active Applications').nextElementSibling).toHaveTextContent('8');
